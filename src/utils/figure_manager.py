@@ -5,11 +5,14 @@ This module provides basic figure registration functionality.
 
 import json
 import os
+import tempfile
+import hashlib
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Dict, Optional
 
 from .logging import get_logger
+from .exceptions import ValidationError
 
 logger = get_logger(__name__)
 
@@ -24,6 +27,7 @@ class FigureMetadata:
     section: Optional[str] = None
     generated_by: Optional[str] = None
     parameters: Optional[Dict[str, Any]] = None
+    alt_text: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
@@ -69,6 +73,7 @@ class FigureManager:
         label: Optional[str] = None,
         section: Optional[str] = None,
         generated_by: Optional[str] = None,
+        alt_text: Optional[str] = None,
         **kwargs,
     ) -> FigureMetadata:
         """Register a figure.
@@ -79,11 +84,16 @@ class FigureManager:
             label: Figure label (auto-generated if None)
             section: Section where figure appears
             generated_by: Script that generated the figure
+            alt_text: Accessible description, when supplied
             **kwargs: Additional parameters
 
         Returns:
             FigureMetadata object
         """
+        if alt_text is not None and (
+            not isinstance(alt_text, str) or not alt_text.strip()
+        ):
+            raise ValidationError("Figure alt text must be a nonempty string")
         # Generate label if not provided
         if label is None:
             base_name = Path(filename).stem
@@ -97,6 +107,7 @@ class FigureManager:
             section=section,
             generated_by=generated_by,
             parameters=kwargs if kwargs else None,
+            alt_text=alt_text,
         )
 
         # Register
@@ -114,12 +125,29 @@ class FigureManager:
                     data = json.load(f)
                     for label, fig_data in data.items():
                         self.figures[label] = FigureMetadata(**fig_data)
-            except Exception:
-                # Start fresh if registry is corrupted
+            except (ValueError, TypeError, KeyError, AttributeError):
+                # Preserve unreadable content before a later registration replaces it.
+                original = self.registry_file.read_bytes()
+                digest = hashlib.sha256(original).hexdigest()[:12]
+                archive = self.registry_file.with_name(
+                    self.registry_file.name + f".corrupt-{digest}"
+                )
+                if not archive.exists():
+                    archive.write_bytes(original)
+                logger.warning("Preserved invalid figure registry at %s", archive)
                 self.figures = {}
 
     def _save_registry(self) -> None:
         """Save figure registry to file."""
         data = {label: fig.to_dict() for label, fig in self.figures.items()}
-        with open(self.registry_file, "w") as f:
-            json.dump(data, f, indent=2, default=str)
+        descriptor, temporary = tempfile.mkstemp(
+            prefix=".figure-registry-", dir=self.registry_file.parent
+        )
+        try:
+            with os.fdopen(descriptor, "w") as handle:
+                json.dump(data, handle, indent=2, default=str)
+                handle.write("\n")
+            os.replace(temporary, self.registry_file)
+        finally:
+            if os.path.exists(temporary):
+                os.unlink(temporary)

@@ -1,0 +1,372 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Active Inference as a Meta-Pragmatic and Meta-Epistemic Method</title><style>body{max-width:900px;margin:40px auto;padding:0 24px;font:17px/1.6 Georgia,serif;color:#222}h1,h2,h3{line-height:1.25}a{color:#176a9a}img{max-width:100%}figure{margin:28px 0}figcaption{font-size:14px}table{border-collapse:collapse;width:100%;font-size:15px}th,td{padding:8px;border-bottom:1px solid #ddd;text-align:left}.equation{overflow-x:auto;margin:20px 0}pre{white-space:pre-wrap;background:#f4f4f4;padding:12px}@media print{body{font-size:11pt;margin:0}h1,h2,h3{break-after:avoid}figure,table{break-inside:avoid}}</style><body><header><h1>Active Inference as a Meta-Pragmatic and Meta-Epistemic Method</h1><p>Daniel Friedman</p><p>Working manuscript · Synthetic computational demonstration</p></header><h1 id="sec:abstract">Abstract</h1>
+
+<p>Active inference separates belief updating and policy evaluation from the specification of the model in which they occur. We interpret specification of observation likelihoods, dynamics, outcome preferences, and initial beliefs as a meta-epistemic and meta-pragmatic activity. A two-by-two framework distinguishes data from metadata, and object-level processing from monitoring or revision of that processing. The four quadrants are an analytical taxonomy, not a claim about four natural cognitive kinds. We supply a discrete categorical implementation, explicit probability contracts, exact variational-free-energy checks, and a reproducible synthetic binary sensor experiment. Across 30 independent seeds with 400 held-out trials each, reliability-aware inference achieves 84.68% accuracy versus 76.36% for a homogeneous-reliability baseline. Adaptive acquisition reaches 90.34% while using 3.89 observations per trial versus three for the baseline. Reliability estimated from separate labeled training achieves 84.68%; misleading reliability metadata reduces accuracy to 54.12%. Paired seed-level intervals and multiplicity-adjusted tests accompany these results. They demonstrate properties of the specified task and mechanisms, rather than general superiority of meta-cognition, proof of the free energy principle, or validated security defenses. We identify model revision, calibration, metadata provenance, and bounded adaptation as concrete research variables.</p>
+<p><strong>Keywords:</strong> active inference; expected free energy; meta-cognition; model specification; metadata reliability; reproducible simulation</p>
+<h1 id="sec:introduction">Introduction</h1>
+
+<p>An agent can infer correctly under an inappropriate observation model or select the minimum-cost policy under inappropriate preferences. In either case, improving the inference algorithm alone may leave the error intact. This distinction motivates examining how a model is specified, evaluated, and revised.</p>
+<p>We use <em>meta-epistemic</em> for choices about the representation and acquisition of evidence, and <em>meta-pragmatic</em> for choices about preferences and the evaluation of action. These are interpretive terms for modeling activities. They do not imply that ordinary parameter estimation is impossible or that an agent's initial ontology is irrevocable. Observation and transition models can be learned; the selection of representations, update rules, and constraints remains a modeling decision.</p>
+<p>Our contribution is a taxonomy connecting these activities to inspectable computational mechanisms. We distinguish data from information about its source or reliability, and direct inference from evaluation of inference. The resulting quadrants organize examples and failure cases. Their usefulness depends on operational definitions and comparative tests; the taxonomy itself does not guarantee improved performance.</p>
+<p>The paper contributes (1) explicit definitions of the four quadrants, (2) a categorical implementation with shared probability conventions and mathematical identity tests, (3) matched synthetic comparisons with retained trial-level evidence, and (4) a scoped discussion of metadata manipulation and model revision. Active inference is not the only framework in which these questions arise. Reinforcement learning, Bayesian decision theory, active learning, and meta-learning also permit learned models, structured objectives, and information-seeking behavior.</p>
+<p>Section <a href="#sec:related_work">Related Work</a> places the interpretation in its research context. Section <a href="#sec:background">Background and Numerical Conventions</a> defines the numerical conventions. Sections <a href="#sec:methodology">Methodology</a> and <a href="#sec:quadrant_model">The Two-by-Two Quadrant Framework</a> give the experimental design and operational taxonomy. Sections <a href="#sec:security">Security and Information Integrity</a>, <a href="#sec:discussion">Discussion</a>, and <a href="#sec:conclusions">Conclusion</a> delimit the implications. The appendix and retained artifacts provide the audit trail.</p>
+<h1 id="sec:related_work">Related Work</h1>
+
+<h2 id="active-inference-and-model-specification">Active inference and model specification</h2>
+<p>The free energy principle and discrete active inference supply the background for the distinction between state inference and model specification <a href="#bib-friston2010free">[1]</a>, <a href="#bib-dacosta2020active">[2]</a>. Expected free energy balances information gain and outcome preferences under a predictive model <a href="#bib-friston2015epistemic">[3]</a>. The variational assumptions behind planning require care: expected free energy is not obtained by simply substituting future observations into the usual variational objective <a href="#bib-millidge2021whence">[4]</a>. Our implementation is deliberately limited to categorical models with known likelihood and transition matrices.</p>
+<p>Methods and software already address learning, hierarchical models, and practical computation <a href="#bib-friston2016active">[5]</a>, <a href="#bib-smith2022step">[6]</a>, <a href="#bib-heins2022pymdp">[7]</a>. Thus, our meta-level interpretation does not introduce model learning to active inference. Its contribution is a classification of specification and monitoring choices, coupled to explicit examples that can be checked computationally.</p>
+<p>Recent work studies scale-free generative models, variational planning, and interpretable graph-based agents <a href="#bib-friston2025scalefree">[8]</a>, <a href="#bib-devries2025planning">[9]</a>, <a href="#bib-feps2025">[10]</a>. These are distinct technical architectures, not implementations or validation of the quadrants proposed here. We include them to clarify the surrounding research program, without importing their performance claims into our results.</p>
+<h2 id="monitoring-control-and-calibration">Monitoring, control, and calibration</h2>
+<p>The distinction between monitoring and control predates this taxonomy <a href="#bib-flavell1979metacognition">[11]</a>, <a href="#bib-nelson1990metamemory">[12]</a>. Confidence, calibration, discrimination, and metacognitive efficiency are different quantities <a href="#bib-fleming2014measure">[13]</a>. A concentrated posterior can be confidently wrong under model misspecification. Accordingly, the experiment reports Brier loss and log loss rather than treating posterior concentration as evidence of correctness.</p>
+<p>MetaMind and SOFAI provide contemporary examples of metacognitive organization in artificial systems <a href="#bib-metamind2025">[14]</a>, <a href="#bib-sofai2025">[15]</a>. Their tasks and mechanisms differ from our binary sensor setting. An architectural analogy does not establish shared statistical behavior or biological equivalence.</p>
+<h2 id="relation-to-reinforcement-learning-and-bayesian-decision-theory">Relation to reinforcement learning and Bayesian decision theory</h2>
+<p>The difference between specifying outcome preferences and specifying rewards is useful, but it is not an absolute division between inspectable and opaque objectives. If preferences are encoded as <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>p</mi><mi>C</mi></msub><mo stretchy="false">&#x00028;</mo><mi>o</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0221D;</mo><mi>exp</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003B2;</mi><mi>r</mi><mo stretchy="false">&#x00028;</mo><mi>o</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00029;</mo></mrow></math>, the expected log-preference term corresponds to expected reward up to a scale and normalization constant. Epistemic value adds a particular information-seeking objective. Active inference and model-based reinforcement learning have operational connections <a href="#bib-tschantz2019scaling">[16]</a>, <a href="#bib-sajid2021active">[17]</a>; both require assumptions about observations, actions, and values.</p>
+<p>Our question is therefore comparative: which explicit reliability or monitoring mechanism changes behavior under a specified environment and resource budget? The four labels do not determine the answer in advance.</p>
+<h2 id="safety-and-information-integrity">Safety and information integrity</h2>
+<p>Objective specification, distribution shift, and oversight are established concerns in AI safety <a href="#bib-amodei2016concrete">[18]</a>, <a href="#bib-gabriel2020artificial">[19]</a>. We use the quadrants to organize where an intervention acts: on observations, metadata, monitoring rules, or model revision. We do not infer human susceptibility, attack success probabilities, or alignment guarantees from the taxonomy. The misleading-metadata control is a controlled synthetic failure case, not a deployment security evaluation.</p>
+<h1 id="sec:background">Background and Numerical Conventions</h1>
+
+<h2 id="discrete-generative-model">Discrete generative model</h2>
+<p>Let <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>s</mi></mrow></math> index hidden states, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>o</mi></mrow></math> observations, and <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>a</mi></mrow></math> actions. The implementation uses <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>A</mi><mrow><mi>o</mi><mo>&#x0002C;</mo><mi>s</mi></mrow></msub><mo>&#x0003D;</mo><mi>p</mi><mo stretchy="false">&#x00028;</mo><mi>o</mi><mo>&#x02223;</mo><mi>s</mi><mo stretchy="false">&#x00029;</mo></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>B</mi><mrow><msup><mi>s</mi><mi>&#x02032;</mi></msup><mo>&#x0002C;</mo><mi>s</mi><mo>&#x0002C;</mo><mi>a</mi></mrow></msub><mo>&#x0003D;</mo><mi>p</mi><mo stretchy="false">&#x00028;</mo><msup><mi>s</mi><mi>&#x02032;</mi></msup><mo>&#x02223;</mo><mi>s</mi><mo>&#x0002C;</mo><mi>a</mi><mo stretchy="false">&#x00029;</mo></mrow></math>, finite outcome preference logits <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>C</mi><mi>o</mi></msub></mrow></math>, and a normalized initial prior <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>D</mi><mi>s</mi></msub></mrow></math>. Columns of <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math> and of each action slice of <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi></mrow></math> sum to one. A two-dimensional <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi></mrow></math> is promoted to a single-action tensor. Arrays with incompatible dimensions, empty axes, negative probabilities, nonfinite values, or invalid normalization are rejected.</p>
+<p>The normalized outcome preference is <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>p</mi><mi>C</mi></msub><mo stretchy="false">&#x00028;</mo><mi>o</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>exp</mi><mo stretchy="false">&#x00028;</mo><msub><mi>C</mi><mi>o</mi></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0002F;</mo><msub><mo>&#x02211;</mo><mi>j</mi></msub><mi>exp</mi><mo stretchy="false">&#x00028;</mo><msub><mi>C</mi><mi>j</mi></msub><mo stretchy="false">&#x00029;</mo></mrow></math>. Logits are not probabilities; adding a constant to all entries leaves the normalized preference unchanged. Model validation copies inputs so that later mutation of caller-owned arrays does not silently change an initialized model. Public model arrays remain inspectable and mutable; callers must validate deliberate revisions.</p>
+<h2 id="bayesian-state-inference">Bayesian state inference</h2>
+<p>For a categorical observation, Bayes' rule gives:</p>
+<p><div class="equation" id="eq:bayes"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>q</mi><mo stretchy="false">&#x00028;</mo><mi>s</mi><mo>&#x02223;</mo><mi>o</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><msub><mi>A</mi><mrow><mi>o</mi><mo>&#x0002C;</mo><mi>s</mi></mrow></msub><msub><mi>D</mi><mi>s</mi></msub></mrow><mrow><msub><mo>&#x02211;</mo><mi>j</mi></msub><msub><mi>A</mi><mrow><mi>o</mi><mo>&#x0002C;</mo><mi>j</mi></mrow></msub><msub><mi>D</mi><mi>j</mi></msub></mrow></mfrac><mo>&#x0002E;</mo></mrow></math></div></p>
+<p>For a normalized nonnegative virtual-evidence vector <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>e</mi><mo stretchy="false">&#x00028;</mo><mi>o</mi><mo stretchy="false">&#x00029;</mo></mrow></math>, the implementation uses <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>L</mi><mi>e</mi></msub><mo stretchy="false">&#x00028;</mo><mi>s</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msub><mo>&#x02211;</mo><mi>o</mi></msub><mi>e</mi><mo stretchy="false">&#x00028;</mo><mi>o</mi><mo stretchy="false">&#x00029;</mo><msub><mi>A</mi><mrow><mi>o</mi><mo>&#x0002C;</mo><mi>s</mi></mrow></msub></mrow></math> and replaces <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>A</mi><mrow><mi>o</mi><mo>&#x0002C;</mo><mi>s</mi></mrow></msub></mrow></math> with <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>L</mi><mi>e</mi></msub><mo stretchy="false">&#x00028;</mo><mi>s</mi><mo stretchy="false">&#x00029;</mo></mrow></math> in Equation <a href="#eq:bayes">(1)</a>. This convention models evidence about possible outcomes. It differs from a Jeffrey update, which mixes already-conditioned posteriors. A uniform evidence vector is uninformative because each likelihood column sums to one. Zero-probability states retain zero mass; evidence impossible under the model and prior raises an error instead of being repaired by clipping.</p>
+<h2 id="variational-free-energy">Variational free energy</h2>
+<p>Given an explicit joint distribution and a normalized candidate posterior <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>q</mi></mrow></math>, variational free energy is:</p>
+<p><div class="equation" id="eq:vfe"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>F</mi><mo stretchy="false">&#x00028;</mo><mi>q</mi><mo>&#x0002C;</mo><mi>o</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><munder><mo>&#x02211;</mo><mi>s</mi></munder><mi>q</mi><mo stretchy="false">&#x00028;</mo><mi>s</mi><mo stretchy="false">&#x00029;</mo><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mi>log</mi><mi>q</mi><mo stretchy="false">&#x00028;</mo><mi>s</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>log</mi><mi>p</mi><mo stretchy="false">&#x00028;</mo><mi>o</mi><mo>&#x0002C;</mo><mi>s</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mo>&#x0003D;</mo><mo>&#x02212;</mo><mi>log</mi><mi>p</mi><mo stretchy="false">&#x00028;</mo><mi>o</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><msub><mi>D</mi><mrow><mrow><mi mathvariant="normal">K</mi><mi mathvariant="normal">L</mi></mrow></mrow></msub><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mi>q</mi><mo stretchy="false">&#x00028;</mo><mi>s</mi><mo stretchy="false">&#x00029;</mo><mi>&#x02016;</mi><mi>p</mi><mo stretchy="false">&#x00028;</mo><mi>s</mi><mo>&#x02223;</mo><mi>o</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mo>&#x0002E;</mo></mrow></math></div></p>
+<p>Equation <a href="#eq:vfe">(2)</a> bounds negative log evidence and reaches the bound at the exact posterior. Candidate beliefs assigning positive mass outside posterior support have infinite free energy. The exact implementation is <code>calculate_variational_free_energy</code>; the older model-free <code>FreeEnergyPrinciple.calculate_free_energy</code> path remains an explicitly labeled schematic score for compatibility. Its trajectories and state-boundary diagrams do not establish a variational bound, conditional independence, or the physical claims of the FEP. Supplying a generative model to that class selects the exact calculation.</p>
+<h2 id="expected-free-energy">Expected free energy</h2>
+<p>For each future policy step, propagate <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>q</mi><mi>&#x003C4;</mi></msub><mo>&#x0003D;</mo><mi>B</mi><mo stretchy="false">&#x00028;</mo><msub><mi>a</mi><mi>&#x003C4;</mi></msub><mo stretchy="false">&#x00029;</mo><msub><mi>q</mi><mrow><mi>&#x003C4;</mi><mo>&#x02212;</mo><mn>1</mn></mrow></msub></mrow></math> and predict <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>q</mi><mi>o</mi></msub><mo>&#x0003D;</mo><mi>A</mi><msub><mi>q</mi><mi>&#x003C4;</mi></msub></mrow></math>. With an exact conditional update, state information gain is <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>I</mi><mo stretchy="false">&#x00028;</mo><mi>s</mi><mi>;</mi><mi>o</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>H</mi><mo stretchy="false">&#x00028;</mo><msub><mi>q</mi><mi>o</mi></msub><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><msub><mo>&#x02211;</mo><mi>s</mi></msub><msub><mi>q</mi><mi>&#x003C4;</mi></msub><mo stretchy="false">&#x00028;</mo><mi>s</mi><mo stretchy="false">&#x00029;</mo><mi>H</mi><mo stretchy="false">&#x00028;</mo><msub><mi>A</mi><mrow><mi>:</mi><mo>&#x0002C;</mo><mi>s</mi></mrow></msub><mo stretchy="false">&#x00029;</mo></mrow></math>. Our normalized planning score is:</p>
+<p><div class="equation" id="eq:efe"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>G</mi><mi>&#x003C4;</mi></msub><mo>&#x0003D;</mo><mo>&#x02212;</mo><mi>I</mi><mo stretchy="false">&#x00028;</mo><mi>s</mi><mi>;</mi><mi>o</mi><mo>&#x02223;</mo><mi>&#x003C0;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><munder><mo>&#x02211;</mo><mi>o</mi></munder><msub><mi>q</mi><mi>o</mi></msub><mo stretchy="false">&#x00028;</mo><mi>o</mi><mo stretchy="false">&#x00029;</mo><mi>log</mi><msub><mi>p</mi><mi>C</mi></msub><mo stretchy="false">&#x00028;</mo><mi>o</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msub><mi>D</mi><mrow><mrow><mi mathvariant="normal">K</mi><mi mathvariant="normal">L</mi></mrow></mrow></msub><mo stretchy="false">[</mo><msub><mi>q</mi><mi>o</mi></msub><mi>&#x02016;</mi><msub><mi>p</mi><mi>C</mi></msub><mo stretchy="false">]</mo><mo>&#x0002B;</mo><munder><mo>&#x02211;</mo><mi>s</mi></munder><msub><mi>q</mi><mi>&#x003C4;</mi></msub><mo stretchy="false">&#x00028;</mo><mi>s</mi><mo stretchy="false">&#x00029;</mo><mi>H</mi><mo stretchy="false">&#x00028;</mo><msub><mi>A</mi><mrow><mi>:</mi><mo>&#x0002C;</mo><mi>s</mi></mrow></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div></p>
+<p>The equivalence in Equation <a href="#eq:efe">(3)</a> follows by expanding mutual information and KL divergence. It is exact for this finite, known-likelihood predictive model. It does not include uncertainty about parameters, posterior approximation error, or observation-contingent replanning.</p>
+<p>For compatibility, the returned <code>total</code> uses the raw-logit score <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02212;</mo><mi>I</mi><mo>&#x02212;</mo><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mi>C</mi><mo stretchy="false">]</mo></mrow></math>. <code>normalized_total</code> adds <code>logsumexp(C)</code> per step and equals risk plus ambiguity. Normalized values are evaluated directly from stable log preferences to avoid cancellation under large constant logit shifts. Policy rankings agree mathematically for a fixed model and horizon convention. Mean aggregation is the legacy default; sum aggregation implements additive finite-horizon costs. Comparing different horizons or different preference models requires specifying this convention and normalization explicitly.</p>
+<p>Policy selection accepts current posterior beliefs, with <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>D</mi></mrow></math> used when beliefs are omitted. It returns an argmin and a policy distribution proportional to <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>exp</mi><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mi>&#x003B3;</mi><mi>G</mi><mo stretchy="false">&#x00029;</mo></mrow></math>, where <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B3;</mi><mo>&#x0003E;</mo><mn>0</mn></mrow></math> is precision. Increasing precision concentrates this distribution; it does not change an exact argmin. Equal scores retain a uniform distribution. All entropy and KL quantities use natural logarithms and are measured in nats.</p>
+<p><figure id="fig:efe_sensitivity"><img src="figures/efe_sensitivity.png" alt="Exact EFE sensitivity for a binary symmetric observation model, uniform state beliefs, identity dynamics and C=(1,-1). Curves are mathematical evaluations, without sampling intervals."><figcaption>Exact EFE sensitivity for a binary symmetric observation model, uniform state beliefs, identity dynamics and C=(1,-1). Curves are mathematical evaluations, without sampling intervals.</figcaption></figure></p>
+<h1 id="sec:methodology">Methodology</h1>
+
+<h2 id="study-type-and-inferential-scope">Study type and inferential scope</h2>
+<p>This is a conceptual framework with a synthetic computational demonstration. The taxonomy was not derived from empirical clustering and is not tested as a biological partition. The experiment tests concrete mechanisms inspired by its quadrants. The mechanisms are implemented in <code>src/analysis/experiments.py</code>; the narrative quadrant class supplies definitions and examples, rather than four independently validated algorithms.</p>
+<p>The design below is fixed in code and recorded in each output manifest. It is not a preregistered study. Historical numerical claims in earlier manuscript versions lacked a corresponding experiment and are superseded by the retained results reported here. No participant data, clinical outcomes, or deployment incidents are analyzed.</p>
+<h2 id="generative-task-and-controls">Generative task and controls</h2>
+<p>Each test trial independently draws a binary hidden state from a uniform prior. Five conditionally independent binary sensors agree with that state with probabilities <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>0.55</mn><mo>&#x0002C;</mo><mn>0.65</mn><mo>&#x0002C;</mo><mn>0.85</mn><mo>&#x0002C;</mo><mn>0.80</mn><mo>&#x0002C;</mo><mn>0.80</mn><mo stretchy="false">&#x00029;</mo></mrow></math>. Every strategy sees the same pre-generated test states and observations within a seed. The first three sensors are the common initial evidence. The state remains fixed within a trial and resets independently between trials.</p>
+<ul>
+<li><strong>Q1 fixed:</strong> inference assumes reliability 0.80 for each of the first three sensors.</li>
+<li><strong>Q2 metadata:</strong> inference uses the true, sensor-specific reliabilities for the same three observations. This is an oracle-metadata condition.</li>
+<li><strong>Q3 adaptive:</strong> starts from Q2, then acquires a fourth and, if needed, fifth observation while the maximum posterior probability is below 0.90. Its cost is the actual observation count, with a maximum of five.</li>
+<li><strong>Q4 learned:</strong> estimates the first three reliabilities from 200 separate labeled training trials per seed, using a Beta(1,1) prior. Parameters are frozen before held-out evaluation. It uses exactly three test observations.</li>
+<li><strong>Misleading metadata:</strong> uses claimed reliabilities <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>0.95</mn><mo>&#x0002C;</mo><mn>0.85</mn><mo>&#x0002C;</mo><mn>0.55</mn><mo stretchy="false">&#x00029;</mo></mrow></math> for the first three sensors. This prespecified adverse control reverses the ordering of sensor quality.</li>
+</ul>
+<p>Q3 changes available evidence, whereas Q4 changes fitted likelihood parameters. They are not matched to Q1 on every resource. We report these differences rather than attributing all gains to a generic meta-level capacity. The confidence score controlling Q3 is maximum posterior probability; it is not the composite heuristic returned by <code>MetaCognitiveSystem</code>.</p>
+<h2 id="replication-randomness-and-outcomes">Replication, randomness, and outcomes</h2>
+<p>Thirty independent seeds (0--29) generate 400 held-out trials each. A <code>SeedSequence</code> spawns distinct training and test streams. Labels from test trials are used only for scoring. The training and held-out streams are not used to tune the threshold, prior, or hypotheses. Equal posterior probabilities select state zero deterministically.</p>
+<p>The primary outcome is held-out accuracy. Secondary descriptive outcomes are mean Brier loss, logarithmic loss in nats, and observations per test trial. Lower loss is better. Accuracy alone may conceal confidence errors, and a high posterior is not evidence of calibration under misspecification.</p>
+<p>The three directional predictions concern (H1) Q2 versus Q1 accuracy, (H2) Q3 versus Q2 accuracy with additional sensing, and (H3) Q4 versus Q1 accuracy after separate training. The comparisons are operationalizations of these mechanisms, not claims that every quadrant extension improves accuracy. Two-sided tests retain the possibility of harm.</p>
+<h2 id="statistical-analysis">Statistical analysis</h2>
+<p>The inferential unit is a seed-level mean, yielding 30 paired replicates per comparison; the 12,000 test trials are not treated as 12,000 independent agent replicates. The common-random-number design reduces comparison noise. We report mean paired differences with 95% percentile-bootstrap intervals from 5,000 resamples of seeds, using bootstrap seed 42. Intervals are marginal, not simultaneous family-wise intervals.</p>
+<p>Primary test evidence is a two-sided paired sign-flip test using 10,000 Monte Carlo resamples (seed 2718) with a plus-one correction. Its validity requires exchangeability of signs under the paired null; it is not an exact finite-sample test for arbitrary differences. Holm correction applies to the family of three primary comparisons. Paired t-tests and standardized within-pair differences <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>d</mi><mi>z</mi></msub><mo>&#x0003D;</mo><mover><mrow><mi>&#x00394;</mi></mrow><mo accent="true">&#x02015;</mo></mover><mo>&#x0002F;</mo><msub><mi>s</mi><mi>&#x00394;</mi></msub></mrow></math> are supplementary. Effect-size conventions are explicit; large standardized differences across low-noise seed averages do not imply large population effects in human cognition.</p>
+<p>The pipeline also checks 200 two-step policy evaluations across 50 randomly generated models against the risk-plus-ambiguity identity, and checks the VFE evidence decomposition. These check the implementation under specified numerical contracts, not the truth of the FEP as a physical theory. Deterministic and impossible-evidence cases are included in regression tests.</p>
+<h2 id="evidence-retention">Evidence retention</h2>
+<p><code>results/trials.csv</code> retains test states, sensor outcomes, strategy probabilities, and Q3 sensing counts. <code>results/replicates.csv</code> retains all seed-level metrics. <code>results/summary.json</code> contains intervals, tests, design parameters and limitations; <code>results/efe_sensitivity.csv</code> contains the exact curves. <code>results/manifest.json</code> hashes source files, configuration, environment versions and output artifacts. The Git revision is the base revision; source digests identify the executed working-tree content.</p>
+<p><figure id="fig:quadrant_experiment"><img src="figures/quadrant_experiment.png" alt="Synthetic held-out outcomes. Dots show independent seeds and intervals show 95 percent bootstrap confidence intervals for seed means. Q3 consumes additional observations and Q4 uses external labeled training. Misleading metadata is an adverse control."><figcaption>Synthetic held-out outcomes. Dots show independent seeds and intervals show 95 percent bootstrap confidence intervals for seed means. Q3 consumes additional observations and Q4 uses external labeled training. Misleading metadata is an adverse control.</figcaption></figure></p>
+<h1 id="sec:quadrant_model">The Two-by-Two Quadrant Framework</h1>
+
+<h2 id="operational-definitions">Operational definitions</h2>
+<p>The horizontal axis distinguishes observations from information about their production, reliability, or provenance. The vertical axis distinguishes performing inference from monitoring, evaluating, or revising inference. A datum can be metadata relative to one task and ordinary data relative to another; classification must therefore specify the object-level task and monitored process.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Data</th>
+<th>Metadata</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Object-level cognition</td>
+<td>Q1: infer states and evaluate actions</td>
+<td>Q2: condition inference on source reliability or context</td>
+</tr>
+<tr>
+<td>Meta-cognitive regulation</td>
+<td>Q3: monitor uncertainty and alter processing or acquisition</td>
+<td>Q4: evaluate or revise the reliability model, strategy, or representation</td>
+</tr>
+</tbody>
+</table>
+<p>The axes are analytically distinguishable, but we do not assert statistical independence or universal neural separability. One implementation can contain operations assigned to several quadrants. Neither a timestamp nor a confidence value alone makes a system meta-cognitive; there must be a specified monitoring/control relation.</p>
+<h2 id="q1-direct-inference-and-policy-evaluation">Q1: direct inference and policy evaluation</h2>
+<p>Q1 includes Equation <a href="#eq:bayes">(1)</a> and policy evaluation in Equation <a href="#eq:efe">(3)</a> under a fixed model. The experimental Q1 baseline uses the same inference rule as the other conditions, with a homogeneous reliability assumption. Its weakness is model misspecification, rather than the absence of any Bayesian operation. Correctly specified Q1 inference can match a metadata-aware strategy when metadata carries no additional information.</p>
+<h2 id="q2-reliability-and-context">Q2: reliability and context</h2>
+<p>Q2 uses metadata <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>m</mi></mrow></math> by conditioning the likelihood, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi><mo stretchy="false">&#x00028;</mo><mi>o</mi><mo>&#x02223;</mo><mi>s</mi><mo>&#x0002C;</mo><mi>m</mi><mo stretchy="false">&#x00029;</mo></mrow></math>. In the sensor example, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>m</mi></mrow></math> identifies sensor-specific reliability. This changes the evidence supplied to the same Bayesian update. The gain is conditional on the metadata being informative and trustworthy. If metadata is irrelevant, unavailable, or false, it may yield no gain or cause harm.</p>
+<p>An alternative weighted score <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>G</mi><mo>&#x0007E;</mo></mover><mo>&#x0003D;</mo><msub><mi>w</mi><mi>e</mi></msub><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mi>I</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><msub><mi>w</mi><mi>p</mi></msub><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mi mathvariant="double-struck">E</mi><mo stretchy="false">[</mo><mi>C</mi><mo stretchy="false">]</mo><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><msub><mi>w</mi><mi>m</mi></msub><mi>K</mi><mo stretchy="false">&#x00028;</mo><mi>m</mi><mo stretchy="false">&#x00029;</mo></mrow></math> can be useful as a designed decision objective. Arbitrary weights and an added metadata cost do not automatically preserve a variational derivation. Such scores must be labeled heuristics unless a corresponding generative model and derivation are supplied.</p>
+<h2 id="q3-monitoring-and-bounded-control">Q3: monitoring and bounded control</h2>
+<p>Q3 observes a property of the inference process and changes what the system does next. Here, maximum posterior probability determines whether another observation is acquired. The monitoring rule is bounded by an explicit sensing budget. The mechanism improves accuracy when new observations are sufficiently informative, but incurs cost and can fail under miscalibrated beliefs.</p>
+<p>Posterior entropy and maximum posterior probability describe belief concentration. Calibration requires comparison with realized outcomes. The package's composite confidence and attention examples are illustrative control rules; their weights are not fitted psychological parameters or calibrated probabilities of correctness.</p>
+<h2 id="q4-model-evaluation-and-revision">Q4: model evaluation and revision</h2>
+<p>Q4 evaluates the reliability model and changes its parameters. The implemented mechanism estimates likelihood reliabilities on a separate labeled training set and freezes them before test. This is model-level adaptation under external supervision. It is not unrestricted self-modification, a learned ontology, or evidence that an agent can independently choose appropriate goals.</p>
+<p>A general framework-revision objective may combine predictive fit, resource cost, and constraints on permissible changes. The choice of those terms requires justification; lowering an in-sample objective is not enough. Held-out evaluation and bounded update rules distinguish improved fit from overfitting or drift. Revising preferences also requires an external criterion for whether the revision is desirable.</p>
+<h2 id="integration-and-falsifiability">Integration and falsifiability</h2>
+<p>The framework suggests testable contrasts: informative versus uninformative metadata, matched versus mismatched models, fixed versus adaptive sensing under comparable cost, and training-based revision versus held-out controls. A useful taxonomy should help define these contrasts without predetermining their outcomes. Evidence against a particular mechanism should remain possible. The current study gives one tractable example; broader tasks, correlated sensors, nonstationarity, and representation learning are future tests.</p>
+<h1 id="sec:security">Security and Information Integrity</h1>
+
+<h2 id="scoped-threat-model">Scoped threat model</h2>
+<p>We consider an attacker able to change observations, reported reliability, monitoring rules, or selected model parameters in a categorical artificial agent. The assets are the fidelity of state estimates, the integrity of preferences, and the validity of model revisions. We assume the evaluation state and held-out scoring code remain trusted. This is a conceptual and synthetic threat model; it does not establish attack prevalence, impact in deployed systems, or human cognitive vulnerability.</p>
+<table>
+<thead>
+<tr>
+<th>Intervention</th>
+<th>Example</th>
+<th>Evidence or limitation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Observations (Q1)</td>
+<td>Alter a sensor outcome</td>
+<td>Can be studied as a controlled observation perturbation</td>
+</tr>
+<tr>
+<td>Metadata (Q2)</td>
+<td>Overstate reliability of a weak sensor</td>
+<td>Measured adverse control in the binary task</td>
+</tr>
+<tr>
+<td>Monitoring (Q3)</td>
+<td>Alter a confidence threshold or sensing budget</td>
+<td>Requires a separate monitoring-rule intervention</td>
+</tr>
+<tr>
+<td>Model revision (Q4)</td>
+<td>Poison training labels or permit preference drift</td>
+<td>Requires a trusted update reference and held-out evaluation</td>
+</tr>
+</tbody>
+</table>
+<p>These locations need not be exclusive. Altering a likelihood matrix may affect both direct inference and metadata-conditioned inference. There is no measured monotonic ranking of danger or detectability across Q1--Q4.</p>
+<h2 id="measured-metadata-failure">Measured metadata failure</h2>
+<p>The misleading-metadata condition claims high reliability for the weakest sensor and low reliability for the strongest. Held-out accuracy falls to 54.12%, compared with 84.68% under truthful reliability metadata. Log loss also increases. This demonstrates a specific misspecification failure under known ground truth. It does not establish the effectiveness of a detector, defense, or real-world influence operation.</p>
+<h2 id="diagnostics-and-their-limits">Diagnostics and their limits</h2>
+<p><code>CognitiveSecurityAnalyzer.detect_anomaly</code> requires valid normalized belief distributions before applying a disclosed smoothing epsilon to KL divergence. The smoothing makes the diagnostic finite when a baseline assigns zero mass, and therefore it is not the unsmoothed support-sensitive KL used in the exact inference identities. Thresholds are user-specified and are not calibrated false-positive rates. Distribution shift can be benign, and an attack can remain close to a baseline.</p>
+<p><code>validate_framework_integrity</code> checks shape, finiteness, compatibility, nonnegativity, and stochasticity. A malicious model can satisfy every one of these contracts. Structural validity therefore cannot establish absence of tampering. The result explicitly records that tamper absence was not verified. The attack-surface scores and Gaussian parameter-drift demonstrations are author-specified illustrations, not measured risk scores or probability-preserving attack simulations.</p>
+<h2 id="bounded-safeguards-and-open-questions">Bounded safeguards and open questions</h2>
+<p>A practical system can record trusted parameter versions, verify input provenance, constrain allowed revisions, retain rollback points, and test candidate changes on held-out data. These are design proposals requiring separate evaluation. Model hashes establish byte identity against a trusted reference; they do not establish the truth or appropriateness of that reference.</p>
+<p>Preference specification remains a normative choice. An inspectable <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>C</mi></mrow></math> vector can help make that choice discussable, but its mathematical representation does not ensure alignment with human values <a href="#bib-gabriel2020artificial">[19]</a>, <a href="#bib-amodei2016concrete">[18]</a>. Future security experiments should state attacker capabilities, clean and attacked distributions, detector calibration data, resource budgets, and false-positive/false-negative tradeoffs. No security efficacy claim is made here.</p>
+<h1 id="sec:discussion">Discussion</h1>
+
+<h2 id="interpretation-of-the-numerical-results">Interpretation of the numerical results</h2>
+<p>The experiment supports a narrow conclusion: using accurate source reliability can improve a misspecified inference baseline, and additional evidence can improve accuracy at additional cost. Estimating reliability from labeled training approximates the oracle condition in this task. These findings are compatible with standard Bayesian model specification and sequential evidence acquisition. They do not require that the four quadrants correspond to distinct computational or biological faculties.</p>
+<p>Q2 and Q4 produce identical held-out classification accuracy in the retained run, while their Brier and log losses differ. In this parameter regime, fitted likelihood weights preserve the ordering of classification decisions across seeds. Equal accuracy therefore does not imply identical beliefs or perfect parameter recovery. Conversely, a sizable standardized seed-level effect largely reflects small variation in replicate means, so absolute percentage-point differences and sensing costs deserve priority.</p>
+<h2 id="contribution-of-the-taxonomy">Contribution of the taxonomy</h2>
+<p>The taxonomy makes three questions explicit: what evidence is modeled, what information is available about its reliability, and which part of processing can be monitored or revised. It connects model specification to testable interventions and makes assumptions inspectable. It does not supersede established work on learning, monitoring/control, active learning, or hierarchical inference.</p>
+<p>Changing <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>C</mi></mrow></math>, or <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>D</mi></mrow></math> has different meanings: observation model revision, dynamics revision, preference revision, and prior revision. These should not all be treated as the same form of optimization. Empirical fit can assess some epistemic revisions, whereas preference revision additionally needs a justified normative reference.</p>
+<h2 id="sec:limitations">Limitations</h2>
+
+<p>The task has two states, conditionally independent sensors, fixed reliabilities, and no changing state within a trial. Labels are available for training Q4, and true reliability is supplied to Q2/Q3. Q3 receives a larger sensing budget. Those assumptions favor the tested mechanisms; correlated observations, incorrect metadata, changing reliability, and costly acquisition can alter the result.</p>
+<p>The experiment evaluates state estimation and sensing, not a full partially observable control task or long-horizon planning. EFE is checked separately through exact mathematical identities and a reliability sweep. No claim is made that the synthetic accuracy gains were caused by EFE policy selection. The package's narrative framework/modeler classes and schematic FEP visualizations remain educational demonstrations.</p>
+<p>Confidence intervals concern this simulation design. Bootstrap seed resampling approximates variability over independent generated datasets, not uncertainty about all possible environments. Sign-flip tests require a symmetric/exchangeable null; they are supplementary to retained estimates and model assumptions. The three primary tests use Holm correction, while the displayed 95% intervals are marginal. No retrospective power calculation or fabricated regression fit is reported.</p>
+<p>The manuscript is a working research document, without claimed peer review or independent replication. Bibliographic corrections are documented separately; bibliography links establish source identity, not independent confirmation of every interpretation. Synthetic failures do not support clinical or deployment guidance.</p>
+<h2 id="next-empirical-tests">Next empirical tests</h2>
+<p>Useful next tests would compare equal sensing budgets, include model-free and model-based decision baselines, introduce correlated and shifting sensor noise, vary training-label availability, and evaluate metadata provenance or corruption detectors on held-out attacks. Representation-changing Q4 mechanisms require complexity penalties and external evaluation. A biological study would need measured behavior, confidence reports, a fitted model, and appropriate metacognitive measures <a href="#bib-fleming2014measure">[13]</a>, rather than mapping the quadrant labels directly onto neural structures.</p>
+<h1 id="sec:conclusions">Conclusion</h1>
+
+<p>Active inference makes observation likelihoods, dynamics, preferences, and priors explicit modeling objects. We interpret decisions about these objects as meta-epistemic and meta-pragmatic activities and organize examples with a data/metadata by cognition/meta-cognition taxonomy. The taxonomy is useful when it clarifies a mechanism, a comparison, and a possible failure, rather than when it merely assigns a higher-order label.</p>
+<p>The implementation now exposes consistent probability conventions, categorical and soft-evidence inference, normalized EFE decompositions, exact variational bounds, and reproducible experiment artifacts. In the specified binary sensor task, reliability-aware inference improves accuracy over a homogeneous-reliability baseline, adaptive sensing improves accuracy with additional observations, and supervised reliability fitting approximates an oracle model. Misleading metadata causes a substantial failure. These outcomes delimit the claim: better-specified or better-informed models can help, but monitoring and revision require resources, evidence, and constraints.</p>
+<p>The next research step is to test those mechanisms under richer environments and matched budgets. The current study supplies an inspectable starting point and an audit trail, without claiming universal performance benefits, biological validation, or security guarantees.</p>
+<h1 id="sec:acknowledgments">Acknowledgments and Research Transparency</h1>
+
+<p>This work builds on the active inference, Bayesian modeling, and metacognition literature cited throughout. Citation does not imply endorsement by the cited researchers.</p>
+<p>The reported experiment uses synthetic data only. No human or animal participants are involved. No funding, competing-interest, institutional affiliation, or publication-status declaration is inferred from the repository; the author should supply any required declarations before submission.</p>
+<p>The manuscript, implementation, generated data, and figure sources are retained with configuration and source hashes. The software is distributed under the repository's Apache-2.0 license. The author is responsible for the final scientific claims and bibliographic details.</p>
+<h1 id="sec:appendix">Appendix</h1>
+
+<h2 id="sec:mathematical_foundations">Derivation checks</h2>
+
+<p>Expanding <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>D</mi><mrow><mrow><mi mathvariant="normal">K</mi><mi mathvariant="normal">L</mi></mrow></mrow></msub><mo stretchy="false">&#x00028;</mo><msub><mi>q</mi><mi>o</mi></msub><mi>&#x02016;</mi><msub><mi>p</mi><mi>C</mi></msub><mo stretchy="false">&#x00029;</mo></mrow></math> gives <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02212;</mo><mi>H</mi><mo stretchy="false">&#x00028;</mo><msub><mi>q</mi><mi>o</mi></msub><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi mathvariant="double-struck">E</mi><mo stretchy="false">[</mo><mi>log</mi><msub><mi>p</mi><mi>C</mi></msub><mo stretchy="false">]</mo></mrow></math>. Adding ambiguity <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi mathvariant="double-struck">E</mi><mrow><msub><mi>q</mi><mi>s</mi></msub></mrow></msub><mi>H</mi><mo stretchy="false">&#x00028;</mo><msub><mi>A</mi><mrow><mi>:</mi><mo>&#x0002C;</mo><mi>s</mi></mrow></msub><mo stretchy="false">&#x00029;</mo></mrow></math> gives <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02212;</mo><mi>I</mi><mo stretchy="false">&#x00028;</mo><mi>s</mi><mi>;</mi><mi>o</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi mathvariant="double-struck">E</mi><mo stretchy="false">[</mo><mi>log</mi><msub><mi>p</mi><mi>C</mi></msub><mo stretchy="false">]</mo></mrow></math>, establishing Equation <a href="#eq:efe">(3)</a>. Replacing normalized log preferences with logits subtracts <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>log</mi><msub><mo>&#x02211;</mo><mi>o</mi></msub><mi>exp</mi><mo stretchy="false">&#x00028;</mo><msub><mi>C</mi><mi>o</mi></msub><mo stretchy="false">&#x00029;</mo></mrow></math> per policy step. This constant affects reported magnitudes but not a fixed-model, fixed-convention policy ranking.</p>
+<p>For VFE, substitute <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi><mo stretchy="false">&#x00028;</mo><mi>o</mi><mo>&#x0002C;</mo><mi>s</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>p</mi><mo stretchy="false">&#x00028;</mo><mi>s</mi><mo>&#x02223;</mo><mi>o</mi><mo stretchy="false">&#x00029;</mo><mi>p</mi><mo stretchy="false">&#x00028;</mo><mi>o</mi><mo stretchy="false">&#x00029;</mo></mrow></math> into Equation <a href="#eq:vfe">(2)</a>. The log-evidence term factors out of the normalized expectation, leaving posterior KL divergence. With <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>q</mi><mo>&#x0003D;</mo><mi>p</mi><mo stretchy="false">&#x00028;</mo><mi>s</mi><mo>&#x02223;</mo><mi>o</mi><mo stretchy="false">&#x00029;</mo></mrow></math> the divergence is zero. Exact-zero handling uses <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mi>log</mi><mn>0</mn><mo>&#x0003D;</mo><mn>0</mn></mrow></math> and retains infinite divergences for support violations.</p>
+<p>Tests additionally compare batched binary log-odds inference with sequential core Bayesian updates, check asymmetric column-stochastic transitions, and check preference-shift and horizon-aggregation identities. Mathematical identity tests complement software coverage; coverage alone does not establish theoretical correctness.</p>
+<h2 id="sec:validation_results">Retained experiment results</h2>
+
+<table>
+<thead>
+<tr>
+<th>Condition</th>
+<th style="text-align: right;">Accuracy (%)</th>
+<th style="text-align: right;">Brier loss</th>
+<th style="text-align: right;">Log loss (nats)</th>
+<th style="text-align: right;">Observations/trial</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q1_fixed</td>
+<td style="text-align: right;">76.36</td>
+<td style="text-align: right;">0.1781</td>
+<td style="text-align: right;">0.5519</td>
+<td style="text-align: right;">3.000</td>
+</tr>
+<tr>
+<td>Q2_metadata</td>
+<td style="text-align: right;">84.68</td>
+<td style="text-align: right;">0.1235</td>
+<td style="text-align: right;">0.4051</td>
+<td style="text-align: right;">3.000</td>
+</tr>
+<tr>
+<td>Q3_adaptive</td>
+<td style="text-align: right;">90.34</td>
+<td style="text-align: right;">0.0812</td>
+<td style="text-align: right;">0.2896</td>
+<td style="text-align: right;">3.892</td>
+</tr>
+<tr>
+<td>Q4_learned</td>
+<td style="text-align: right;">84.68</td>
+<td style="text-align: right;">0.1258</td>
+<td style="text-align: right;">0.4114</td>
+<td style="text-align: right;">3.000</td>
+</tr>
+<tr>
+<td>Q2_misleading</td>
+<td style="text-align: right;">54.12</td>
+<td style="text-align: right;">0.3306</td>
+<td style="text-align: right;">1.1861</td>
+<td style="text-align: right;">3.000</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Contrast</th>
+<th style="text-align: right;">Difference (percentage points)</th>
+<th>95% bootstrap interval</th>
+<th style="text-align: right;">Paired d_z</th>
+<th style="text-align: right;">Holm sign-flip p</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>H1</td>
+<td style="text-align: right;">8.325</td>
+<td>[7.442, 9.217]</td>
+<td style="text-align: right;">3.439</td>
+<td style="text-align: right;">0.00030</td>
+</tr>
+<tr>
+<td>H2</td>
+<td style="text-align: right;">5.658</td>
+<td>[5.058, 6.267]</td>
+<td style="text-align: right;">3.275</td>
+<td style="text-align: right;">0.00030</td>
+</tr>
+<tr>
+<td>H3</td>
+<td style="text-align: right;">8.325</td>
+<td>[7.442, 9.217]</td>
+<td style="text-align: right;">3.439</td>
+<td style="text-align: right;">0.00030</td>
+</tr>
+</tbody>
+</table>
+<p>These estimates are computed from <code>results/summary.json</code>. Each comparison uses 30 paired seed means. The primary p-values are Monte Carlo sign-flip estimates at finite resolution, with Holm correction across H1--H3. The intervals are marginal percentile-bootstrap intervals; they are not adjusted simultaneous intervals. The supplementary paired t-tests and full seed-level data are retained in the artifact set.</p>
+<h2 id="sec:implementation_architecture">Implementation and complexity</h2>
+
+<p><code>core</code> defines categorical models and exact inference. <code>framework</code> supplies the taxonomy, monitoring illustrations, and structural security diagnostics. <code>analysis</code> contains generators, statistics, validation, experiments, and pipeline orchestration. <code>visualization</code> creates educational and experiment figures; <code>utils</code> supplies manuscript validation and provenance. No parent repository infrastructure is required by the research pipeline.</p>
+<p>For a dense model with S states, O observations, A candidate actions and horizon H, a single H-step policy costs approximately <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>O</mi><mo stretchy="false">&#x00028;</mo><mi>H</mi><mo stretchy="false">&#x00028;</mo><msup><mi>S</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mi>O</mi><mi>S</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00029;</mo></mrow></math> for transitions and predictions, with <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>O</mi><mo stretchy="false">&#x00028;</mo><mi>O</mi><mi>S</mi><mo stretchy="false">&#x00029;</mo></mrow></math> likelihood entropy preprocessing. Evaluating K candidate policies multiplies the per-policy cost by K. The implementation does not claim sparse scaling or measured support for 1,000-state models. No runtime table is reported without a retained benchmark protocol and hardware description.</p>
+<h2 id="sec:reproducibility">Reproduction protocol</h2>
+
+<p>Run from a clean checkout:</p>
+<pre><code class="language-bash">uv sync --locked --extra dev --extra research --python 3.12
+MPLBACKEND=Agg uv run --python 3.12 pytest --cov=src --cov-report=term-missing
+uv run --python 3.12 python scripts/07_analysis_pipeline.py
+</code></pre>
+<p>The pipeline writes the source-backed results and standalone HTML manuscript to <code>results/</code>. Changing seed counts, trial counts, training size, numerical libraries or model configuration creates a different run, which must be described as such. Random-number generators are local; reproducibility does not rely on global <code>numpy.random.seed</code>. Source and output digests support verification within a recorded environment. PDF figure metadata or library/platform differences can change binary hashes without changing numerical estimates.</p>
+<p>The older scripts 01--05 generate educational diagrams under <code>output/figures/</code>; those illustrations are separate from the retained experiment evidence. Script 06 validates the manuscript rather than inserting unreviewed or stale figures automatically.</p>
+<h1 id="sec:symbols">Symbols and Glossary</h1>
+
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning and convention</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>s</mi><mo>&#x0002C;</mo><msup><mi>s</mi><mi>&#x02032;</mi></msup></mrow></math></td>
+<td>Current and destination hidden states</td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>o</mi><mo>&#x0002C;</mo><mi>a</mi><mo>&#x0002C;</mo><mi>&#x003C0;</mi></mrow></math></td>
+<td>Outcome, action, and open-loop action sequence</td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>A</mi><mrow><mi>o</mi><mo>&#x0002C;</mo><mi>s</mi></mrow></msub></mrow></math></td>
+<td>Column-stochastic observation likelihood</td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>B</mi><mrow><msup><mi>s</mi><mi>&#x02032;</mi></msup><mo>&#x0002C;</mo><mi>s</mi><mo>&#x0002C;</mo><mi>a</mi></mrow></msub></mrow></math></td>
+<td>Column-stochastic state transition for action <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>a</mi></mrow></math></td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>C</mi><mi>o</mi></msub></mrow></math></td>
+<td>Finite outcome preference logit</td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>D</mi><mi>s</mi></msub></mrow></math></td>
+<td>Initial normalized state prior</td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>e</mi><mo stretchy="false">&#x00028;</mo><mi>o</mi><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+<td>Normalized virtual evidence weights</td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>p</mi><mi>C</mi></msub><mo stretchy="false">&#x00028;</mo><mi>o</mi><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+<td>Softmax-normalized preference distribution</td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>q</mi><mi>s</mi></msub><mo>&#x0002C;</mo><msub><mi>q</mi><mi>o</mi></msub></mrow></math></td>
+<td>Predictive state and outcome distributions</td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>F</mi><mo>&#x0002C;</mo><mi>G</mi></mrow></math></td>
+<td>Variational and expected free energy, in nats</td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>H</mi><mo>&#x0002C;</mo><mi>I</mi><mo>&#x0002C;</mo><msub><mi>D</mi><mrow><mrow><mi mathvariant="normal">K</mi><mi mathvariant="normal">L</mi></mrow></mrow></msub></mrow></math></td>
+<td>Shannon entropy, mutual information, KL divergence</td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B3;</mi></mrow></math></td>
+<td>Positive policy precision</td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>d</mi><mi>z</mi></msub></mrow></math></td>
+<td>Mean paired difference divided by SD of paired differences</td>
+</tr>
+<tr>
+<td>Q1--Q4</td>
+<td>Operational taxonomy labels, not natural cognitive kinds</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Metadata</strong> is information about the source, production or reliability of task-level evidence. <strong>Monitoring</strong> evaluates a property of inference; <strong>control</strong> changes processing based on that evaluation. <strong>Calibration</strong> concerns agreement between probabilistic predictions and observed outcomes, and differs from posterior concentration. <strong>Structural integrity</strong> denotes validity of a model's numerical contracts; it does not establish absence of malicious alteration.</p><h1 id="sec:references">References</h1><ol><li id="bib-friston2010free">Friston, Karl. 2010. The free-energy principle: a unified brain theory?. Nature Reviews Neuroscience <a href="https://www.nature.com/articles/nrn2787">Source</a></li>
+<li id="bib-dacosta2020active">Da Costa, Lancelot and Parr, Thomas and Sajid, Noor and Veselic, Sebastijan and Neacsu, Victorita and Friston, Karl. 2020. Active inference on discrete state-spaces: a synthesis. Journal of Mathematical Psychology <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7732703/">Source</a></li>
+<li id="bib-friston2015epistemic">Friston, Karl and Rigoli, Francesco and Ognibene, Dimitri and Mathys, Christoph and FitzGerald, Thomas and Pezzulo, Giovanni. 2015. Active inference and epistemic value. Cognitive Neuroscience <a href="https://pubmed.ncbi.nlm.nih.gov/25689102/">Source</a></li>
+<li id="bib-millidge2021whence">Millidge, Beren and Tschantz, Alexander and Buckley, Christopher L. 2021. Whence the expected free energy?. Neural Computation <a href="https://arxiv.org/abs/2004.08128">Source</a></li>
+<li id="bib-friston2016active">Friston, Karl and FitzGerald, Thomas and Rigoli, Francesco and Schwartenbeck, Philipp and O&#x27;Doherty, John and Pezzulo, Giovanni. 2016. Active inference and learning. Neuroscience &amp; Biobehavioral Reviews <a href="https://discovery.ucl.ac.uk/id/eprint/1506130/">Source</a></li>
+<li id="bib-smith2022step">Smith, Ryan and Friston, Karl J and Whyte, Christopher J. 2022. A step-by-step tutorial on active inference and its application to empirical data. Journal of Mathematical Psychology <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8956124/">Source</a></li>
+<li id="bib-heins2022pymdp">Heins, Conor and Millidge, Beren and Da Costa, Lancelot and Mann, Stephen and Kirchhoff, Michael and Koudahl, Magnus and Tschantz, Alexander and Buckley, Christopher L and Friston, Karl. 2022. pymdp: A Python library for active inference in discrete state spaces. Journal of Open Source Software <a href="https://joss.theoj.org/papers/10.21105/joss.04098">Source</a></li>
+<li id="bib-friston2025scalefree">Friston, Karl and Heins, Conor and Verbelen, Tim and Da Costa, Lancelot and Salvatori, Tommaso and Markovic, Dimitrije and Tschantz, Alexander and Koudahl, Magnus and Buckley, Christopher and Parr, Thomas. 2025. From pixels to planning: scale-free active inference. Frontiers in Network Physiology <a href="https://www.frontiersin.org/journals/network-physiology/articles/10.3389/fnetp.2025.1521963/full">Source</a></li>
+<li id="bib-devries2025planning">de Vries, Bert and Nuijten, Wouter and van de Laar, Thijs and Kouw, Wouter and Adamiat, Sepideh and Nisslbeck, Tim and Lukashchuk, Mykola and Nguyen, Hoang Minh Huu and Hidalgo Araya, Marco and Tresor, Raphael and Jenneskens, Thijs and Nikoloska, Ivana and Subramanian, Raaja Ganapathy and van Erp, Bart and Bagaev, Dmitry and Podusenko, Albert. 2025. Expected Free Energy-based Planning as Variational Inference <a href="https://arxiv.org/abs/2504.14898">Source</a></li>
+<li id="bib-feps2025">Pazem, J. and Krumm, M. and Vining, A. Q. and Fiderer, L. J. and Briegel, H. J.. 2025. Free Energy Projective Simulation (FEPS): Active inference with interpretability. PLOS One <a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0331047">Source</a></li>
+<li id="bib-flavell1979metacognition">Flavell, John H. 1979. Metacognition and cognitive monitoring: A new area of cognitive-developmental inquiry. American Psychologist <a href="https://doi.org/10.1037/0003-066X.34.10.906">Source</a></li>
+<li id="bib-nelson1990metamemory">Nelson, Thomas O and Narens, Louis. 1990. Metamemory: A theoretical framework and new findings <a href="https://www.imbs.uci.edu/~lnarens/1990/Nelson%26Narens_Book_Chapter_1990.pdf">Source</a></li>
+<li id="bib-fleming2014measure">Fleming, Stephen M. and Lau, Hakwan. 2014. How to measure metacognition. Frontiers in Human Neuroscience <a href="https://www.frontiersin.org/journals/human-neuroscience/articles/10.3389/fnhum.2014.00443/full">Source</a></li>
+<li id="bib-metamind2025">Zhang, Xuanming and Chen, Yuxuan and Yeh, Samuel and Li, Sharon. 2025. MetaMind: Modeling Human Social Thoughts with Metacognitive Multi-Agent Systems. arXiv preprint arXiv:2505.18943 <a href="https://arxiv.org/abs/2505.18943">Source</a></li>
+<li id="bib-sofai2025">Bergamaschi Ganapini, M. and Campbell, M. and Fabiano, F. and Horesh, L. and Lenchner, J. and Loreggia, A. and Mattei, N. and Rossi, F. and Srivastava, B. and Venable, K. B.. 2025. Fast, slow, and metacognitive thinking in AI. npj Artificial Intelligence <a href="https://www.nature.com/articles/s44387-025-00027-5">Source</a></li>
+<li id="bib-tschantz2019scaling">Tschantz, Alexander and Baltieri, Manuel and Seth, Anil K. and Buckley, Christopher L.. 2019. Scaling active inference <a href="https://arxiv.org/abs/1911.10601">Source</a></li>
+<li id="bib-sajid2021active">Sajid, Noor and Ball, Philip J and Parr, Thomas and Friston, Karl J. 2021. Active inference: demystified and compared. Neural Computation <a href="https://arxiv.org/abs/1909.10863">Source</a></li>
+<li id="bib-amodei2016concrete">Amodei, Dario and Olah, Chris and Steinhardt, Jacob and Christiano, Paul and Schulman, John and Man\&#x27;e, Dan. 2016. Concrete problems in AI safety. arXiv preprint arXiv:1606.06565 <a href="https://arxiv.org/abs/1606.06565">Source</a></li>
+<li id="bib-gabriel2020artificial">Gabriel, Iason. 2020. Artificial intelligence, values, and alignment. Minds and Machines <a href="https://link.springer.com/article/10.1007/s11023-020-09539-2">Source</a></li></ol></body></html>

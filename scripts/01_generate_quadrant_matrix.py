@@ -22,6 +22,7 @@ sys.path.insert(0, str(project_root / "src"))
 # Import src/ modules
 from framework.quadrant_framework import QuadrantFramework
 from utils.figure_manager import FigureManager
+
 # Local imports
 from utils.logging import get_logger
 from visualization import VisualizationEngine
@@ -40,7 +41,7 @@ def main() -> None:
     # Initialize components
     quadrant_framework = QuadrantFramework()
     viz_engine = VisualizationEngine(output_dir=str(output_dir))
-    figure_manager = FigureManager()
+    figure_manager = FigureManager(str(output_dir / "figure_registry.json"))
 
     # Get quadrant matrix data
     matrix_data = quadrant_framework.create_quadrant_matrix_visualization()

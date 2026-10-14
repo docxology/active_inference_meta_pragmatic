@@ -12,6 +12,7 @@ from typing import Dict, List, Optional, Tuple, Union
 
 import numpy as np
 from numpy.typing import NDArray
+from core.probability import model_matrices
 from utils.exceptions import ValidationError
 from utils.logging import get_logger
 
@@ -31,6 +32,8 @@ class ValidationFramework:
         Args:
             tolerance: Numerical tolerance for validation checks
         """
+        if not np.isfinite(tolerance) or tolerance <= 0:
+            raise ValidationError("Tolerance must be finite and positive")
         self.tolerance = tolerance
         logger.info(f"Initialized validation framework with tolerance {tolerance}")
 
@@ -51,6 +54,8 @@ class ValidationFramework:
         """
         try:
             distribution = np.asarray(distribution)
+            if distribution.size == 0:
+                raise ValidationError(f"{name} is empty")
 
             # Check for NaN or infinite values
             if not np.all(np.isfinite(distribution)):
@@ -69,14 +74,20 @@ class ValidationFramework:
                 # 2D transition matrix - each row should sum to 1
                 row_sums = np.sum(distribution, axis=1)
                 if not np.allclose(row_sums, 1.0, atol=self.tolerance):
-                    bad_rows = np.where(~np.isclose(row_sums, 1.0, atol=self.tolerance))[0]
+                    bad_rows = np.where(
+                        ~np.isclose(row_sums, 1.0, atol=self.tolerance)
+                    )[0]
                     raise ValidationError(
                         f"{name} rows are not properly normalized: rows {bad_rows} sum to {row_sums[bad_rows]}"  # noqa: E501
                     )
                 total = np.sum(distribution)  # Total sum for reporting
-                expected_sum = float(distribution.shape[0])  # Should equal number of rows
+                expected_sum = float(
+                    distribution.shape[0]
+                )  # Should equal number of rows
             else:
-                raise ValidationError(f"{name} has unsupported dimensionality {distribution.ndim}")
+                raise ValidationError(
+                    f"{name} has unsupported dimensionality {distribution.ndim}"
+                )
 
             # Check overall normalization
             if not np.isclose(total, expected_sum, atol=self.tolerance):
@@ -99,7 +110,9 @@ class ValidationFramework:
             raise
         except Exception as e:
             logger.error(f"Error validating probability distribution: {e}")
-            raise ValidationError(f"Probability distribution validation failed: {e}") from e
+            raise ValidationError(
+                f"Probability distribution validation failed: {e}"
+            ) from e
 
     def validate_generative_model(
         self, model: Dict[str, NDArray]
@@ -138,8 +151,8 @@ class ValidationFramework:
                     "valid": True,
                 }
 
-            # Validate matrix compatibility
-            A, B, C, D = model["A"], model["B"], model["C"], model["D"]
+            # Validate matrix compatibility and column stochasticity.
+            A, B, C, D = model_matrices(*(model[k] for k in required_matrices))
 
             n_states = D.shape[0]
             n_observations = A.shape[0]
@@ -166,7 +179,9 @@ class ValidationFramework:
                 # Validate each transition matrix
                 for action in range(B.shape[2]):
                     transition_matrix = B[:, :, action]
-                    self.validate_probability_distribution(transition_matrix, f"B[:, :, {action}]")
+                    self.validate_probability_distribution(
+                        transition_matrix.T, f"B[:, :, {action}] columns"
+                    )
 
             # Validate prior beliefs
             self.validate_probability_distribution(D, "prior beliefs (D)")
@@ -246,17 +261,21 @@ class ValidationFramework:
                     implementation_result["posterior_beliefs"],
                     theoretical_expectation.get("inference_expectation", {}),
                 )
-                validation_results["theoretical_checks"]["inference"] = inference_validation
+                validation_results["theoretical_checks"][
+                    "inference"
+                ] = inference_validation
 
                 if not inference_validation["correct"]:
                     validation_results["overall_correctness"] = False
                     validation_results["issues"].extend(inference_validation["issues"])
 
             # Validate numerical stability
-            stability_validation = self._validate_numerical_stability(implementation_result)
-            validation_results["implementation_checks"]["numerical_stability"] = (
-                stability_validation
+            stability_validation = self._validate_numerical_stability(
+                implementation_result
             )
+            validation_results["implementation_checks"][
+                "numerical_stability"
+            ] = stability_validation
 
             if not stability_validation["stable"]:
                 validation_results["overall_correctness"] = False
@@ -276,7 +295,9 @@ class ValidationFramework:
 
         except Exception as e:
             logger.error(f"Error validating theoretical correctness: {e}")
-            raise ValidationError(f"Theoretical correctness validation failed: {e}") from e
+            raise ValidationError(
+                f"Theoretical correctness validation failed: {e}"
+            ) from e
 
     def _validate_efe_correctness(
         self, efe_components: Dict, expectation: Dict
@@ -292,7 +313,7 @@ class ValidationFramework:
                 issues.append(f"Missing EFE component: {component}")
                 correct = False
 
-        # Check component relationships (epistemic can be positive or negative, pragmatic typically negative)  # noqa: E501
+        # Check finite components and any declared expectations  # noqa: E501
         if "epistemic" in efe_components and "pragmatic" in efe_components:
             epistemic = efe_components["epistemic"]
             pragmatic = efe_components["pragmatic"]
@@ -306,6 +327,26 @@ class ValidationFramework:
                 issues.append("Pragmatic component is not finite")
                 correct = False
 
+        if "total" in efe_components and all(
+            k in efe_components for k in required_components
+        ):
+            if not np.isclose(
+                efe_components["total"],
+                efe_components["epistemic"] + efe_components["pragmatic"],
+                atol=self.tolerance,
+                rtol=0,
+            ):
+                issues.append("EFE total does not equal epistemic + pragmatic")
+                correct = False
+        for key in required_components:
+            bounds = expectation.get(f"{key}_range")
+            if (
+                bounds is not None
+                and key in efe_components
+                and not bounds[0] <= efe_components[key] <= bounds[1]
+            ):
+                issues.append(f"{key} outside expected range")
+                correct = False
         return {"correct": correct, "issues": issues}
 
     def _validate_inference_correctness(
@@ -329,7 +370,9 @@ class ValidationFramework:
 
         return {"correct": correct, "issues": issues}
 
-    def _validate_numerical_stability(self, results: Dict) -> Dict[str, Union[bool, List]]:
+    def _validate_numerical_stability(
+        self, results: Dict
+    ) -> Dict[str, Union[bool, List]]:
         """Validate numerical stability of results."""
         issues = []
         stable = True
@@ -388,7 +431,9 @@ class ValidationFramework:
 
             for metric_name, required_value in requirements.items():
                 if metric_name not in performance_metrics:
-                    validation_results["issues"].append(f"Missing required metric: {metric_name}")
+                    validation_results["issues"].append(
+                        f"Missing required metric: {metric_name}"
+                    )
                     validation_results["overall_pass"] = False
                     continue
 
@@ -432,7 +477,9 @@ class ValidationFramework:
 
         except Exception as e:
             logger.error(f"Error validating algorithm performance: {e}")
-            raise ValidationError(f"Algorithm performance validation failed: {e}") from e
+            raise ValidationError(
+                f"Algorithm performance validation failed: {e}"
+            ) from e
 
     def create_validation_report(
         self, validation_results: List[Dict]
@@ -452,12 +499,18 @@ class ValidationFramework:
                     "passed": sum(
                         1
                         for r in validation_results
-                        if r.get("valid", r.get("overall_pass", False))
+                        if r.get(
+                            "valid",
+                            r.get("overall_pass", r.get("overall_correctness", False)),
+                        )
                     ),
                     "failed": sum(
                         1
                         for r in validation_results
-                        if not r.get("valid", r.get("overall_pass", True))
+                        if not r.get(
+                            "valid",
+                            r.get("overall_pass", r.get("overall_correctness", False)),
+                        )
                     ),
                     "overall_status": "PASS",
                 },
@@ -512,19 +565,23 @@ def demonstrate_validation_framework() -> Dict[str, Union[str, Dict]]:
     invalid_dist = np.array([0.2, 0.3, 0.6])  # Doesn't sum to 1
 
     try:
-        valid_result = framework.validate_probability_distribution(valid_dist, "test_valid")
+        valid_result = framework.validate_probability_distribution(
+            valid_dist, "test_valid"
+        )
     except ValidationError:
         valid_result = {"valid": False, "error": "Validation failed"}
 
     try:
-        invalid_result = framework.validate_probability_distribution(invalid_dist, "test_invalid")
+        invalid_result = framework.validate_probability_distribution(
+            invalid_dist, "test_invalid"
+        )
     except ValidationError as e:
         invalid_result = {"valid": False, "error": str(e)}
 
     # Demonstrate generative model validation
     simple_model = {
         "A": np.array([[0.8, 0.2], [0.2, 0.8]]),
-        "B": np.array([[[0.9, 0.1], [0.1, 0.9]]]),
+        "B": np.eye(2)[:, :, None],
         "C": np.array([1.0, -1.0]),
         "D": np.array([0.5, 0.5]),
     }

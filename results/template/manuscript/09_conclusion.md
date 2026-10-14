@@ -1,0 +1,7 @@
+# Conclusion {#sec:conclusions}
+
+Active inference makes observation likelihoods, dynamics, preferences, and priors explicit modeling objects. We interpret decisions about these objects as meta-epistemic and meta-pragmatic activities and organize examples with a data/metadata by cognition/meta-cognition taxonomy. The taxonomy is useful when it clarifies a mechanism, a comparison, and a possible failure, rather than when it merely assigns a higher-order label.
+
+The implementation now exposes consistent probability conventions, categorical and soft-evidence inference, normalized EFE decompositions, exact variational bounds, and reproducible experiment artifacts. In the specified binary sensor task, reliability-aware inference improves accuracy over a homogeneous-reliability baseline, adaptive sensing improves accuracy with additional observations, and supervised reliability fitting approximates an oracle model. Misleading metadata causes a substantial failure. These outcomes delimit the claim: better-specified or better-informed models can help, but monitoring and revision require resources, evidence, and constraints.
+
+The next research step is to test those mechanisms under richer environments and matched budgets. The current study supplies an inspectable starting point and an audit trail, without claiming universal performance benefits, biological validation, or security guarantees.

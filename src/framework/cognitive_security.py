@@ -18,6 +18,7 @@ from typing import Dict, List, Optional, Tuple, Union
 
 import numpy as np
 from numpy.typing import NDArray
+from core.probability import probability_vector, model_matrices
 from utils.exceptions import ValidationError
 from utils.logging import get_logger
 
@@ -112,7 +113,9 @@ class CognitiveSecurityAnalyzer:
         self._drift_history: List[Dict] = []
         logger.info("Initialized CognitiveSecurityAnalyzer")
 
-    def analyze_attack_surface(self, quadrant: int) -> Dict[str, Union[float, List[str]]]:
+    def analyze_attack_surface(
+        self, quadrant: int
+    ) -> Dict[str, Union[float, List[str]]]:
         """Analyze attack surface for a specific quadrant (1-4).
 
         Each quadrant in the 2x2 framework (Data/MetaData x Cognitive/MetaCognitive)
@@ -140,7 +143,8 @@ class CognitiveSecurityAnalyzer:
         # Compute vulnerability score from base + meta-level exposure
         vulnerability_score = float(
             np.clip(
-                profile["base_vulnerability"] * 0.6 + profile["meta_level_exposure"] * 0.4,
+                profile["base_vulnerability"] * 0.6
+                + profile["meta_level_exposure"] * 0.4,
                 0.0,
                 1.0,
             )
@@ -150,12 +154,15 @@ class CognitiveSecurityAnalyzer:
             "quadrant": quadrant,
             "quadrant_name": profile["name"],
             "vulnerability_score": vulnerability_score,
+            "score_kind": "illustrative author-specified heuristic; not calibrated risk",
             "attack_vectors": list(profile["attack_vectors"]),
             "defense_mechanisms": list(profile["defense_mechanisms"]),
             "meta_level_exposure": profile["meta_level_exposure"],
         }
 
-        logger.debug(f"Attack surface Q{quadrant}: vulnerability={vulnerability_score:.3f}")
+        logger.debug(
+            f"Attack surface Q{quadrant}: vulnerability={vulnerability_score:.3f}"
+        )
         return result
 
     def simulate_parameter_drift(
@@ -163,6 +170,7 @@ class CognitiveSecurityAnalyzer:
         params: Dict[str, NDArray],
         noise_level: float = 0.1,
         steps: int = 100,
+        seed: Optional[int] = 42,
     ) -> Dict[str, Union[NDArray, float, bool]]:
         """Simulate gradual parameter drift in generative model matrices.
 
@@ -189,16 +197,20 @@ class CognitiveSecurityAnalyzer:
         """
         if not params:
             raise ValidationError("params dictionary must not be empty")
-        if noise_level < 0:
-            raise ValidationError(f"noise_level must be non-negative, got {noise_level}")
-        if steps < 1:
+        if not np.isfinite(noise_level) or noise_level < 0:
+            raise ValidationError(
+                f"noise_level must be non-negative, got {noise_level}"
+            )
+        if not isinstance(steps, (int, np.integer)) or steps < 1:
             raise ValidationError(f"steps must be >= 1, got {steps}")
 
-        rng = np.random.default_rng(seed=42)
+        rng = np.random.default_rng(seed=seed)
         drift_trajectory: Dict[str, NDArray] = {}
 
         for name, matrix in params.items():
-            original = matrix.copy().astype(float)
+            original = np.asarray(matrix, dtype=float).copy()
+            if original.size == 0 or not np.all(np.isfinite(original)):
+                raise ValidationError("Parameters must be nonempty finite arrays")
             current = original.copy()
             norms = np.zeros(steps)
 
@@ -210,7 +222,9 @@ class CognitiveSecurityAnalyzer:
             drift_trajectory[name] = norms
 
         # Total drift is sum of final drift values
-        total_drift = float(sum(trajectory[-1] for trajectory in drift_trajectory.values()))
+        total_drift = float(
+            sum(trajectory[-1] for trajectory in drift_trajectory.values())
+        )
 
         # Detection threshold: scale with dimensionality and noise
         total_params = sum(m.size for m in params.values())
@@ -273,7 +287,12 @@ class CognitiveSecurityAnalyzer:
         if beliefs.ndim != 1:
             raise ValidationError("beliefs must be a 1-D array")
 
-        # Clip to avoid log(0)
+        # Require valid distributions before any numerical smoothing.
+        beliefs = probability_vector(beliefs)
+        baseline = probability_vector(baseline)
+        if not np.isfinite(threshold) or threshold < 0:
+            raise ValidationError("Threshold must be finite and nonnegative")
+        # Clip to avoid log(0); this is explicitly a smoothed KL diagnostic.
         eps = 1e-10
         p = np.clip(beliefs, eps, 1.0)
         q = np.clip(baseline, eps, 1.0)
@@ -302,6 +321,7 @@ class CognitiveSecurityAnalyzer:
             "kl_divergence": kl_div,
             "severity": severity,
             "threshold": threshold,
+            "smoothing_epsilon": eps,
         }
 
         logger.debug(
@@ -313,7 +333,7 @@ class CognitiveSecurityAnalyzer:
         self,
         model_params: Dict[str, NDArray],
     ) -> Dict[str, Union[bool, List[str], Dict]]:
-        """Validate that a generative model has not been tampered with.
+        """Validate structural probability contracts; this cannot establish tamper absence.
 
         Checks matrix properties (stochasticity, non-negativity, bounds),
         parameter bounds, and structural consistency across the model.
@@ -340,10 +360,15 @@ class CognitiveSecurityAnalyzer:
         issues: List[str] = []
         checks: Dict[str, bool] = {}
 
-        A = model_params["A"]
-        B = model_params["B"]
-        C = model_params["C"]
-        D = model_params["D"]
+        A, B, C, D = (np.asarray(model_params[k]) for k in ("A", "B", "C", "D"))
+        if any(matrix.size == 0 for matrix in (A, B, C, D)):
+            return {
+                "is_valid": False,
+                "issues": ["Model matrices must not be empty"],
+                "checks": {"nonempty": False},
+                "integrity_score": 0.0,
+                "tamper_absence_verified": False,
+            }
 
         # Check A: non-negative, columns sum to ~1 (stochastic)
         checks["A_non_negative"] = bool(np.all(A >= 0))
@@ -374,7 +399,9 @@ class CognitiveSecurityAnalyzer:
                 check_name = f"B_stochastic_action_{action_idx}"
                 checks[check_name] = is_stochastic
                 if not is_stochastic:
-                    issues.append(f"B matrix action {action_idx} columns do not sum to 1")
+                    issues.append(
+                        f"B matrix action {action_idx} columns do not sum to 1"
+                    )
         elif B.ndim == 2:
             col_sums_b = B.sum(axis=0)
             checks["B_stochastic"] = bool(np.allclose(col_sums_b, 1.0, atol=1e-4))
@@ -406,6 +433,12 @@ class CognitiveSecurityAnalyzer:
             if not checks["AC_compatible"]:
                 issues.append(f"A rows ({A.shape[0]}) != C length ({C.shape[0]})")
 
+        try:
+            model_matrices(A, B, C, D)
+            checks["probabilistic_structure"] = True
+        except ValidationError as exc:
+            checks["probabilistic_structure"] = False
+            issues.append(str(exc))
         # Compute integrity score
         n_checks = len(checks)
         n_passed = sum(1 for v in checks.values() if v)
@@ -416,6 +449,7 @@ class CognitiveSecurityAnalyzer:
             "issues": issues,
             "checks": checks,
             "integrity_score": integrity_score,
+            "tamper_absence_verified": False,
         }
 
         logger.debug(

@@ -42,7 +42,7 @@ def main() -> None:
     # Initialize components
     analyzer = CognitiveSecurityAnalyzer()
     viz_engine = VisualizationEngine(output_dir=str(output_dir))
-    figure_manager = FigureManager()
+    figure_manager = FigureManager(str(output_dir / "figure_registry.json"))
 
     # Generate figures
     create_attack_surface_diagram(analyzer, viz_engine, figure_manager)
@@ -79,12 +79,30 @@ def create_attack_surface_diagram(
     x = np.arange(len(quadrants))
     width = 0.25
 
-    bars1 = ax.bar(x - width, vulnerability_scores, width,
-                   label="Vulnerability Score", color="#E74C3C", alpha=0.8)
-    bars2 = ax.bar(x, meta_exposures, width,
-                   label="Meta-Level Exposure", color="#3498DB", alpha=0.8)
-    bars3 = ax.bar(x + width, attack_budget, width,
-                   label="Attack Budget", color="#C0392B", alpha=0.7)
+    bars1 = ax.bar(
+        x - width,
+        vulnerability_scores,
+        width,
+        label="Vulnerability Score",
+        color="#E74C3C",
+        alpha=0.8,
+    )
+    bars2 = ax.bar(
+        x,
+        meta_exposures,
+        width,
+        label="Meta-Level Exposure",
+        color="#3498DB",
+        alpha=0.8,
+    )
+    bars3 = ax.bar(
+        x + width,
+        attack_budget,
+        width,
+        label="Attack Budget",
+        color="#C0392B",
+        alpha=0.7,
+    )
 
     ax.set_xlabel("Quadrant")
     ax.set_ylabel("Score (0-1)")
@@ -95,15 +113,20 @@ def create_attack_surface_diagram(
     ax.set_ylim(0, 1.2)
 
     # Detection threshold reference line
-    ax.axhline(y=0.5, color="#7F8C8D", linestyle="--", linewidth=1.5,
-               label="Detection Threshold (0.5)", alpha=0.8)
+    ax.axhline(
+        y=0.5,
+        color="#7F8C8D",
+        linestyle="--",
+        linewidth=1.5,
+        label="Detection Threshold (0.5)",
+        alpha=0.8,
+    )
     ax.text(3.6, 0.52, "Detection\nThreshold", fontsize=8, color="#7F8C8D", va="bottom")
 
     # Add attack vector counts as text
     for i, n in enumerate(n_vectors):
         top = max(vulnerability_scores[i], meta_exposures[i], attack_budget[i])
-        ax.text(i, top + 0.06, f"{n} vectors",
-                ha="center", fontsize=9, style="italic")
+        ax.text(i, top + 0.06, f"{n} vectors", ha="center", fontsize=9, style="italic")
 
     plt.tight_layout()
     saved = viz_engine.save_figure(fig, "cognitive_security_attack_surface")
@@ -113,8 +136,8 @@ def create_attack_surface_diagram(
     figure_manager.register_figure(
         filename="cognitive_security_attack_surface.png",
         caption="Attack surface analysis across the four quadrants of the meta-pragmatic "
-                "framework, showing vulnerability score, meta-level exposure, and "
-                "attack budget required per quadrant.",
+        "framework, showing vulnerability score, meta-level exposure, and "
+        "attack budget required per quadrant.",
         section="security_implications",
         generated_by="05_generate_security_figures.py",
     )
@@ -128,8 +151,9 @@ def create_defense_architecture_diagram(
 ) -> None:
     """Create defense layer architecture diagram."""
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
-    fig.suptitle("Defense Layer Architecture by Quadrant",
-                 fontsize=16, fontweight="bold", y=0.98)
+    fig.suptitle(
+        "Defense Layer Architecture by Quadrant", fontsize=16, fontweight="bold", y=0.98
+    )
 
     colors = ["#E8F4FD", "#FFF3E0", "#F3E5F5", "#E8F5E8"]
 
@@ -143,17 +167,21 @@ def create_defense_architecture_diagram(
         y_pos = np.arange(len(defenses))
 
         # Color intensity based on layer depth
-        layer_colors = [plt.cm.Blues(0.3 + 0.7 * i / len(defenses))
-                        for i in range(len(defenses))]
+        layer_colors = [
+            plt.cm.Blues(0.3 + 0.7 * i / len(defenses)) for i in range(len(defenses))
+        ]
 
         ax.barh(y_pos, [1.0] * len(defenses), color=layer_colors, edgecolor="gray")
         ax.set_yticks(y_pos)
         ax.set_yticklabels([d[:50] for d in defenses], fontsize=8)
         ax.set_xlim(0, 1.2)
         ax.set_xticks([])
-        ax.set_title(f"Q{q}: {result['quadrant_name']}\n"
-                     f"(vulnerability: {result['vulnerability_score']:.2f})",
-                     fontsize=11, fontweight="bold")
+        ax.set_title(
+            f"Q{q}: {result['quadrant_name']}\n"
+            f"(vulnerability: {result['vulnerability_score']:.2f})",
+            fontsize=11,
+            fontweight="bold",
+        )
         ax.set_facecolor(colors[q - 1])
 
     plt.tight_layout()
@@ -199,20 +227,54 @@ def create_anomaly_detection_plot(
     point_colors = [severity_colors[s] for s in severities]
 
     ax1.scatter(alphas, kl_values, c=point_colors, s=20, alpha=0.8, zorder=3)
-    ax1.axhline(y=0.1, color="red", linestyle="--", linewidth=1.5,
-                label="Detection threshold (0.1)")
+    ax1.axhline(
+        y=0.1,
+        color="red",
+        linestyle="--",
+        linewidth=1.5,
+        label="Detection threshold (0.1)",
+    )
 
     # Explicit colour legend for severity levels
     from matplotlib.lines import Line2D
+
     legend_elements = [
-        Line2D([0], [0], marker="o", color="w", markerfacecolor="#27AE60",
-               markersize=8, label="Normal (low KL)"),
-        Line2D([0], [0], marker="o", color="w", markerfacecolor="#F39C12",
-               markersize=8, label="Attacked (medium KL)"),
-        Line2D([0], [0], marker="o", color="w", markerfacecolor="#E74C3C",
-               markersize=8, label="High severity"),
-        Line2D([0], [0], marker="o", color="w", markerfacecolor="#8E44AD",
-               markersize=8, label="Critical severity"),
+        Line2D(
+            [0],
+            [0],
+            marker="o",
+            color="w",
+            markerfacecolor="#27AE60",
+            markersize=8,
+            label="Normal (low KL)",
+        ),
+        Line2D(
+            [0],
+            [0],
+            marker="o",
+            color="w",
+            markerfacecolor="#F39C12",
+            markersize=8,
+            label="Attacked (medium KL)",
+        ),
+        Line2D(
+            [0],
+            [0],
+            marker="o",
+            color="w",
+            markerfacecolor="#E74C3C",
+            markersize=8,
+            label="High severity",
+        ),
+        Line2D(
+            [0],
+            [0],
+            marker="o",
+            color="w",
+            markerfacecolor="#8E44AD",
+            markersize=8,
+            label="Critical severity",
+        ),
         Line2D([0], [0], color="red", linestyle="--", label="Detection threshold"),
     ]
     ax1.legend(handles=legend_elements, fontsize=8, loc="upper left")
@@ -239,20 +301,34 @@ def create_anomaly_detection_plot(
         crossings = np.where(traj_arr > threshold_val)[0]
         if len(crossings) > 0:
             first_cross = crossings[0]
-            ax2.axvline(x=first_cross, color="#7F8C8D", linestyle=":",
-                        linewidth=1.2, alpha=0.7)
+            ax2.axvline(
+                x=first_cross, color="#7F8C8D", linestyle=":", linewidth=1.2, alpha=0.7
+            )
 
-    ax2.axhline(y=threshold_val, color="red", linestyle="--", linewidth=1.5,
-                label="Detection threshold")
+    ax2.axhline(
+        y=threshold_val,
+        color="red",
+        linestyle="--",
+        linewidth=1.5,
+        label="Detection threshold",
+    )
 
     # Steady-state detection accuracy annotation
-    final_vals = [np.array(traj)[-10:].mean()
-                  for traj in drift_result["drift_trajectory"].values()]
+    final_vals = [
+        np.array(traj)[-10:].mean()
+        for traj in drift_result["drift_trajectory"].values()
+    ]
     detected_frac = sum(v > threshold_val for v in final_vals) / len(final_vals)
-    ax2.text(0.97, 0.97,
-             f"Steady-state\ndetection: {detected_frac:.0%}",
-             transform=ax2.transAxes, ha="right", va="top", fontsize=9,
-             bbox=dict(boxstyle="round,pad=0.3", facecolor="lightyellow", alpha=0.8))
+    ax2.text(
+        0.97,
+        0.97,
+        f"Steady-state\ndetection: {detected_frac:.0%}",
+        transform=ax2.transAxes,
+        ha="right",
+        va="top",
+        fontsize=9,
+        bbox=dict(boxstyle="round,pad=0.3", facecolor="lightyellow", alpha=0.8),
+    )
 
     ax2.set_xlabel("Time Steps")
     ax2.set_ylabel("Frobenius Norm Drift")
@@ -267,10 +343,10 @@ def create_anomaly_detection_plot(
     figure_manager.register_figure(
         filename="cognitive_security_anomaly_detection.png",
         caption="Anomaly detection thresholds and parameter drift simulation. "
-                "Left: KL divergence coloured by severity (Normal=green, "
-                "Attacked=orange/red, Critical=purple). "
-                "Right: parameter drift with baseline period shaded, "
-                "threshold-crossing markers, and steady-state detection rate.",
+        "Left: KL divergence coloured by severity (Normal=green, "
+        "Attacked=orange/red, Critical=purple). "
+        "Right: parameter drift with baseline period shaded, "
+        "threshold-crossing markers, and steady-state detection rate.",
         section="security_implications",
         generated_by="05_generate_security_figures.py",
     )

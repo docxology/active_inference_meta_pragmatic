@@ -21,6 +21,8 @@ if TYPE_CHECKING:
 
 import numpy as np
 from numpy.typing import NDArray
+from .probability import model_matrices, probability_vector, bayesian_update, entropy
+from scipy.special import logsumexp, softmax, xlogy
 from utils.exceptions import ValidationError
 from utils.logging import get_logger
 
@@ -59,17 +61,23 @@ class ActiveInferenceFramework:
         else:  # It's already a dictionary
             self.generative_model = generative_model
 
-        self.precision = precision
+        if not np.isfinite(precision) or precision <= 0:
+            raise ValidationError("Precision must be finite and positive")
+        self.precision = float(precision)
         self._validate_generative_model()
 
         # Extract dimensions for convenience
         self.n_states = self.generative_model["D"].shape[0]
         self.n_observations = self.generative_model["A"].shape[0]
         self.n_actions = (
-            self.generative_model["B"].shape[2] if len(self.generative_model["B"].shape) > 2 else 1
+            self.generative_model["B"].shape[2]
+            if len(self.generative_model["B"].shape) > 2
+            else 1
         )
 
-        logger.info(f"Initialized Active Inference framework with precision {precision}")
+        logger.info(
+            f"Initialized Active Inference framework with precision {precision}"
+        )
 
     def _validate_policy(self, policy: NDArray) -> None:
         """Validate that policy is valid.
@@ -82,7 +90,7 @@ class ActiveInferenceFramework:
         """
         policy = np.asarray(policy)
 
-        if policy.size == 0:
+        if policy.ndim != 1 or policy.size == 0:
             raise ValidationError("Policy cannot be empty")
 
         if not np.issubdtype(policy.dtype, np.integer):
@@ -90,268 +98,162 @@ class ActiveInferenceFramework:
 
         # Check that all actions are valid (0 to n_actions-1)
         if np.any(policy < 0) or np.any(policy >= self.n_actions):
-            raise ValidationError(f"Policy actions must be in range [0, {self.n_actions - 1}]")
+            raise ValidationError(
+                f"Policy actions must be in range [0, {self.n_actions - 1}]"
+            )
 
     def _validate_posterior_beliefs(self, posterior_beliefs: NDArray) -> None:
-        """Validate that posterior beliefs form a valid probability distribution.
-
-        Args:
-            posterior_beliefs: Array to validate
-
-        Raises:
-            ValidationError: If posterior beliefs are invalid
-        """
-        posterior_beliefs = np.asarray(posterior_beliefs)
-
-        # Check for NaN or infinite values
-        if not np.all(np.isfinite(posterior_beliefs)):
-            raise ValidationError("Posterior beliefs contain NaN or infinite values")
-
-        # Check for negative values
-        if np.any(posterior_beliefs < 0):
-            raise ValidationError("Posterior beliefs contain negative values")
-
-        # Check normalization (sum close to 1)
-        total = np.sum(posterior_beliefs)
-        if not np.isclose(total, 1.0, atol=1e-6):
-            raise ValidationError(f"Posterior beliefs do not sum to 1 (sum = {total:.6f})")
+        """Require a state-sized finite normalized probability vector."""
+        probability_vector(posterior_beliefs, self.n_states, "posterior beliefs")
 
     def _validate_generative_model(self) -> None:
-        """Validate generative model structure.
-
-        Raises:
-            ValidationError: If required matrices are missing or malformed
-        """
-        required_matrices = ["A", "B", "C", "D"]
-        for matrix_name in required_matrices:
-            if matrix_name not in self.generative_model:
-                raise ValidationError(f"Missing required matrix: {matrix_name}")
-
-        # Basic shape validation
-        A = self.generative_model["A"]
-        if len(A.shape) != 2:
-            raise ValidationError("Matrix A must be 2-dimensional")
+        """Validate the same A/B/C/D contract as GenerativeModel."""
+        if not isinstance(self.generative_model, dict):
+            raise ValidationError(
+                "Generative model must be a dictionary or GenerativeModel"
+            )
+        for key in ("A", "B", "C", "D"):
+            if key not in self.generative_model:
+                raise ValidationError(f"Missing required matrix: {key}")
+        matrices = model_matrices(
+            *(self.generative_model[k] for k in ("A", "B", "C", "D"))
+        )
+        self.generative_model = dict(zip(("A", "B", "C", "D"), matrices))
 
     def calculate_expected_free_energy(
         self,
         posterior_beliefs: NDArray,
         policy: NDArray,
         observations: Optional[NDArray] = None,
+        aggregation: str = "mean",
     ) -> Tuple[float, Dict[str, float]]:
-        """Calculate Expected Free Energy (EFE) for a given policy.
+        """Evaluate open-loop EFE with exact zero support.
 
-        EFE = Epistemic_Affordance + Pragmatic_Value
-
-        Args:
-            posterior_beliefs: Current posterior beliefs over hidden states
-            policy: Action policy (sequence of actions)
-            observations: Optional current observations
-
-        Returns:
-            Tuple of (total_EFE, component_dict) where component_dict contains:
-            - 'epistemic': Epistemic affordance component
-            - 'pragmatic': Pragmatic value component
+        The legacy score is -I(s;o) - E[C(o)]. `normalized_total` adds
+        logsumexp(C) per step and equals risk + ambiguity for normalized
+        preferences. Mean is the backward-compatible horizon convention;
+        use aggregation='sum' for additive finite-horizon planning.
+        `observations` is retained for compatibility; update beliefs first.
         """
-        try:
-            # Validate inputs
-            self._validate_posterior_beliefs(posterior_beliefs)
-            self._validate_policy(policy)
-
-            # Epistemic component: information gain from policy
-            epistemic = self._calculate_epistemic_affordance(posterior_beliefs, policy)
-
-            # Pragmatic component: expected cost/reward
-            pragmatic = self._calculate_pragmatic_value(posterior_beliefs, policy)
-
-            total_efe = epistemic + pragmatic
-
-            components = {
-                "epistemic": epistemic,
-                "pragmatic": pragmatic,
-                "total": total_efe,
-            }
-
-            logger.debug(
-                f"EFE calculation: epistemic={epistemic:.4f}, pragmatic={pragmatic:.4f}, total={total_efe:.4f}"  # noqa: E501
-            )
-
-            return total_efe, components
-
-        except Exception as e:
-            logger.error(f"Error calculating EFE: {e}")
-            raise ValidationError(f"EFE calculation failed: {e}") from e
-
-    def _calculate_epistemic_affordance(self, posterior_beliefs: NDArray, policy: NDArray) -> float:
-        """Calculate epistemic affordance (expected information gain).
-
-        Epistemic affordance is the expected reduction in uncertainty about hidden
-        states that results from executing the policy. Computed as the expected
-        KL divergence between the posterior after observing outcomes and the
-        predictive prior under the policy: E_Q(o|π)[KL(Q(s|o,π) || Q(s|π))].
-
-        This equals the mutual information I(s; o | π), measuring how much
-        observing outcomes under the policy would reduce state uncertainty.
-        """
-        A = self.generative_model["A"]
-        B = self.generative_model["B"]
-
-        n_states = len(posterior_beliefs)
-        current_beliefs = posterior_beliefs.copy()
-        total_epistemic = 0.0
-
+        beliefs = probability_vector(
+            posterior_beliefs, self.n_states, "posterior beliefs"
+        )
+        self._validate_policy(policy)
+        policy = np.asarray(policy)
+        if aggregation not in ("mean", "sum"):
+            raise ValidationError("Aggregation must be 'mean' or 'sum'")
+        A, B, C = (self.generative_model[k] for k in ("A", "B", "C"))
+        column_entropies = -np.sum(xlogy(A, A), axis=0)
+        shifted_C = C - np.max(C)
+        normalized_log_preferences = shifted_C - logsumexp(shifted_C)
+        values = []
         for action in policy:
-            # Predicted next-state distribution under this action.
-            # B convention: (n_states, n_states, n_actions) where B[:, :, a]
-            # is the transition matrix for action a.  Fall back to identity
-            # (no transition) if B does not conform to this shape.
-            if (
-                len(B.shape) == 3
-                and B.shape[0] == n_states
-                and B.shape[1] == n_states
-                and action < B.shape[2]
-            ):
-                next_state_probs = B[:, :, action] @ current_beliefs
-            else:
-                next_state_probs = current_beliefs
-
-            # Normalise to avoid drift
-            next_state_probs = np.clip(next_state_probs, 1e-10, 1.0)
-            next_state_probs = next_state_probs / next_state_probs.sum()
-
-            # Predicted observation distribution: Q(o|π) = A @ Q(s|π)
-            predicted_obs = A @ next_state_probs
-            predicted_obs = np.clip(predicted_obs, 1e-10, 1.0)
-            predicted_obs = predicted_obs / predicted_obs.sum()
-
-            # Expected KL: sum_o Q(o|π) * KL(Q(s|o,π) || Q(s|π))
-            expected_kl = 0.0
-            for obs_idx in range(A.shape[0]):
-                obs_prob = predicted_obs[obs_idx]
-                if obs_prob < 1e-10:
-                    continue
-                # Bayesian update: Q(s|o,π) ∝ A[o,:] * Q(s|π)
-                posterior_given_obs = A[obs_idx, :] * next_state_probs
-                pgo_sum = posterior_given_obs.sum()
-                if pgo_sum < 1e-10:
-                    continue
-                posterior_given_obs = posterior_given_obs / pgo_sum
-                # KL(Q(s|o) || Q(s|π))
-                kl = np.sum(
-                    posterior_given_obs
-                    * (np.log(posterior_given_obs + 1e-10) - np.log(next_state_probs + 1e-10))
+            beliefs = B[:, :, action] @ beliefs
+            outcomes = A @ beliefs
+            ambiguity = float(beliefs @ column_entropies)
+            information_gain = max(0.0, entropy(outcomes) - ambiguity)
+            values.append(
+                (
+                    -information_gain,
+                    -float(outcomes @ C),
+                    ambiguity,
+                    entropy(outcomes),
+                    -float(outcomes @ normalized_log_preferences),
                 )
-                expected_kl += obs_prob * kl
+            )
+        reduced = (
+            np.asarray(values).mean(axis=0)
+            if aggregation == "mean"
+            else np.asarray(values).sum(axis=0)
+        )
+        epistemic, pragmatic, ambiguity, outcome_entropy, normalized_cost = map(
+            float, reduced
+        )
+        normalizer = float(logsumexp(C)) * (len(policy) if aggregation == "sum" else 1)
+        total = epistemic + pragmatic
+        components = {
+            "epistemic": epistemic,
+            "pragmatic": pragmatic,
+            "total": total,
+            "information_gain": -epistemic,
+            "ambiguity": ambiguity,
+            "outcome_entropy": outcome_entropy,
+            "preference_normalizer": normalizer,
+            "normalized_total": epistemic + normalized_cost,
+            "risk": normalized_cost - outcome_entropy,
+        }
+        return total, components
 
-            total_epistemic += expected_kl
-            current_beliefs = next_state_probs  # Propagate beliefs
+    def _calculate_epistemic_affordance(
+        self, posterior_beliefs: NDArray, policy: NDArray
+    ) -> float:
+        """Return negative expected information gain, averaged over policy steps."""
+        return self.calculate_expected_free_energy(posterior_beliefs, policy)[1][
+            "epistemic"
+        ]
 
-        # Average over policy steps; epistemic term enters EFE negatively
-        # (higher information gain reduces EFE)
-        n_steps = max(1, len(policy))
-        return -total_epistemic / n_steps
-
-    def _calculate_pragmatic_value(self, posterior_beliefs: NDArray, policy: NDArray) -> float:
-        """Calculate pragmatic value (expected preference divergence).
-
-        Pragmatic value measures the expected divergence between the predicted
-        observation distribution and the agent's preferences encoded in matrix C.
-        A positive value indicates predicted observations conflict with preferences.
-        """
-        A = self.generative_model["A"]
-        B = self.generative_model["B"]
-        C = self.generative_model.get("C", np.zeros(A.shape[0]))
-
-        n_states = len(posterior_beliefs)
-        current_beliefs = posterior_beliefs.copy()
-        total_pragmatic = 0.0
-
-        for action in policy:
-            if (
-                len(B.shape) == 3
-                and B.shape[0] == n_states
-                and B.shape[1] == n_states
-                and action < B.shape[2]
-            ):
-                next_state_probs = B[:, :, action] @ current_beliefs
-            else:
-                next_state_probs = current_beliefs
-
-            next_state_probs = np.clip(next_state_probs, 1e-10, 1.0)
-            next_state_probs = next_state_probs / next_state_probs.sum()
-
-            # Expected observations under policy
-            predicted_obs = A @ next_state_probs
-            predicted_obs = np.clip(predicted_obs, 1e-10, 1.0)
-            predicted_obs = predicted_obs / predicted_obs.sum()
-
-            # Pragmatic cost: -E_Q(o)[log P(o)] = -Q(o)·C
-            # Lower is better (preferred observations have high C values)
-            pragmatic_cost = -np.sum(predicted_obs * C)
-            total_pragmatic += pragmatic_cost
-            current_beliefs = next_state_probs
-
-        return total_pragmatic / max(1, len(policy))
+    def _calculate_pragmatic_value(
+        self, posterior_beliefs: NDArray, policy: NDArray
+    ) -> float:
+        """Return negative expected preference logits, averaged over steps."""
+        return self.calculate_expected_free_energy(posterior_beliefs, policy)[1][
+            "pragmatic"
+        ]
 
     def _calculate_entropy(self, beliefs: NDArray) -> float:
-        """Calculate Shannon entropy of a belief distribution."""
-        beliefs = np.clip(beliefs, 1e-10, 1.0)
-        return -np.sum(beliefs * np.log(beliefs))
+        """Return Shannon entropy in nats, preserving zero probabilities."""
+        return entropy(probability_vector(beliefs))
 
-    def select_optimal_policy(self, candidate_policies: List[NDArray]) -> Tuple[NDArray, Dict]:
-        """Select optimal policy by minimizing EFE.
+    def select_optimal_policy(
+        self,
+        candidate_policies: List[NDArray],
+        posterior_beliefs: Optional[NDArray] = None,
+        aggregation: str = "mean",
+    ) -> Tuple[NDArray, Dict]:
+        """Select minimum EFE using current beliefs (D when omitted).
 
-        Args:
-            candidate_policies: List of candidate action policies
-
-        Returns:
-            Tuple of (optimal_policy, selection_info) where selection_info contains
-            EFE values for all policies and selection criteria
+        Also report a normalized policy posterior softmax(-precision * G).
+        Precision controls this posterior; it does not change argmin ranking.
         """
-        try:
-            policy_scores = {}
-
-            for i, policy in enumerate(candidate_policies):
-                posterior_beliefs = self._infer_posterior_beliefs()
-                efe_total, efe_components = self.calculate_expected_free_energy(
-                    posterior_beliefs, policy
-                )
-                policy_scores[f"policy_{i}"] = {
-                    "policy": policy,
-                    "efe_total": efe_total,
-                    "efe_components": efe_components,
-                }
-
-            # Select policy with minimal EFE
-            optimal_policy_key = min(
-                policy_scores.keys(), key=lambda k: policy_scores[k]["efe_total"]
+        if len(candidate_policies) == 0:
+            raise ValidationError("Candidate policies cannot be empty")
+        beliefs = (
+            self._infer_posterior_beliefs()
+            if posterior_beliefs is None
+            else posterior_beliefs
+        )
+        scores = {}
+        for i, policy in enumerate(candidate_policies):
+            total, components = self.calculate_expected_free_energy(
+                beliefs, policy, aggregation=aggregation
             )
-
-            optimal_policy = policy_scores[optimal_policy_key]["policy"]
-            selection_info = {
-                "optimal_policy": optimal_policy_key,
-                "all_scores": policy_scores,
-                "selection_criteria": "minimize_EFE",
+            scores[f"policy_{i}"] = {
+                "policy": policy,
+                "efe_total": total,
+                "efe_components": components,
+                "efe_normalized": components["normalized_total"],
             }
-
-            logger.info(f"Selected optimal policy: {optimal_policy_key}")
-            return optimal_policy, selection_info
-
-        except Exception as e:
-            logger.error(f"Error selecting optimal policy: {e}")
-            raise ValidationError(f"Policy selection failed: {e}") from e
+        values = np.array([score["efe_normalized"] for score in scores.values()])
+        if not np.all(np.isfinite(values)):
+            raise ValidationError(
+                "Policy evaluation produced non-finite normalized scores"
+            )
+        index = int(np.argmin(values))
+        # Subtract the minimum before scaling to avoid overflow for large precision.
+        with np.errstate(over="ignore"):
+            logits = -self.precision * (values - values.min())
+        probabilities = softmax(logits)
+        return candidate_policies[index], {
+            "optimal_policy": f"policy_{index}",
+            "all_scores": scores,
+            "selection_criteria": "minimize_EFE",
+            "policy_probabilities": probabilities.tolist(),
+            "precision": self.precision,
+        }
 
     def _infer_posterior_beliefs(self) -> NDArray:
-        """Return the prior belief distribution from the generative model.
-
-        Uses the D matrix (prior over initial states) as the starting belief
-        when no observation is available for inference.
-
-        Returns:
-            Prior belief distribution over hidden states from matrix D
-        """
-        D = self.generative_model["D"]
-        D = np.clip(D, 1e-10, 1.0)
-        return D / D.sum()
+        """Return a copy of D when observations are unavailable."""
+        return self.generative_model["D"].copy()
 
     def perception_as_inference(self, observations: NDArray) -> NDArray:
         """Implement perception as inference.
@@ -366,7 +268,9 @@ class ActiveInferenceFramework:
             # Variational inference to minimize free energy
             posterior = self._variational_inference(observations)
 
-            logger.debug(f"Perception as inference completed with {len(posterior)} state beliefs")
+            logger.debug(
+                f"Perception as inference completed with {len(posterior)} state beliefs"
+            )
             return posterior
 
         except Exception as e:
@@ -374,32 +278,10 @@ class ActiveInferenceFramework:
             raise ValidationError(f"Perception inference failed: {e}") from e
 
     def _variational_inference(self, observations: NDArray) -> NDArray:
-        """Perform Bayesian belief update given observations.
-
-        Computes posterior Q(s|o) ∝ P(o|s) * P(s) by multiplying the
-        observation likelihood column A[o, :] with the prior D.
-
-        Args:
-            observations: One-hot or probability vector over observation indices
-
-        Returns:
-            Normalised posterior belief distribution over hidden states
-        """
-        A = self.generative_model["A"]
-        D = self.generative_model["D"]
-
-        # Identify the most likely observation index from the input vector
-        obs_idx = int(np.argmax(observations))
-
-        # Likelihood of each hidden state producing this observation
-        likelihood = A[obs_idx, :]
-
-        # Posterior ∝ likelihood × prior
-        posterior = likelihood * D
-        posterior = np.clip(posterior, 1e-10, 1.0)
-        posterior = posterior / posterior.sum()
-
-        return posterior
+        """Exact categorical or virtual-evidence Bayes update from D."""
+        return bayesian_update(
+            self.generative_model["A"], observations, self.generative_model["D"]
+        )
 
 
 def demonstrate_active_inference_concepts() -> Dict[str, Union[str, float]]:
@@ -447,7 +329,7 @@ def demonstrate_active_inference_concepts() -> Dict[str, Union[str, float]]:
     _B[:, :, 0] = np.eye(_n)  # stay
     _B[:, :, 1] = np.fliplr(np.eye(_n))  # switch
     simple_model = {
-        "A": np.array([[0.8, 0.2], [0.3, 0.7]]),  # Observation likelihoods
+        "A": np.array([[0.8, 0.2], [0.2, 0.8]]),  # Observation likelihoods
         "B": _B,  # Transition probabilities (2, 2, 2)
         "C": np.array([1.0, -1.0]),  # Preferences
         "D": np.array([0.5, 0.5]),  # Prior beliefs
@@ -459,7 +341,9 @@ def demonstrate_active_inference_concepts() -> Dict[str, Union[str, float]]:
     posterior = np.array([0.6, 0.4])
     policy = np.array([0, 1])  # Simple two-step policy
 
-    efe_total, efe_components = framework.calculate_expected_free_energy(posterior, policy)
+    efe_total, efe_components = framework.calculate_expected_free_energy(
+        posterior, policy
+    )
 
     demonstration = {
         "concepts": concepts,

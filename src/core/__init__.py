@@ -10,6 +10,7 @@ from .active_inference import (
 )
 from .free_energy_principle import (
     FreeEnergyPrinciple,
+    calculate_variational_free_energy,
     define_what_is_a_thing,
     demonstrate_fep_concepts,
 )
@@ -23,6 +24,7 @@ __all__ = [
     "ActiveInferenceFramework",
     "demonstrate_active_inference_concepts",
     "FreeEnergyPrinciple",
+    "calculate_variational_free_energy",
     "define_what_is_a_thing",
     "demonstrate_fep_concepts",
     "GenerativeModel",

@@ -185,29 +185,35 @@ class TestBackwardCompatWrappers:
     def test_active_inference_wrapper(self):
         """Test src/active_inference.py re-exports from core."""
         from core.active_inference import ActiveInferenceFramework
+
         assert ActiveInferenceFramework is not None
 
     def test_free_energy_principle_wrapper(self):
         """Test src/free_energy_principle.py re-exports from core."""
         from core.free_energy_principle import FreeEnergyPrinciple
+
         assert FreeEnergyPrinciple is not None
 
     def test_meta_cognition_wrapper(self):
         """Test src/meta_cognition.py re-exports from framework."""
         from framework.meta_cognition import MetaCognitiveSystem
+
         assert MetaCognitiveSystem is not None
 
     def test_modeler_perspective_wrapper(self):
         """Test src/modeler_perspective.py re-exports from framework."""
         from framework.modeler_perspective import ModelerPerspective
+
         assert ModelerPerspective is not None
 
     def test_validation_wrapper(self):
         """Test src/validation.py re-exports from analysis."""
         from analysis.validation import ValidationFramework
+
         assert ValidationFramework is not None
 
     def test_statistical_analysis_wrapper(self):
         """Test src/statistical_analysis.py re-exports from analysis."""
         from analysis.statistical_analysis import StatisticalAnalyzer
+
         assert StatisticalAnalyzer is not None

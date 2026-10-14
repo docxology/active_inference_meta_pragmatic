@@ -81,7 +81,9 @@ class VisualizationEngine:
                 }
             )
 
-    def create_figure(self, figsize: Tuple[float, float] = (8, 6)) -> Tuple[plt.Figure, plt.Axes]:
+    def create_figure(
+        self, figsize: Tuple[float, float] = (8, 6)
+    ) -> Tuple[plt.Figure, plt.Axes]:
         """Create a new figure with proper styling.
 
         Args:
@@ -215,8 +217,12 @@ class VisualizationEngine:
             quadrants = matrix_data["quadrants"]
             title = matrix_data.get("title", "Quadrant Matrix")
             subtitle = matrix_data.get("subtitle", "")
-            y_axis_labels = matrix_data.get("y_axis", {}).get("categories", ["Low", "High"])
-            x_axis_labels = matrix_data.get("x_axis", {}).get("categories", ["Low", "High"])
+            y_axis_labels = matrix_data.get("y_axis", {}).get(
+                "categories", ["Low", "High"]
+            )
+            x_axis_labels = matrix_data.get("x_axis", {}).get(
+                "categories", ["Low", "High"]
+            )
         elif "matrix" in matrix_data and "labels" in matrix_data:
             # New format from tests - convert to quadrants format
             matrix = matrix_data["matrix"]
@@ -298,7 +304,9 @@ class VisualizationEngine:
 
         # Top-left (Q3)
         ax.add_patch(
-            Rectangle((0, 1), 1, 1, fill=True, alpha=0.1, color=quadrants["top_left"]["color"])
+            Rectangle(
+                (0, 1), 1, 1, fill=True, alpha=0.1, color=quadrants["top_left"]["color"]
+            )
         )
         ax.text(
             0.5,
@@ -590,7 +598,9 @@ class VisualizationEngine:
         )
 
         # Add title
-        ax.set_title("Meta-Cognitive Process Flow", fontsize=18, fontweight="bold", pad=20)
+        ax.set_title(
+            "Meta-Cognitive Process Flow", fontsize=18, fontweight="bold", pad=20
+        )
 
         # Set limits and remove axes
         ax.set_xlim(0, 1)

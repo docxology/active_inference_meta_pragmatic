@@ -79,7 +79,9 @@ class ModelerPerspective:
 
         except Exception as e:
             logger.error(f"Error specifying epistemic framework: {e}")
-            raise ValidationError(f"Epistemic framework specification failed: {e}") from e
+            raise ValidationError(
+                f"Epistemic framework specification failed: {e}"
+            ) from e
 
     def specify_pragmatic_framework(
         self, framework_name: str, pragmatic_considerations: Dict[str, Union[str, List]]
@@ -124,7 +126,9 @@ class ModelerPerspective:
 
         except Exception as e:
             logger.error(f"Error specifying pragmatic framework: {e}")
-            raise ValidationError(f"Pragmatic framework specification failed: {e}") from e
+            raise ValidationError(
+                f"Pragmatic framework specification failed: {e}"
+            ) from e
 
     def demonstrate_meta_epistemic_modeling(self) -> Dict[str, Union[str, Dict]]:
         """Demonstrate meta-epistemic aspects of Active Inference modeling.
@@ -418,7 +422,9 @@ class ModelerPerspective:
             },
         }
 
-        logger.info("Synthesized complete meta-theoretical perspective on Active Inference")
+        logger.info(
+            "Synthesized complete meta-theoretical perspective on Active Inference"
+        )
         return synthesis
 
 

@@ -1,0 +1,20 @@
+{
+  "fig:quadrant_experiment": {
+    "filename": "quadrant_experiment.png",
+    "caption": "Held-out accuracy, calibration losses and sensing cost in a synthetic binary task. Dots show independent seeds; bars show 95% percentile-bootstrap intervals for seed means. Q3 uses extra observations; Q4 uses separate labeled training. Misleading metadata is a prespecified adverse control.",
+    "label": "fig:quadrant_experiment",
+    "section": "methodology",
+    "generated_by": "scripts/07_analysis_pipeline.py",
+    "parameters": null,
+    "alt_text": "Four panels compare accuracy, Brier loss, log loss and observations per trial across five synthetic sensor strategies. Adaptive sensing has the highest accuracy and lowest losses while using about 3.9 observations; other strategies use three. True and learned reliability perform similarly, while misleading reliability has the lowest accuracy and highest losses. Dots represent independent seeds; bars represent 95 percent bootstrap intervals for seed means."
+  },
+  "fig:efe_sensitivity": {
+    "filename": "efe_sensitivity.png",
+    "caption": "Exact single-step EFE for a binary symmetric likelihood, uniform state prior, identity transition and C=(1,-1). Information gain grows as observations become less ambiguous. Normalized EFE equals risk plus ambiguity; these are exact calculations, not confidence intervals.",
+    "label": "fig:efe_sensitivity",
+    "section": "background",
+    "generated_by": "scripts/07_analysis_pipeline.py",
+    "parameters": null,
+    "alt_text": "Two exact line plots against binary sensor reliability from 0.5 to 1. Information gain rises from zero to log two as ambiguity falls from log two to zero. Outcome risk stays constant under uniform predicted outcomes, and normalized expected free energy decreases as ambiguity falls, remaining equal to risk plus ambiguity. These curves are mathematical evaluations without sampling intervals."
+  }
+}

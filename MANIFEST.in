@@ -1,0 +1,8 @@
+include LICENSE README.md uv.lock .python-version template.lock.json
+recursive-include manuscript *.md *.bib *.yaml
+recursive-include docs *.md *.json
+recursive-include doc *.md
+recursive-include scripts *.py
+recursive-include tests *.py
+prune results
+prune output

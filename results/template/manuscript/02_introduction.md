@@ -1,0 +1,11 @@
+# Introduction {#sec:introduction}
+
+An agent can infer correctly under an inappropriate observation model or select the minimum-cost policy under inappropriate preferences. In either case, improving the inference algorithm alone may leave the error intact. This distinction motivates examining how a model is specified, evaluated, and revised.
+
+We use *meta-epistemic* for choices about the representation and acquisition of evidence, and *meta-pragmatic* for choices about preferences and the evaluation of action. These are interpretive terms for modeling activities. They do not imply that ordinary parameter estimation is impossible or that an agent's initial ontology is irrevocable. Observation and transition models can be learned; the selection of representations, update rules, and constraints remains a modeling decision.
+
+Our contribution is a taxonomy connecting these activities to inspectable computational mechanisms. We distinguish data from information about its source or reliability, and direct inference from evaluation of inference. The resulting quadrants organize examples and failure cases. Their usefulness depends on operational definitions and comparative tests; the taxonomy itself does not guarantee improved performance.
+
+The paper contributes (1) explicit definitions of the four quadrants, (2) a categorical implementation with shared probability conventions and mathematical identity tests, (3) matched synthetic comparisons with retained trial-level evidence, and (4) a scoped discussion of metadata manipulation and model revision. Active inference is not the only framework in which these questions arise. Reinforcement learning, Bayesian decision theory, active learning, and meta-learning also permit learned models, structured objectives, and information-seeking behavior.
+
+Section [3](#sec:related_work) places the interpretation in its research context. Section [4](#sec:background) defines the numerical conventions. Sections [5](#sec:methodology) and [6](#sec:quadrant_model) give the experimental design and operational taxonomy. Sections [7](#sec:security), [8](#sec:discussion), and [9](#sec:conclusions) delimit the implications. The appendix and retained artifacts provide the audit trail.

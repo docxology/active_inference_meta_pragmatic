@@ -6,8 +6,7 @@ methods are thoroughly tested with real data and no mocks.
 
 import numpy as np
 import pytest
-from analysis.validation import (ValidationFramework,
-                                     demonstrate_validation_framework)
+from analysis.validation import ValidationFramework, demonstrate_validation_framework
 from utils.exceptions import ValidationError
 
 
@@ -325,6 +324,7 @@ class TestValidationFramework:
             ]
         )
         B = B_raw.transpose(1, 2, 0)  # Reshape to (3, 3, 2)
+        B = B / B.sum(axis=0, keepdims=True)  # Destination axis is column stochastic
 
         model = {
             "A": A,

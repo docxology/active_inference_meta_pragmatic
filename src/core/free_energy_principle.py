@@ -21,8 +21,53 @@ import numpy as np
 from numpy.typing import NDArray
 from utils.exceptions import ValidationError
 from utils.logging import get_logger
+from .probability import (
+    model_matrices,
+    probability_vector,
+    observation_likelihood,
+    entropy,
+)
+from scipy.special import rel_entr, xlogy
 
 logger = get_logger(__name__)
+
+
+def calculate_variational_free_energy(
+    model: object,
+    observation: NDArray,
+    beliefs: NDArray,
+    prior: Optional[NDArray] = None,
+) -> Tuple[float, Dict[str, float]]:
+    """Exact categorical variational bound in nats.
+
+    F(q) = E_q[log q(s) - log P(o,s)] = -log P(o) + KL(q||P(s|o)).
+    Soft observations are normalized virtual evidence (see probability.py).
+    Infinite F is retained when q assigns mass outside posterior support.
+    """
+    values = [
+        model[k] if isinstance(model, dict) else getattr(model, k)
+        for k in ("A", "B", "C", "D")
+    ]
+    A, _, _, D = model_matrices(*values)
+    q = probability_vector(beliefs, A.shape[1], "beliefs")
+    prior = D if prior is None else probability_vector(prior, D.size, "prior")
+    joint = observation_likelihood(A, observation) * prior
+    evidence = float(joint.sum())
+    if evidence <= 0:
+        raise ValidationError("Observation is impossible under the model and prior")
+    posterior = joint / evidence
+    active = q > 0
+    energy = float(-np.sum(xlogy(q[active], joint[active])))
+    belief_entropy = entropy(q)
+    surprise = float(-np.log(evidence))
+    divergence = float(np.sum(rel_entr(q, posterior)))
+    return energy - belief_entropy, {
+        "energy": energy,
+        "entropy": belief_entropy,
+        "free_energy": energy - belief_entropy,
+        "surprise": surprise,
+        "posterior_divergence": divergence,
+    }
 
 
 class FreeEnergyPrinciple:
@@ -32,14 +77,33 @@ class FreeEnergyPrinciple:
     self-organizing systems that maintain their structure over time.
     """
 
-    def __init__(self, system_states: Dict[str, NDArray], precision: float = 1.0) -> None:
+    def __init__(
+        self,
+        system_states: Dict[str, NDArray],
+        precision: float = 1.0,
+        generative_model: Optional[object] = None,
+    ) -> None:
         """Initialize Free Energy Principle framework.
 
         Args:
             system_states: Dictionary containing internal, external, and sensory states
             precision: Precision parameter for free energy calculations
         """
-        # Ensure all system states have compatible shapes
+        if not np.isfinite(precision) or precision <= 0:
+            raise ValidationError("Precision must be finite and positive")
+        for name in ("internal", "external", "sensory"):
+            if name not in system_states:
+                raise ValidationError(f"Missing required system state: {name}")
+        system_states = {
+            k: np.asarray(v, dtype=float).copy() for k, v in system_states.items()
+        }
+        if any(
+            v.ndim != 1 or not v.size or not np.all(np.isfinite(v))
+            for v in system_states.values()
+        ):
+            raise ValidationError("System states must be nonempty finite vectors")
+        self.generative_model = generative_model
+        # Padding belongs only to the legacy schematic system-state illustration.
         state_shapes = [arr.shape[0] for arr in system_states.values()]
         state_shape_set = set(state_shapes)
 
@@ -59,14 +123,18 @@ class FreeEnergyPrinciple:
                     corrected_states[key] = arr
 
             self.system_states = corrected_states
-            logger.debug(f"Normalized {len(corrected_states)} system states to shape {max_shape}")
+            logger.debug(
+                f"Normalized {len(corrected_states)} system states to shape {max_shape}"
+            )
         else:
             self.system_states = system_states
 
         self.precision = precision
         self._validate_system_states()
 
-        logger.info(f"Initialized Free Energy Principle framework with precision {precision}")
+        logger.info(
+            f"Initialized Free Energy Principle framework with precision {precision}"
+        )
 
     def _validate_system_states(self) -> None:
         """Validate system state structure.
@@ -91,9 +159,12 @@ class FreeEnergyPrinciple:
     def calculate_free_energy(
         self, observations: NDArray, beliefs: NDArray
     ) -> Tuple[float, Dict[str, float]]:
-        """Calculate variational free energy.
+        """Calculate exact VFE when a generative_model was supplied.
 
-        Free Energy = Energy - Entropy = Surprise - Information Gain
+        Without a model this retains the legacy cross-entropy illustration,
+        which is not a variational bound or proof of the FEP. The result
+        declares its evaluation_kind explicitly. Use the standalone exact
+        calculate_variational_free_energy function for scientific analyses.
 
         Args:
             observations: Current sensory observations
@@ -106,6 +177,23 @@ class FreeEnergyPrinciple:
             - 'surprise': Surprise component
         """
         try:
+            if self.generative_model is not None:
+                return calculate_variational_free_energy(
+                    self.generative_model, observations, beliefs
+                )
+            observations = np.asarray(observations, dtype=float)
+            beliefs = np.asarray(beliefs, dtype=float)
+            if (
+                observations.ndim < 1
+                or beliefs.ndim < 1
+                or not observations.size
+                or not beliefs.size
+                or not np.all(np.isfinite(observations))
+                or not np.all(np.isfinite(beliefs))
+            ):
+                raise ValidationError(
+                    "Observations and beliefs must be nonempty finite vectors"
+                )
             # Energy term: expected log likelihood
             energy = self._calculate_energy(observations, beliefs)
 
@@ -123,6 +211,7 @@ class FreeEnergyPrinciple:
                 "entropy": entropy,
                 "free_energy": free_energy,
                 "surprise": surprise,
+                "evaluation_kind": "legacy_illustrative_score",
             }
 
             logger.debug(
@@ -141,7 +230,9 @@ class FreeEnergyPrinciple:
 
         # Validate probability values
         if np.any(observations < 0) or np.any(observations > 1):
-            raise ValidationError("Observations must be valid probabilities (0 ≤ p ≤ 1)")
+            raise ValidationError(
+                "Observations must be valid probabilities (0 ≤ p ≤ 1)"
+            )
 
         if np.any(beliefs < 0) or np.any(beliefs > 1):
             raise ValidationError("Beliefs must be valid probabilities (0 ≤ p ≤ 1)")
@@ -233,6 +324,8 @@ class FreeEnergyPrinciple:
             Dictionary containing time series of system states and free energy
         """
         try:
+            if not isinstance(time_steps, (int, np.integer)) or time_steps < 1:
+                raise ValidationError("time_steps must be a positive integer")
             rng = np.random.default_rng(seed)
 
             # Initialize system state
@@ -246,7 +339,9 @@ class FreeEnergyPrinciple:
 
             for t in range(time_steps):
                 # Generate observations from current state
-                observations = self._generate_observations(internal_state, external_state, rng)
+                observations = self._generate_observations(
+                    internal_state, external_state, rng
+                )
 
                 # Update beliefs through variational inference
                 beliefs = self._variational_inference(observations)
@@ -272,15 +367,22 @@ class FreeEnergyPrinciple:
                 "time_steps": time_steps,
             }
 
-            logger.info(f"Demonstrated structure preservation over {time_steps} time steps")
+            logger.info(
+                f"Demonstrated structure preservation over {time_steps} time steps"
+            )
             return result
 
         except Exception as e:
             logger.error(f"Error demonstrating structure preservation: {e}")
-            raise ValidationError(f"Structure preservation demonstration failed: {e}") from e
+            raise ValidationError(
+                f"Structure preservation demonstration failed: {e}"
+            ) from e
 
     def _generate_observations(
-        self, internal: NDArray, external: NDArray, rng: Optional[np.random.Generator] = None
+        self,
+        internal: NDArray,
+        external: NDArray,
+        rng: Optional[np.random.Generator] = None,
     ) -> NDArray:
         """Generate sensory observations from system states."""
         if rng is None:
@@ -291,7 +393,9 @@ class FreeEnergyPrinciple:
         external_trunc = external[:min_len] if len(external) > min_len else external
 
         # Simplified observation generation
-        return np.clip(internal_trunc + external_trunc + rng.normal(0, 0.1, min_len), 0, 1)
+        return np.clip(
+            internal_trunc + external_trunc + rng.normal(0, 0.1, min_len), 0, 1
+        )
 
     def _variational_inference(self, observations: NDArray) -> NDArray:
         """Perform variational inference to update beliefs."""
@@ -306,7 +410,9 @@ class FreeEnergyPrinciple:
         # Handle dimension mismatch by expanding beliefs to match internal state
         if len(beliefs) < len(internal):
             # Pad beliefs with zeros to match internal dimension
-            beliefs_expanded = np.pad(beliefs, (0, len(internal) - len(beliefs)), "constant")
+            beliefs_expanded = np.pad(
+                beliefs, (0, len(internal) - len(beliefs)), "constant"
+            )
         else:
             # Truncate beliefs to match internal dimension
             beliefs_expanded = beliefs[: len(internal)]
@@ -365,7 +471,9 @@ def demonstrate_fep_concepts() -> Dict[str, Union[str, Dict]]:
     system_states = {
         "internal": np.array([0.5, 0.3, 0.2]),  # Internal state distribution
         "external": np.array([0.1, 0.9]),  # External environment
-        "sensory": np.array([0.4, 0.6, 0.0]),  # Sensory inputs (match internal dimension)
+        "sensory": np.array(
+            [0.4, 0.6, 0.0]
+        ),  # Sensory inputs (match internal dimension)
     }
 
     fep = FreeEnergyPrinciple(system_states)
@@ -395,7 +503,9 @@ def demonstrate_fep_concepts() -> Dict[str, Union[str, Dict]]:
         "structure_preservation": {
             "final_internal_state": preservation_demo["internal_states"][-1].tolist(),
             "free_energy_trajectory": preservation_demo["free_energy_history"].tolist(),
-            "converged": bool(np.std(preservation_demo["free_energy_history"][-10:]) < 0.01),
+            "converged": bool(
+                np.std(preservation_demo["free_energy_history"][-10:]) < 0.01
+            ),
         },
         "thing_definition": thing_definition,
         "key_insight": """

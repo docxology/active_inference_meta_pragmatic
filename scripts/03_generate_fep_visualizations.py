@@ -26,6 +26,7 @@ sys.path.insert(0, str(project_root / "src"))
 # Import src/ modules
 from core.free_energy_principle import FreeEnergyPrinciple, define_what_is_a_thing
 from utils.figure_manager import FigureManager
+
 # Local imports
 from utils.logging import get_logger
 from visualization import VisualizationEngine
@@ -43,7 +44,7 @@ def main() -> None:
 
     # Initialize components
     viz_engine = VisualizationEngine(output_dir=str(output_dir))
-    figure_manager = FigureManager()
+    figure_manager = FigureManager(str(output_dir / "figure_registry.json"))
 
     # Generate FEP system boundary visualization
     create_system_boundary_diagram(viz_engine, figure_manager)
@@ -232,13 +233,13 @@ def create_free_energy_dynamics(
     )
 
     # Simulate free energy minimization
-    np.random.seed(42)
+    rng = np.random.default_rng(42)
     time_steps = 100
     t = np.arange(time_steps)
 
     # Generate total free energy trajectory (exponential decay with noise)
     base_fe = 5.0 * np.exp(-t / 30)
-    noise = 0.1 * np.random.randn(time_steps)
+    noise = 0.1 * rng.normal(size=time_steps)
     free_energy = np.maximum(base_fe + noise, 0.01)
 
     # ── Top plot: Free energy over time with phase annotations ──
@@ -272,27 +273,47 @@ def create_free_energy_dynamics(
     epistemic = np.maximum(epistemic, 0.0)
     pragmatic = np.maximum(free_energy - epistemic, 0.0)
 
-    ax2.plot(t, epistemic, color="#27AE60", linewidth=2,
-             label="Epistemic value (information gain)")
-    ax2.plot(t, pragmatic, color="#E74C3C", linewidth=2,
-             label="Pragmatic value (goal achievement)")
+    ax2.plot(
+        t,
+        epistemic,
+        color="#27AE60",
+        linewidth=2,
+        label="Epistemic value (information gain)",
+    )
+    ax2.plot(
+        t,
+        pragmatic,
+        color="#E74C3C",
+        linewidth=2,
+        label="Pragmatic value (goal achievement)",
+    )
     ax2.plot(t, free_energy, "k--", linewidth=1.5, alpha=0.6, label="Total EFE")
     ax2.fill_between(t, epistemic, alpha=0.15, color="#27AE60")
     ax2.fill_between(t, pragmatic, alpha=0.15, color="#E74C3C")
 
     # Quadrant label annotations
-    ax2.text(15, epistemic[15] + 0.18, "Q1/Q3\n(epistemic)", fontsize=8,
-             color="#27AE60", ha="center",
-             bbox=dict(boxstyle="round,pad=0.2", facecolor="white", alpha=0.7))
-    ax2.text(50, pragmatic[50] + 0.18, "Q1/Q2\n(pragmatic)", fontsize=8,
-             color="#E74C3C", ha="center",
-             bbox=dict(boxstyle="round,pad=0.2", facecolor="white", alpha=0.7))
+    ax2.text(
+        15,
+        epistemic[15] + 0.18,
+        "Q1/Q3\n(epistemic)",
+        fontsize=8,
+        color="#27AE60",
+        ha="center",
+        bbox=dict(boxstyle="round,pad=0.2", facecolor="white", alpha=0.7),
+    )
+    ax2.text(
+        50,
+        pragmatic[50] + 0.18,
+        "Q1/Q2\n(pragmatic)",
+        fontsize=8,
+        color="#E74C3C",
+        ha="center",
+        bbox=dict(boxstyle="round,pad=0.2", facecolor="white", alpha=0.7),
+    )
 
     ax2.set_xlabel("Time Steps")
     ax2.set_ylabel("EFE Components")
-    ax2.set_title(
-        "EFE Epistemic/Pragmatic Decomposition — Quadrant Mapping"
-    )
+    ax2.set_title("EFE Epistemic/Pragmatic Decomposition — Quadrant Mapping")
     ax2.legend(loc="upper right", fontsize=9)
     ax2.grid(True, alpha=0.3)
 
@@ -306,9 +327,9 @@ def create_free_energy_dynamics(
     figure_manager.register_figure(
         filename="free_energy_dynamics.png",
         caption="EFE decomposition into epistemic (information gain, Q1/Q3) and pragmatic "
-                "(goal achievement, Q1/Q2) components over 100 time steps. "
-                "Exploration, exploitation, and convergence phases annotated. "
-                "Total free energy converges to $\\mathcal{F}^* \\approx 0.05$.",
+        "(goal achievement, Q1/Q2) components over 100 time steps. "
+        "Exploration, exploitation, and convergence phases annotated. "
+        "Total free energy converges to $\\mathcal{F}^* \\approx 0.05$.",
         section="methodology",
         generated_by="generate_fep_visualizations.py",
     )

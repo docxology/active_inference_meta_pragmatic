@@ -1,74 +1,15 @@
-# scripts/ - Analysis Scripts
+# Workflows
 
-Thin orchestrators that coordinate Active Inference analysis workflows.
+From the repository root, install research extras with `uv sync --locked --extra dev --extra research`.
 
-## Quick Start
+- `uv run python scripts/07_analysis_pipeline.py`: reproduce checks, held-out synthetic experiment, figures, evidence, manuscript HTML and provenance in `results/`.
+- `uv run python scripts/07_analysis_pipeline.py --dry-run`: inspect stages without output writes.
+- `uv run python scripts/06_insert_all_figures.py --render`: validate authored references and rebuild HTML.
+- Scripts `01_generate_quadrant_matrix.py` through `05_generate_security_figures.py` create educational illustrations under `output/figures/`. Those figures do not constitute the retained experiment.
 
-```bash
-# Run analysis pipeline
-python3 scripts/analysis_pipeline.py
+The standalone pipeline has six stages. Requested later stages execute preceding dependencies. CLI failures propagate as nonzero exit status.
 
-# Generate quadrant matrix visualizations
-python3 scripts/generate_quadrant_matrix.py
+- `uv run python scripts/08_render_with_template.py --template-root /path/to/template`: produce the pinned template PDF/HTML editions and rendering receipt.
+- `uv run python scripts/09_validate_documentation.py`: validate the modular documentation index and actual local links.
 
-# Generate Active Inference concept demonstrations
-python3 scripts/generate_active_inference_concepts.py
-
-# View generated outputs
-ls -la ../output/figures/
-```
-
-## Key Features
-
-- **analysis pipeline** (6-stage workflow)
-- **Automated figure generation** (quadrant matrices, concept visualizations)
-- **Statistical analysis** (validation and verification)
-- **Manuscript integration** (figure registration and cross-referencing)
-
-## Common Commands
-
-### Run Analysis Pipeline
-```bash
-python3 analysis_pipeline.py
-```
-Executes 6-stage analysis workflow.
-
-### Generate Specific Visualizations
-```bash
-python3 generate_quadrant_matrix.py          # 2×2 quadrant matrices
-python3 generate_active_inference_concepts.py # Core AI concepts
-python3 generate_fep_visualizations.py         # Free Energy Principle
-python3 generate_quadrant_examples.py          # Quadrant demonstrations
-```
-
-### Insert Figures into Manuscript
-```bash
-python3 insert_all_figures.py
-```
-Registers and inserts all generated figures into manuscript sections.
-
-## Architecture
-
-```mermaid
-graph TD
-    A[analysis_pipeline.py] --> B[Stage 1: Theoretical Demos]
-    A --> C[Stage 2: Visualizations]
-    A --> D[Stage 3: Statistical Analysis]
-    A --> E[Stage 4: Validation]
-    A --> F[Stage 5: Reports]
-    A --> G[Stage 6: Data Export]
-    
-    B --> H[src/active_inference.py]
-    C --> I[src/visualization.py]
-    D --> J[src/statistical_analysis.py]
-    E --> K[src/validation.py]
-    
-    L[generate_quadrant_matrix.py] --> M[src/quadrant_framework.py]
-    L --> N[src/visualization.py]
-    
-    O[insert_all_figures.py] --> P[utils/figure_manager.py]
-```
-
-## More Information
-
-See [AGENTS.md](AGENTS.md) for technical documentation.
+See [rendering](../docs/rendering_pipeline.md) and [documentation](../docs/README.md).

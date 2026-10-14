@@ -1,0 +1,71 @@
+# Paper Metadata Configuration
+# This file contains all configurable metadata for the Active Inference manuscript
+# Edit this file to customize your paper's metadata
+
+paper:
+  title: "Active Inference as a Meta-Pragmatic and Meta-Epistemic Method"
+  subtitle: "A Framework for Understanding Cognitive Science and Cognitive Security Implications"
+  version: "1.1"
+  date: "" # Auto-generated if empty (uses current date)
+
+# Author information
+authors:
+  - name: "Daniel Friedman"
+    orcid: "" # Not supplied
+    email: "" # Not supplied
+    affiliation: "Independent Researcher"
+    corresponding: true
+
+# Publication information (optional)
+publication:
+  doi: "" # To be assigned upon publication
+  journal: "" # For future publication
+  volume: "" # For future publication
+  pages: "" # For future publication
+  year: "2026"
+  repository_url: "https://github.com/docxology/active_inference_meta_pragmatic"
+  repository_label: "Private source repository"
+
+# Keywords for metadata
+keywords:
+  - "active inference"
+  - "free energy principle"
+  - "meta-cognition"
+  - "meta-pragmatic"
+  - "meta-epistemic"
+  - "cognitive science"
+  - "cognitive security"
+  - "generative models"
+  - "expected free energy"
+  - "predictive processing"
+  - "AI safety"
+  - "value alignment"
+  - "framework specification"
+
+# Additional metadata
+metadata:
+  abstract: "" # Can reference abstract section or leave empty
+  acknowledgments: "" # Funding info, etc. (can reference acknowledgments section)
+  license: "Apache-2.0"
+  language: "en"
+
+# Publication rendering uses docxology/template via script 08.
+render:
+  formats:
+    pdf: true
+    html: true
+    slides: false
+    docx: false
+    epub: false
+  html:
+    asset_mode: cdn
+
+# Let sections flow rather than leaving isolated continuation pages.
+rendering:
+  section_breaks: false
+
+# Testing Configuration
+testing:
+  max_test_failures: 0 # General maximum (default: 0 = strict, no failures allowed)
+  max_infra_test_failures: 0 # Infrastructure test suite maximum (default: 0)
+  max_project_test_failures: 0 # Project test suite maximum (default: 0)

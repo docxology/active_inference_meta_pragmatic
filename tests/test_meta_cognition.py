@@ -6,9 +6,11 @@ attention allocation, strategy evaluation, and self-reflective capabilities.
 
 import numpy as np
 import pytest
-from framework.meta_cognition import (MetaCognitiveSystem,
-                                          demonstrate_meta_cognitive_processes,
-                                          demonstrate_thinking_about_thinking)
+from framework.meta_cognition import (
+    MetaCognitiveSystem,
+    demonstrate_meta_cognitive_processes,
+    demonstrate_thinking_about_thinking,
+)
 from analysis.validation import ValidationFramework
 
 
@@ -122,11 +124,10 @@ class TestMetaCognitiveSystem:
 
     def test_error_handling(self, meta_system):
         """Test error handling for invalid inputs."""
-        # Invalid belief distribution (negative values) - should handle gracefully by clipping
-        result = meta_system.assess_inference_confidence(
-            np.array([-0.1, 1.1, 0.0]), 0.1
-        )
-        assert "confidence_score" in result  # Should still produce a result
+        from utils.exceptions import ValidationError
+
+        with pytest.raises(ValidationError):
+            meta_system.assess_inference_confidence(np.array([-0.1, 1.1, 0.0]), 0.1)
 
         # Empty available resources - should raise ValidationError
         from utils.exceptions import ValidationError

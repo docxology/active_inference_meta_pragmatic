@@ -6,9 +6,11 @@ system boundary definition, structure preservation, and theoretical validation.
 
 import numpy as np
 import pytest
-from core.free_energy_principle import (FreeEnergyPrinciple,
-                                            define_what_is_a_thing,
-                                            demonstrate_fep_concepts)
+from core.free_energy_principle import (
+    FreeEnergyPrinciple,
+    define_what_is_a_thing,
+    demonstrate_fep_concepts,
+)
 from analysis.validation import ValidationFramework
 from utils.exceptions import ValidationError
 

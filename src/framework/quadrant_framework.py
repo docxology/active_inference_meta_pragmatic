@@ -63,7 +63,7 @@ class QuadrantFramework:
                     """,
                 },
                 "active_inference_role": "Baseline pragmatic and epistemic processing (EFE)",
-                "mathematical_formulation": "Basic EFE = G(π) + H[Q(π)]",
+                "mathematical_formulation": "G(π) = -I(s;o|π) - E[C(o)]",
             },
             "Q2_metadata_cognitive": {
                 "name": "Meta-Data Organization (Cognitive)",
@@ -144,7 +144,9 @@ class QuadrantFramework:
         """
         if quadrant_id not in self.quadrants:
             valid_ids = list(self.quadrants.keys())
-            raise ValidationError(f"Invalid quadrant ID: {quadrant_id}. Valid IDs: {valid_ids}")
+            raise ValidationError(
+                f"Invalid quadrant ID: {quadrant_id}. Valid IDs: {valid_ids}"
+            )
 
         return self.quadrants[quadrant_id]
 
@@ -164,7 +166,9 @@ class QuadrantFramework:
             ValidationError: If parameters are invalid
         """
         if data_type not in ["data", "metadata"]:
-            raise ValidationError(f"Invalid data_type: {data_type}. Must be 'data' or 'metadata'")
+            raise ValidationError(
+                f"Invalid data_type: {data_type}. Must be 'data' or 'metadata'"
+            )
         if cognitive_level not in ["cognitive", "metacognitive"]:
             raise ValidationError(
                 f"Invalid cognitive_level: {cognitive_level}. Must be 'cognitive' or 'metacognitive'"  # noqa: E501
@@ -183,14 +187,18 @@ class QuadrantFramework:
         analysis = {
             "quadrant_id": quadrant_id,
             "processing_characteristics": quadrant_info,
-            "level_assessment": self._assess_processing_level(data_type, cognitive_level),
+            "level_assessment": self._assess_processing_level(
+                data_type, cognitive_level
+            ),
             "active_inference_implications": self._analyze_active_inference_implications(
                 quadrant_id
             ),
             "meta_level": self._determine_meta_level(data_type, cognitive_level),
         }
 
-        logger.info(f"Analyzed processing level: {data_type} × {cognitive_level} → {quadrant_id}")
+        logger.info(
+            f"Analyzed processing level: {data_type} × {cognitive_level} → {quadrant_id}"
+        )
         return analysis
 
     def _assess_processing_level(
@@ -222,7 +230,9 @@ class QuadrantFramework:
 
         return assessment
 
-    def _analyze_active_inference_implications(self, quadrant_id: str) -> Dict[str, str]:
+    def _analyze_active_inference_implications(
+        self, quadrant_id: str
+    ) -> Dict[str, str]:
         """Analyze Active Inference implications for the quadrant."""
         implications = {
             "Q1_data_cognitive": {
@@ -409,14 +419,16 @@ def demonstrate_quadrant_framework() -> Dict[str, Union[str, Dict]]:
     framework = QuadrantFramework()
 
     # Get all quadrant definitions
-    all_quadrants = {qid: framework.get_quadrant(qid) for qid in framework.quadrants.keys()}
+    all_quadrants = {
+        qid: framework.get_quadrant(qid) for qid in framework.quadrants.keys()
+    }
 
     # Analyze specific processing levels
     level_analysis = {}
     for data_type in ["data", "metadata"]:
         for cog_level in ["cognitive", "metacognitive"]:
-            level_analysis[f"{data_type}_{cog_level}"] = framework.analyze_processing_level(
-                data_type, cog_level
+            level_analysis[f"{data_type}_{cog_level}"] = (
+                framework.analyze_processing_level(data_type, cog_level)
             )
 
     # Demonstrate transitions

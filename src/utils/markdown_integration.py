@@ -70,11 +70,15 @@ class MarkdownIntegration:
 
             # Check if figure already exists
             if f"\\label{{{figure_label}}}" in content:
-                logger.info(f"Figure {figure_label} already exists in {markdown_file.name}")
+                logger.info(
+                    f"Figure {figure_label} already exists in {markdown_file.name}"
+                )
                 return True
 
             # Find the section header
-            section_pattern = rf"^(#{{1,3}})\s+{re.escape(section)}"
+            section_pattern = (
+                rf"^(#{{1,3}})\s+{re.escape(section)}(?:\s+\{{#[^}}]+\}})?\s*$"
+            )
             match = re.search(section_pattern, content, re.MULTILINE)
 
             if not match:
@@ -107,7 +111,9 @@ class MarkdownIntegration:
             new_content = content[:insert_pos] + figure_block + content[insert_pos:]
             markdown_file.write_text(new_content)
 
-            logger.info(f"Inserted {figure_label} in {markdown_file.name} after '{section}'")
+            logger.info(
+                f"Inserted {figure_label} in {markdown_file.name} after '{section}'"
+            )
             return True
 
         except Exception as e:

@@ -1,0 +1,6 @@
+{
+  "repository": "https://github.com/docxology/template",
+  "revision": "192c8bda16c08d06ae2fee4eac71d56901d3ad22",
+  "role": "Combined manuscript PDF and HTML rendering",
+  "update_policy": "Review upstream changes, update this pin, and rerun rendering validation."
+}

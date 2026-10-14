@@ -6,8 +6,10 @@ specifications, self-reflective modeling, and meta-theoretical synthesis.
 
 import numpy as np
 import pytest
-from framework.modeler_perspective import (ModelerPerspective,
-                                               demonstrate_modeler_perspective)
+from framework.modeler_perspective import (
+    ModelerPerspective,
+    demonstrate_modeler_perspective,
+)
 from analysis.validation import ValidationFramework
 from utils.exceptions import ValidationError
 

@@ -55,14 +55,20 @@ class TestAnalyzeAttackSurface:
         """Verify all expected keys are present in the result."""
         result = self.analyzer.analyze_attack_surface(1)
         expected_keys = {
-            "quadrant", "quadrant_name", "vulnerability_score",
-            "attack_vectors", "defense_mechanisms", "meta_level_exposure",
+            "quadrant",
+            "quadrant_name",
+            "vulnerability_score",
+            "attack_vectors",
+            "defense_mechanisms",
+            "meta_level_exposure",
         }
-        assert set(result.keys()) == expected_keys
+        assert expected_keys <= set(result.keys())
+        assert "heuristic" in result["score_kind"]
 
     def test_attack_surface_with_quadrant_framework(self):
         """Test initialization with quadrant framework reference."""
         from framework.quadrant_framework import QuadrantFramework
+
         qf = QuadrantFramework()
         analyzer = CognitiveSecurityAnalyzer(quadrant_framework=qf)
         result = analyzer.analyze_attack_surface(2)
@@ -82,7 +88,9 @@ class TestSimulateParameterDrift:
             "A": np.eye(3),
             "D": np.array([1.0 / 3, 1.0 / 3, 1.0 / 3]),
         }
-        result = self.analyzer.simulate_parameter_drift(params, noise_level=0.01, steps=50)
+        result = self.analyzer.simulate_parameter_drift(
+            params, noise_level=0.01, steps=50
+        )
 
         assert "drift_trajectory" in result
         assert "total_drift" in result
@@ -94,7 +102,9 @@ class TestSimulateParameterDrift:
     def test_drift_increases_over_time(self):
         """Drift trajectory should generally increase over time."""
         params = {"A": np.eye(4)}
-        result = self.analyzer.simulate_parameter_drift(params, noise_level=0.1, steps=100)
+        result = self.analyzer.simulate_parameter_drift(
+            params, noise_level=0.1, steps=100
+        )
 
         trajectory = result["drift_trajectory"]["A"]
         # Compare early vs late drift (later should be larger on average)
@@ -127,9 +137,7 @@ class TestSimulateParameterDrift:
     def test_drift_negative_noise_raises(self):
         """Negative noise level should raise ValidationError."""
         with pytest.raises(ValidationError, match="non-negative"):
-            self.analyzer.simulate_parameter_drift(
-                {"A": np.eye(2)}, noise_level=-0.1
-            )
+            self.analyzer.simulate_parameter_drift({"A": np.eye(2)}, noise_level=-0.1)
 
     def test_drift_history_tracking(self):
         """Drift history should accumulate across calls."""
@@ -196,9 +204,7 @@ class TestDetectAnomaly:
     def test_detect_anomaly_2d_raises(self):
         """2-D arrays should raise ValidationError."""
         with pytest.raises(ValidationError, match="1-D"):
-            self.analyzer.detect_anomaly(
-                np.eye(3), np.eye(3)
-            )
+            self.analyzer.detect_anomaly(np.eye(3), np.eye(3))
 
     def test_detect_anomaly_zero_entries_handled(self):
         """Distributions with zero entries should be handled (clipped)."""
@@ -217,22 +223,28 @@ class TestValidateFrameworkIntegrity:
 
     def _valid_params(self):
         """Create a valid set of model parameters."""
-        A = np.array([
-            [0.8, 0.1, 0.1],
-            [0.1, 0.8, 0.1],
-            [0.1, 0.1, 0.8],
-        ])
+        A = np.array(
+            [
+                [0.8, 0.1, 0.1],
+                [0.1, 0.8, 0.1],
+                [0.1, 0.1, 0.8],
+            ]
+        )
         B = np.zeros((3, 3, 2))
-        B[:, :, 0] = np.array([
-            [0.9, 0.05, 0.05],
-            [0.05, 0.9, 0.05],
-            [0.05, 0.05, 0.9],
-        ])
-        B[:, :, 1] = np.array([
-            [0.1, 0.45, 0.45],
-            [0.45, 0.1, 0.45],
-            [0.45, 0.45, 0.1],
-        ])
+        B[:, :, 0] = np.array(
+            [
+                [0.9, 0.05, 0.05],
+                [0.05, 0.9, 0.05],
+                [0.05, 0.05, 0.9],
+            ]
+        )
+        B[:, :, 1] = np.array(
+            [
+                [0.1, 0.45, 0.45],
+                [0.45, 0.1, 0.45],
+                [0.45, 0.45, 0.1],
+            ]
+        )
         C = np.array([2.0, 0.0, -2.0])
         D = np.array([1.0 / 3, 1.0 / 3, 1.0 / 3])
         return {"A": A, "B": B, "C": C, "D": D}
@@ -313,7 +325,9 @@ class TestValidateFrameworkIntegrity:
         params["B"][0, 0, 0] = -0.1
         result = self.analyzer.validate_framework_integrity(params)
         assert not result["is_valid"]
-        assert any("B matrix" in issue and "negative" in issue for issue in result["issues"])
+        assert any(
+            "B matrix" in issue and "negative" in issue for issue in result["issues"]
+        )
 
     def test_validate_D_negative(self):
         """D matrix with negative values should fail."""
@@ -355,25 +369,19 @@ class TestEdgeCases:
     def test_drift_invalid_steps(self):
         """Steps < 1 should raise ValidationError."""
         with pytest.raises(ValidationError, match="steps must be >= 1"):
-            self.analyzer.simulate_parameter_drift(
-                {"A": np.eye(2)}, steps=0
-            )
+            self.analyzer.simulate_parameter_drift({"A": np.eye(2)}, steps=0)
 
     def test_detect_anomaly_critical_severity(self):
         """Very different distributions should be classified as critical."""
         # Use a very small threshold so even moderate difference is critical
         beliefs = np.array([0.99, 0.005, 0.005])
         baseline = np.array([0.005, 0.005, 0.99])
-        result = self.analyzer.detect_anomaly(
-            beliefs, baseline, threshold=0.001
-        )
+        result = self.analyzer.detect_anomaly(beliefs, baseline, threshold=0.001)
         assert result["severity"] == "critical"
 
     def test_detect_anomaly_high_severity(self):
         """Moderately different distributions with low threshold should be high."""
         baseline = np.array([1.0 / 3, 1.0 / 3, 1.0 / 3])
         beliefs = np.array([0.6, 0.2, 0.2])
-        result = self.analyzer.detect_anomaly(
-            beliefs, baseline, threshold=0.01
-        )
+        result = self.analyzer.detect_anomaly(beliefs, baseline, threshold=0.01)
         assert result["severity"] in ("high", "critical")

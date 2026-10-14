@@ -32,10 +32,24 @@ class StatisticalAnalyzer:
         Args:
             alpha: Significance level for hypothesis tests
         """
+        if not np.isfinite(alpha) or not 0 < alpha < 1:
+            raise ValidationError("alpha must be in (0,1)")
         self.alpha = alpha
         logger.info(f"Initialized statistical analyzer with alpha={alpha}")
 
-    def calculate_descriptive_stats(self, data: NDArray) -> Dict[str, Union[float, int]]:
+    @staticmethod
+    def _sample(data: NDArray, name: str = "data", minimum: int = 2) -> NDArray:
+        """Require independent units in a one-dimensional finite sample."""
+        data = np.asarray(data, dtype=float)
+        if data.ndim != 1 or data.size < minimum or not np.all(np.isfinite(data)):
+            raise ValidationError(
+                f"{name} must be a finite 1-D sample with at least {minimum} values"
+            )
+        return data
+
+    def calculate_descriptive_stats(
+        self, data: NDArray
+    ) -> Dict[str, Union[float, int]]:
         """Calculate comprehensive descriptive statistics.
 
         Args:
@@ -45,7 +59,7 @@ class StatisticalAnalyzer:
             Dictionary containing descriptive statistics
         """
         try:
-            data = np.asarray(data)
+            data = self._sample(data)
             if data.size == 0:
                 raise ValidationError("Cannot calculate statistics for empty data")
 
@@ -73,7 +87,7 @@ class StatisticalAnalyzer:
             }
 
             # Only calculate higher-order statistics if we have enough data to be meaningful
-            if data.size >= 3:
+            if data.size >= 3 and np.ptp(data) > 0:
                 try:
                     stats_dict["skewness"] = float(stats.skew(data))
                     stats_dict["kurtosis"] = float(stats.kurtosis(data))
@@ -85,12 +99,16 @@ class StatisticalAnalyzer:
                 stats_dict["skewness"] = 0.0
                 stats_dict["kurtosis"] = 0.0
 
-            logger.debug(f"Calculated descriptive statistics for {data.size} data points")
+            logger.debug(
+                f"Calculated descriptive statistics for {data.size} data points"
+            )
             return stats_dict
 
         except Exception as e:
             logger.error(f"Error calculating descriptive statistics: {e}")
-            raise ValidationError(f"Descriptive statistics calculation failed: {e}") from e
+            raise ValidationError(
+                f"Descriptive statistics calculation failed: {e}"
+            ) from e
 
     def calculate_correlation(
         self, x: NDArray, y: NDArray, method: str = "pearson"
@@ -106,7 +124,11 @@ class StatisticalAnalyzer:
             Dictionary containing correlation results
         """
         try:
-            x, y = np.asarray(x), np.asarray(y)
+            x, y = self._sample(x, "x"), self._sample(y, "y")
+            if np.ptp(x) == 0 or np.ptp(y) == 0:
+                raise ValidationError(
+                    "Correlation is undefined for a constant variable"
+                )
 
             if len(x) != len(y):
                 raise ValidationError("Correlation variables must have same length")
@@ -124,12 +146,14 @@ class StatisticalAnalyzer:
                 "correlation": float(corr_coef),
                 "p_value": float(p_value),
                 "method": method,
-                "significant": p_value < self.alpha,
+                "significant": bool(p_value < self.alpha),
                 "sample_size": len(x),
                 "interpretation": self._interpret_correlation(corr_coef, p_value),
             }
 
-            logger.debug(f"Calculated {method} correlation: r={corr_coef:.3f}, p={p_value:.3f}")
+            logger.debug(
+                f"Calculated {method} correlation: r={corr_coef:.3f}, p={p_value:.3f}"
+            )
             return correlation
 
         except Exception as e:
@@ -166,11 +190,13 @@ class StatisticalAnalyzer:
             Dictionary containing confidence interval results
         """
         try:
-            data = np.asarray(data)
+            data = self._sample(data)
 
             # Validate input data
             if data.size == 0:
-                raise ValidationError("Cannot calculate confidence interval for empty data")
+                raise ValidationError(
+                    "Cannot calculate confidence interval for empty data"
+                )
 
             # Handle parameter name compatibility
             if confidence_level is not None and confidence is not None:
@@ -184,31 +210,11 @@ class StatisticalAnalyzer:
             else:
                 conf_level = 0.95
 
+            if not np.isfinite(conf_level) or not 0 < conf_level < 1:
+                raise ValidationError("Confidence level must be in (0,1)")
             n = len(data)
 
             mean = np.mean(data)
-
-            # Handle single value case
-            if n == 1:
-                # For single value, confidence interval bounds equal the mean
-                confidence_interval = {
-                    "mean": float(mean),
-                    "confidence_level": conf_level,
-                    "sample_size": n,
-                    "standard_error": 0.0,
-                    "margin_error": 0.0,
-                    "lower_bound": float(mean),
-                    "upper_bound": float(mean),
-                    "ci_range": [float(mean), float(mean)],
-                    "interpretation": f"{conf_level * 100:.0f}% CI: [{mean:.3f}, {mean:.3f}] (single value)",  # noqa: E501
-                }
-                logger.debug(
-                    f"Calculated {conf_level * 100:.0f}% CI for single value: mean={mean:.3f}"
-                )
-                return confidence_interval
-
-            if n < 2:
-                raise ValidationError("Need at least 2 data points for confidence interval")
 
             std_err = stats.sem(data)  # Standard error of the mean
 
@@ -254,7 +260,7 @@ class StatisticalAnalyzer:
                 raise ValidationError("ANOVA requires at least 2 groups")
 
             # Convert to list and validate
-            group_data = [np.asarray(g) for g in groups]
+            group_data = [self._sample(g, "ANOVA group") for g in groups]
 
             # Perform ANOVA
             f_stat, p_value = stats.f_oneway(*group_data)
@@ -263,12 +269,12 @@ class StatisticalAnalyzer:
                 "test": "One-way ANOVA",
                 "f_statistic": float(f_stat),
                 "p_value": float(p_value),
-                "significant": p_value < self.alpha,
+                "significant": bool(p_value < self.alpha),
                 "n_groups": len(groups),
                 "group_sizes": [len(g) for g in group_data],
                 "total_sample_size": sum(len(g) for g in group_data),
                 "interpretation": self._interpret_anova(p_value),
-                "post_hoc_needed": p_value < self.alpha,
+                "post_hoc_needed": bool(p_value < self.alpha),
             }
 
             logger.debug(
@@ -283,11 +289,11 @@ class StatisticalAnalyzer:
     def _interpret_anova(self, p_value: float) -> str:
         """Interpret ANOVA results."""
         if p_value < self.alpha:
-            return "Significant differences found between groups (reject null hypothesis)"
-        else:
             return (
-                "No significant differences found between groups (fail to reject null hypothesis)"
+                "Significant differences found between groups (reject null hypothesis)"
             )
+        else:
+            return "No significant differences found between groups (fail to reject null hypothesis)"
 
     def perform_t_test(
         self, group1: NDArray, group2: NDArray, test_type: str = "independent"
@@ -308,23 +314,35 @@ class StatisticalAnalyzer:
                     f"test_type must be 'paired' or 'independent', got '{test_type}'"
                 )
 
-            g1, g2 = np.asarray(group1), np.asarray(group2)
+            g1, g2 = self._sample(group1, "Group 1"), self._sample(group2, "Group 2")
 
             # Validate minimum sample sizes to prevent degrees of freedom issues
             if len(g1) < 2:
-                raise ValidationError(f"Group 1 must have at least 2 observations, got {len(g1)}")
+                raise ValidationError(
+                    f"Group 1 must have at least 2 observations, got {len(g1)}"
+                )
             if len(g2) < 2:
-                raise ValidationError(f"Group 2 must have at least 2 observations, got {len(g2)}")
+                raise ValidationError(
+                    f"Group 2 must have at least 2 observations, got {len(g2)}"
+                )
 
             if test_type == "paired":
                 if len(g1) != len(g2):
                     raise ValidationError(
                         f"Paired t-test requires equal sample sizes, got {len(g1)} vs {len(g2)}"
                     )
-                t_stat, p_value = stats.ttest_rel(g1, g2)
+                t_stat, p_value = (
+                    stats.ttest_rel(g1, g2)
+                    if np.std(g1 - g2, ddof=1) > 0
+                    else (float("nan"), float("nan"))
+                )
                 test_name = "Paired t-test"
             else:  # test_type == "independent"
-                t_stat, p_value = stats.ttest_ind(g1, g2, equal_var=False)  # Welch's t-test
+                t_stat, p_value = (
+                    stats.ttest_ind(g1, g2, equal_var=False)
+                    if np.var(g1) + np.var(g2) > 0
+                    else (float("nan"), float("nan"))
+                )  # Welch's t-test
                 test_name = "Independent t-test (Welch)"
 
             # Calculate effect size (Cohen's d) with safe variance calculation
@@ -335,26 +353,57 @@ class StatisticalAnalyzer:
             var2 = np.var(g2, ddof=1) if len(g2) > 1 else 0
 
             # Calculate pooled standard deviation safely
-            pooled_var = (var1 + var2) / 2
+            pooled_var = ((len(g1) - 1) * var1 + (len(g2) - 1) * var2) / (
+                len(g1) + len(g2) - 2
+            )
             pooled_std = np.sqrt(pooled_var) if pooled_var > 0 else 0
 
-            cohens_d = abs(mean_diff) / pooled_std if pooled_std > 0 else 0
+            cohens_d = abs(mean_diff) / pooled_std if pooled_std > 0 else float("nan")
+            signed_d = mean_diff / pooled_std if pooled_std > 0 else None
+            df_effect = len(g1) + len(g2) - 2
+            paired_std = (
+                float(np.std(g1 - g2, ddof=1)) if test_type == "paired" else None
+            )
+            paired_d_z = (
+                float(mean_diff / paired_std)
+                if paired_std is not None and paired_std > 0
+                else None
+            )
 
             t_test_result = {
                 "test": test_name,
                 "test_type": test_type,
-                "t_statistic": float(t_stat),
-                "p_value": float(p_value),
-                "significant": p_value < self.alpha,
+                "t_statistic": float(t_stat) if np.isfinite(t_stat) else None,
+                "p_value": float(p_value) if np.isfinite(p_value) else None,
+                "significant": bool(np.isfinite(p_value) and p_value < self.alpha),
                 "mean_difference": float(mean_diff),
-                "cohens_d": float(cohens_d),
+                "cohens_d": float(cohens_d) if np.isfinite(cohens_d) else None,
+                "signed_cohens_d": float(signed_d) if signed_d is not None else None,
+                "hedges_g": (
+                    float(signed_d * (1 - 3 / (4 * df_effect - 1)))
+                    if signed_d is not None
+                    else None
+                ),
+                "paired_d_z": paired_d_z,
+                "effect_size_definition": "pooled-SD d; paired_d_z uses SD of within-pair differences",
+                "test_defined": bool(np.isfinite(t_stat) and np.isfinite(p_value)),
                 "group1_size": len(g1),
                 "group2_size": len(g2),
-                "effect_size_interpretation": self._interpret_effect_size(cohens_d),
-                "interpretation": self._interpret_t_test(p_value, cohens_d),
+                "effect_size_interpretation": (
+                    self._interpret_effect_size(cohens_d)
+                    if np.isfinite(cohens_d)
+                    else "undefined (zero variance)"
+                ),
+                "interpretation": (
+                    self._interpret_t_test(p_value, cohens_d)
+                    if np.isfinite(t_stat) and np.isfinite(p_value)
+                    else "Undefined t-test (zero variance of the relevant sampling unit)"
+                ),
             }
 
-            logger.debug(f"{test_name}: t={t_stat:.3f}, p={p_value:.3f}, d={cohens_d:.3f}")
+            logger.debug(
+                f"{test_name}: t={t_stat:.3f}, p={p_value:.3f}, d={cohens_d:.3f}"
+            )
             return t_test_result
 
         except Exception as e:
@@ -362,15 +411,69 @@ class StatisticalAnalyzer:
             raise ValidationError(f"t-test failed: {e}") from e
 
     def _interpret_effect_size(self, cohens_d: float) -> str:
-        """Interpret Cohen's d effect size."""
-        if cohens_d >= 0.8:
+        """Use conventional descriptive labels, not practical-significance claims."""
+        magnitude = abs(cohens_d)
+        if magnitude >= 0.8:
             return "large effect"
-        elif cohens_d >= 0.5:
+        if magnitude >= 0.5:
             return "medium effect"
-        elif cohens_d >= 0.2:
+        if magnitude >= 0.2:
             return "small effect"
-        else:
-            return "negligible effect"
+        return "negligible effect"
+
+    def holm_adjust(self, p_values: NDArray) -> List[float]:
+        """Family-wise error correction without requiring test independence."""
+        p = np.asarray(p_values, dtype=float)
+        if (
+            p.ndim != 1
+            or not p.size
+            or np.any(~np.isfinite(p))
+            or np.any((p < 0) | (p > 1))
+        ):
+            raise ValidationError("p-values must be a nonempty vector in [0,1]")
+        order = np.argsort(p)
+        corrected = np.minimum(
+            1, np.maximum.accumulate((p.size - np.arange(p.size)) * p[order])
+        )
+        result = np.empty_like(p)
+        result[order] = corrected
+        return result.tolist()
+
+    def bootstrap_mean_interval(
+        self,
+        data: NDArray,
+        confidence: float = 0.95,
+        n_resamples: int = 5000,
+        seed: int = 42,
+    ) -> Dict:
+        """Percentile bootstrap CI for the mean over independent replicates.
+
+        For paired differences, pass one difference per independent seed.
+        This does not treat episodes within a seed as independent units.
+        """
+        sample = self._sample(data)
+        if not np.isfinite(confidence) or not 0 < confidence < 1:
+            raise ValidationError("Confidence must be in (0,1)")
+        if not isinstance(n_resamples, (int, np.integer)) or n_resamples < 100:
+            raise ValidationError("Use at least 100 bootstrap resamples")
+        rng = np.random.default_rng(seed)
+        means = np.empty(n_resamples)
+        for start in range(0, n_resamples, 256):
+            stop = min(start + 256, n_resamples)
+            means[start:stop] = rng.choice(
+                sample, size=(stop - start, sample.size), replace=True
+            ).mean(axis=1)
+        lower, upper = np.quantile(means, [(1 - confidence) / 2, (1 + confidence) / 2])
+        return {
+            "mean": float(sample.mean()),
+            "lower_bound": float(lower),
+            "upper_bound": float(upper),
+            "confidence_level": confidence,
+            "sample_size": sample.size,
+            "method": "percentile bootstrap",
+            "n_resamples": n_resamples,
+            "seed": seed,
+        }
 
     def _interpret_t_test(self, p_value: float, cohens_d: float) -> str:
         """Interpret t-test results."""
@@ -380,7 +483,10 @@ class StatisticalAnalyzer:
         return f"{significance} difference with {effect} (p={p_value:.3f}, d={cohens_d:.3f})"
 
     def analyze_algorithm_performance(
-        self, algorithm_results: Dict[str, List[float]]
+        self,
+        algorithm_results: Dict[str, List[float]],
+        paired: bool = False,
+        higher_is_better: bool = True,
     ) -> Dict[str, Union[Dict, List]]:
         """Analyze performance of multiple algorithms.
 
@@ -417,24 +523,39 @@ class StatisticalAnalyzer:
                 for i, name1 in enumerate(algorithm_names[:-1]):
                     for name2 in algorithm_names[i + 1 :]:
                         t_test = self.perform_t_test(
-                            algorithm_results[name1], algorithm_results[name2]
+                            algorithm_results[name1],
+                            algorithm_results[name2],
+                            test_type="paired" if paired else "independent",
                         )
                         pairwise_tests[f"{name1}_vs_{name2}"] = t_test
 
+                adjusted = self.holm_adjust(
+                    [v["p_value"] for v in pairwise_tests.values()]
+                )
+                for result, adjusted_p in zip(pairwise_tests.values(), adjusted):
+                    result["p_value_holm"] = adjusted_p
+                    result["significant_holm"] = adjusted_p < self.alpha
                 comparison["pairwise_t_tests"] = pairwise_tests
+                comparison["multiplicity_correction"] = "Holm (all pairwise tests)"
+                if paired:
+                    comparison.pop(
+                        "anova", None
+                    )  # Independent-groups ANOVA does not fit matched runs.
 
             analysis = {
                 "algorithm_statistics": algorithm_stats,
                 "comparison": comparison,
-                "best_performing": max(
+                "best_performing": (max if higher_is_better else min)(
                     algorithm_stats.keys(), key=lambda k: algorithm_stats[k]["mean"]
                 ),
                 "ranking": sorted(
                     algorithm_stats.keys(),
                     key=lambda k: algorithm_stats[k]["mean"],
-                    reverse=True,
+                    reverse=higher_is_better,
                 ),
-                "sample_sizes": {name: len(scores) for name, scores in algorithm_results.items()},
+                "sample_sizes": {
+                    name: len(scores) for name, scores in algorithm_results.items()
+                },
             }
 
             logger.info(f"Analyzed performance of {len(algorithm_results)} algorithms")
@@ -483,10 +604,10 @@ def demonstrate_statistical_analysis() -> Dict[str, Union[str, Dict]]:
     analyzer = StatisticalAnalyzer()
 
     # Generate sample data
-    np.random.seed(42)
-    data1 = np.random.normal(10, 2, 50)
-    data2 = np.random.normal(12, 2, 50)
-    data3 = np.random.normal(8, 3, 50)
+    rng = np.random.default_rng(42)
+    data1 = rng.normal(10, 2, 50)
+    data2 = rng.normal(12, 2, 50)
+    data3 = rng.normal(8, 3, 50)
 
     # Demonstrate descriptive statistics
     desc_stats = analyzer.calculate_descriptive_stats(data1)
@@ -502,9 +623,9 @@ def demonstrate_statistical_analysis() -> Dict[str, Union[str, Dict]]:
 
     # Demonstrate algorithm comparison
     algorithm_results = {
-        "Algorithm_A": np.random.normal(0.85, 0.05, 30),
-        "Algorithm_B": np.random.normal(0.78, 0.08, 30),
-        "Algorithm_C": np.random.normal(0.92, 0.03, 30),
+        "Algorithm_A": rng.normal(0.85, 0.05, 30),
+        "Algorithm_B": rng.normal(0.78, 0.08, 30),
+        "Algorithm_C": rng.normal(0.92, 0.03, 30),
     }
     performance_analysis = analyzer.analyze_algorithm_performance(algorithm_results)
 

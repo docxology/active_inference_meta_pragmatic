@@ -1,18 +1,19 @@
 # Active Inference Meta-Pragmatic Project Configuration
-# Inherits workspace settings from root pyproject.toml
+# Standalone research package; publication rendering uses a separate template environment.
 
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=77.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "active-inference-meta-pragmatic"
-version = "1.0.0"
+version = "1.1.0"
 description = "Active Inference as a Meta-(Pragmatic/Epistemic) Method: A theoretical framework for understanding cognitive science implications"
 readme = "README.md"
-license = {text = "Apache-2.0"}
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 authors = [
-    {name = "Daniel Friedman", email = "daniel.friedman@example.com"}
+    {name = "Daniel Friedman"}
 ]
 requires-python = ">=3.10"
 keywords = [
@@ -25,7 +26,6 @@ keywords = [
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -40,7 +40,11 @@ dependencies = [
     "psutil>=5.9.0",
 ]
 
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [project.optional-dependencies]
+research = ["markdown>=3.6", "bibtexparser>=1.4,<2", "latex2mathml>=3.77"]
 dev = [
     "pytest>=7.4.0",
     "pytest-cov>=4.1.0",
@@ -83,4 +87,4 @@ disallow_untyped_defs = false
 check_untyped_defs = true
 
 [tool.uv]
-# Inherits workspace settings from root pyproject.toml
+# Standalone research package; publication rendering uses a separate template environment.

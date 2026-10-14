@@ -132,7 +132,9 @@ class DataGenerator:
 
         except Exception as e:
             logger.error(f"Error generating categorical observations: {e}")
-            raise ValidationError(f"Categorical observation generation failed: {e}") from e
+            raise ValidationError(
+                f"Categorical observation generation failed: {e}"
+            ) from e
 
     def generate_state_sequences(
         self,
@@ -177,7 +179,9 @@ class DataGenerator:
                         else:
                             next_state = self.rng.randint(n_states)
                     else:
-                        raise ValidationError(f"Unknown transition type: {transition_type}")
+                        raise ValidationError(
+                            f"Unknown transition type: {transition_type}"
+                        )
 
                     current_state = next_state
 
@@ -204,6 +208,17 @@ class DataGenerator:
             Observation likelihood matrix A of shape (n_observations, n_states)
         """
         try:
+            if (
+                n_states < 1
+                or n_observations < 1
+                or not np.isfinite(noise_level)
+                or not 0 <= noise_level <= 1
+            ):
+                raise ValidationError(
+                    "State/observation counts must be positive and noise in [0,1]"
+                )
+            if n_observations == 1:
+                return np.ones((1, n_states))
             # Create base deterministic mapping
             A = np.zeros((n_observations, n_states))
 
@@ -243,6 +258,8 @@ class DataGenerator:
             Transition matrix B of shape (n_states, n_states, n_actions)
         """
         try:
+            if n_states < 1 or n_actions < 1:
+                raise ValidationError("State and action counts must be positive")
             B = np.zeros((n_states, n_states, n_actions))
 
             if transition_type == "controlled":
@@ -250,10 +267,10 @@ class DataGenerator:
                 for s in range(n_states):
                     B[s, s, 0] = 1.0
 
-                # Action 1: move to next state (cyclic)
-                for s in range(n_states):
-                    next_s = (s + 1) % n_states
-                    B[next_s, s, 1] = 1.0
+                # Every nonzero action moves cyclically by its action index.
+                for a in range(1, n_actions):
+                    for s in range(n_states):
+                        B[(s + a) % n_states, s, a] = 1.0
 
             elif transition_type == "random":
                 # Uniform random transitions for all actions
@@ -271,7 +288,9 @@ class DataGenerator:
             else:
                 raise ValidationError(f"Unknown transition type: {transition_type}")
 
-            logger.debug(f"Generated transition matrix: {n_states}×{n_states}×{n_actions}")
+            logger.debug(
+                f"Generated transition matrix: {n_states}×{n_states}×{n_actions}"
+            )
             return B
 
         except Exception as e:
@@ -340,7 +359,9 @@ class DataGenerator:
 
                 for c in range(n_classes):
                     start_idx = c * samples_per_class
-                    end_idx = (c + 1) * samples_per_class if c < n_classes - 1 else n_samples
+                    end_idx = (
+                        (c + 1) * samples_per_class if c < n_classes - 1 else n_samples
+                    )
 
                     # Class centers in a circle (in n_features dimensions)
                     angle = 2 * np.pi * c / n_classes
@@ -421,7 +442,9 @@ def demonstrate_data_generation() -> Dict[str, Union[str, Dict]]:
     time = np.arange(len(values))
 
     # Generate categorical observations
-    observations = generator.generate_categorical_observations(n_samples=30, n_categories=3)
+    observations = generator.generate_categorical_observations(
+        n_samples=30, n_categories=3
+    )
 
     # Generate state sequences
     sequences = generator.generate_state_sequences(n_sequences=3, sequence_length=10)

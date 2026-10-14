@@ -104,7 +104,7 @@ class TestStatisticalAnalyzer:
         analyzer = StatisticalAnalyzer()
 
         data = np.array([5.0])
-        with pytest.raises(ValidationError, match="Need at least 2 data points"):
+        with pytest.raises(ValidationError, match="at least 2"):
             analyzer.calculate_descriptive_stats(data)
 
     def test_calculate_descriptive_stats_from_list(self):
@@ -227,11 +227,8 @@ class TestStatisticalAnalyzer:
         analyzer = StatisticalAnalyzer()
 
         data = np.array([5.0])
-        ci = analyzer.calculate_confidence_interval(data)
-
-        assert ci["mean"] == 5.0
-        assert ci["lower_bound"] == 5.0
-        assert ci["upper_bound"] == 5.0
+        with pytest.raises(ValidationError, match="at least 2"):
+            analyzer.calculate_confidence_interval(data)
 
     def test_perform_t_test_paired(self):
         """Test paired t-test."""
@@ -418,7 +415,9 @@ class TestStatisticalAnalyzerCoverage:
         analyzer = StatisticalAnalyzer()
         data = np.array([1, 2, 3, 4, 5], dtype=float)
         with pytest.raises(ValidationError):
-            analyzer.calculate_confidence_interval(data, confidence_level=0.95, confidence=0.99)
+            analyzer.calculate_confidence_interval(
+                data, confidence_level=0.95, confidence=0.99
+            )
 
     def test_t_test_invalid_test_type(self):
         """Test t-test with invalid test_type raises error."""

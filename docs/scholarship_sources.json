@@ -1,0 +1,120 @@
+{
+  "checked_date": "2026-10-13",
+  "scope": "Cited records in the revised manuscript; source identity and selected metadata, not an exhaustive systematic review",
+  "records": [
+    {
+      "key": "amodei2016concrete",
+      "title": "Concrete problems in {AI} safety",
+      "source_url": "https://arxiv.org/abs/1606.06565",
+      "record_kind": "preprint"
+    },
+    {
+      "key": "dacosta2020active",
+      "title": "Active inference on discrete state-spaces: a synthesis",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7732703/",
+      "record_kind": "publication"
+    },
+    {
+      "key": "devries2025planning",
+      "title": "Expected Free Energy-based Planning as Variational Inference",
+      "source_url": "https://arxiv.org/abs/2504.14898",
+      "record_kind": "preprint"
+    },
+    {
+      "key": "feps2025",
+      "title": "Free Energy Projective Simulation ({FEPS}): Active inference with interpretability",
+      "source_url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0331047",
+      "record_kind": "publication"
+    },
+    {
+      "key": "flavell1979metacognition",
+      "title": "Metacognition and cognitive monitoring: A new area of cognitive-developmental inquiry",
+      "source_url": "https://doi.org/10.1037/0003-066X.34.10.906",
+      "record_kind": "publication"
+    },
+    {
+      "key": "fleming2014measure",
+      "title": "How to measure metacognition",
+      "source_url": "https://www.frontiersin.org/journals/human-neuroscience/articles/10.3389/fnhum.2014.00443/full",
+      "record_kind": "publication"
+    },
+    {
+      "key": "friston2010free",
+      "title": "The free-energy principle: a unified brain theory?",
+      "source_url": "https://www.nature.com/articles/nrn2787",
+      "record_kind": "publication"
+    },
+    {
+      "key": "friston2015epistemic",
+      "title": "Active inference and epistemic value",
+      "source_url": "https://pubmed.ncbi.nlm.nih.gov/25689102/",
+      "record_kind": "publication"
+    },
+    {
+      "key": "friston2016active",
+      "title": "Active inference and learning",
+      "source_url": "https://discovery.ucl.ac.uk/id/eprint/1506130/",
+      "record_kind": "publication"
+    },
+    {
+      "key": "friston2025scalefree",
+      "title": "From pixels to planning: scale-free active inference",
+      "source_url": "https://www.frontiersin.org/journals/network-physiology/articles/10.3389/fnetp.2025.1521963/full",
+      "record_kind": "publication"
+    },
+    {
+      "key": "gabriel2020artificial",
+      "title": "Artificial intelligence, values, and alignment",
+      "source_url": "https://link.springer.com/article/10.1007/s11023-020-09539-2",
+      "record_kind": "publication"
+    },
+    {
+      "key": "heins2022pymdp",
+      "title": "pymdp: A Python library for active inference in discrete state spaces",
+      "source_url": "https://joss.theoj.org/papers/10.21105/joss.04098",
+      "record_kind": "publication"
+    },
+    {
+      "key": "metamind2025",
+      "title": "{MetaMind}: Modeling Human Social Thoughts with Metacognitive Multi-Agent Systems",
+      "source_url": "https://arxiv.org/abs/2505.18943",
+      "record_kind": "preprint"
+    },
+    {
+      "key": "millidge2021whence",
+      "title": "Whence the expected free energy?",
+      "source_url": "https://arxiv.org/abs/2004.08128",
+      "record_kind": "publication"
+    },
+    {
+      "key": "nelson1990metamemory",
+      "title": "Metamemory: A theoretical framework and new findings",
+      "source_url": "https://www.imbs.uci.edu/~lnarens/1990/Nelson%26Narens_Book_Chapter_1990.pdf",
+      "record_kind": "publication"
+    },
+    {
+      "key": "sajid2021active",
+      "title": "Active inference: demystified and compared",
+      "source_url": "https://arxiv.org/abs/1909.10863",
+      "record_kind": "publication"
+    },
+    {
+      "key": "smith2022step",
+      "title": "A step-by-step tutorial on active inference and its application to empirical data",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8956124/",
+      "record_kind": "publication"
+    },
+    {
+      "key": "sofai2025",
+      "title": "Fast, slow, and metacognitive thinking in {AI}",
+      "source_url": "https://www.nature.com/articles/s44387-025-00027-5",
+      "record_kind": "publication"
+    },
+    {
+      "key": "tschantz2019scaling",
+      "title": "Scaling active inference",
+      "source_url": "https://arxiv.org/abs/1911.10601",
+      "record_kind": "preprint"
+    }
+  ]
+}

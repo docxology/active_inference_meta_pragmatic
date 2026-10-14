@@ -30,6 +30,7 @@ from analysis.data_generator import generate_time_series
 from core.generative_models import create_simple_generative_model
 from framework.meta_cognition import MetaCognitiveSystem
 from utils.figure_manager import FigureManager
+
 # Local imports
 from utils.logging import get_logger
 from visualization import VisualizationEngine
@@ -47,7 +48,7 @@ def main() -> None:
 
     # Initialize components
     viz_engine = VisualizationEngine(output_dir=str(output_dir))
-    figure_manager = FigureManager()
+    figure_manager = FigureManager(str(output_dir / "figure_registry.json"))
 
     # Generate examples for each quadrant
     create_quadrant_1_example(viz_engine, figure_manager)  # Data + Cognitive
@@ -162,14 +163,14 @@ def create_quadrant_2_example(
     )
 
     # Simulate meta-data enhanced processing
-    np.random.seed(42)
+    rng = np.random.default_rng(42)
     n_samples = 100
 
     # Generate base data
-    base_data = np.random.normal(0, 1, n_samples)
+    base_data = rng.normal(0, 1, n_samples)
 
     # Add meta-data: confidence scores and timestamps
-    confidence_scores = np.random.beta(2, 1, n_samples)  # Skewed toward high confidence
+    confidence_scores = rng.beta(2, 1, n_samples)  # Skewed toward high confidence
     timestamps = np.arange(n_samples)
 
     # Quality-based processing: weight by confidence
@@ -241,7 +242,7 @@ def create_quadrant_3_example(
     viz_engine: VisualizationEngine, figure_manager: FigureManager
 ) -> None:
     """Create Quadrant 3 example: Confidence-driven meta-cognitive weighting over time."""
-    np.random.seed(42)
+    rng = np.random.default_rng(42)
     fig, ax1 = plt.subplots(figsize=(12, 6))
     fig.suptitle(
         "Q3 Meta-Cognitive Adaptation — Confidence-Driven \u03bb Weighting",
@@ -253,11 +254,13 @@ def create_quadrant_3_example(
     time_steps = np.arange(21)
 
     # Build belief sequences: start high-confidence, drop mid-episode, recover
-    uncertainty_profile = np.concatenate([
-        np.linspace(0.1, 0.15, 7),   # steps 0-6: stable high confidence
-        np.linspace(0.5, 0.85, 7),   # steps 7-13: rising uncertainty
-        np.linspace(0.45, 0.15, 7),  # steps 14-20: recovery
-    ])
+    uncertainty_profile = np.concatenate(
+        [
+            np.linspace(0.1, 0.15, 7),  # steps 0-6: stable high confidence
+            np.linspace(0.5, 0.85, 7),  # steps 7-13: rising uncertainty
+            np.linspace(0.45, 0.15, 7),  # steps 14-20: recovery
+        ]
+    )
 
     confidence_scores = []
     for u in uncertainty_profile:
@@ -277,14 +280,32 @@ def create_quadrant_3_example(
     )
 
     # Left y-axis: confidence score (blue)
-    ax1.plot(time_steps, confidence_arr, "b-o", linewidth=2, markersize=5,
-             label="Confidence score $c(t)$", zorder=3)
-    ax1.axhline(y=0.7, color="red", linestyle="--", linewidth=1.5,
-                label="Confidence threshold $\\gamma = 0.7$", zorder=2)
-    ax1.fill_between(time_steps, 0, confidence_arr,
-                     where=(confidence_arr < 0.7),
-                     alpha=0.15, color="red",
-                     label="Meta-cognitive intervention zone")
+    ax1.plot(
+        time_steps,
+        confidence_arr,
+        "b-o",
+        linewidth=2,
+        markersize=5,
+        label="Confidence score $c(t)$",
+        zorder=3,
+    )
+    ax1.axhline(
+        y=0.7,
+        color="red",
+        linestyle="--",
+        linewidth=1.5,
+        label="Confidence threshold $\\gamma = 0.7$",
+        zorder=2,
+    )
+    ax1.fill_between(
+        time_steps,
+        0,
+        confidence_arr,
+        where=(confidence_arr < 0.7),
+        alpha=0.15,
+        color="red",
+        label="Meta-cognitive intervention zone",
+    )
     ax1.set_xlabel("Time Step")
     ax1.set_ylabel("Confidence Score $c(t)$", color="blue")
     ax1.tick_params(axis="y", labelcolor="blue")
@@ -294,8 +315,17 @@ def create_quadrant_3_example(
 
     # Right y-axis: λ(c) weighting (orange dashed)
     ax2 = ax1.twinx()
-    ax2.plot(time_steps, lambda_weights, "orange", linestyle="--", linewidth=2,
-             marker="s", markersize=4, label="$\\lambda(c)$ weighting", zorder=3)
+    ax2.plot(
+        time_steps,
+        lambda_weights,
+        "orange",
+        linestyle="--",
+        linewidth=2,
+        marker="s",
+        markersize=4,
+        label="$\\lambda(c)$ weighting",
+        zorder=3,
+    )
     ax2.set_ylabel("Meta-Cognitive Weighting $\\lambda(c)$", color="darkorange")
     ax2.tick_params(axis="y", labelcolor="darkorange")
     ax2.set_ylim(0.5, 3.2)
@@ -315,8 +345,8 @@ def create_quadrant_3_example(
     figure_manager.register_figure(
         filename="quadrant_3_data_metacognitive.png",
         caption="Quadrant 3 example: Confidence-driven meta-cognitive adaptation showing "
-                "confidence score and \\lambda(c) weighting over 21 time steps. "
-                "Shaded region indicates meta-cognitive intervention zone (c < 0.7).",
+        "confidence score and \\lambda(c) weighting over 21 time steps. "
+        "Shaded region indicates meta-cognitive intervention zone (c < 0.7).",
         section="experimental_results",
         generated_by="generate_quadrant_examples.py",
     )
@@ -326,7 +356,7 @@ def create_quadrant_4_example(
     viz_engine: VisualizationEngine, figure_manager: FigureManager
 ) -> None:
     """Create Quadrant 4 example: Framework parameter optimisation grouped bar chart."""
-    np.random.seed(42)
+    rng = np.random.default_rng(42)
     fig, ax = plt.subplots(figsize=(12, 7))
     ax.set_title(
         "Q4 Framework Parameter Optimisation Results",
@@ -343,32 +373,66 @@ def create_quadrant_4_example(
     width = 0.35
 
     bars_init = ax.bar(
-        x - width / 2, initial_vals, width,
-        label="Initial", color="#9E9E9E", alpha=0.85,
-        yerr=error_bar, capsize=4, error_kw={"elinewidth": 1.5}
+        x - width / 2,
+        initial_vals,
+        width,
+        label="Initial",
+        color="#9E9E9E",
+        alpha=0.85,
+        yerr=error_bar,
+        capsize=4,
+        error_kw={"elinewidth": 1.5},
     )
     bars_opt = ax.bar(
-        x + width / 2, optimised_vals, width,
-        label="Optimised", color="#1565C0", alpha=0.85,
-        yerr=error_bar, capsize=4, error_kw={"elinewidth": 1.5}
+        x + width / 2,
+        optimised_vals,
+        width,
+        label="Optimised",
+        color="#1565C0",
+        alpha=0.85,
+        yerr=error_bar,
+        capsize=4,
+        error_kw={"elinewidth": 1.5},
     )
 
     # Add value labels
     for bar in bars_init:
         h = bar.get_height()
-        ax.text(bar.get_x() + bar.get_width() / 2.0, h + error_bar + 0.01,
-                f"{h:.2f}", ha="center", va="bottom", fontsize=10, color="#555555")
+        ax.text(
+            bar.get_x() + bar.get_width() / 2.0,
+            h + error_bar + 0.01,
+            f"{h:.2f}",
+            ha="center",
+            va="bottom",
+            fontsize=10,
+            color="#555555",
+        )
     for bar in bars_opt:
         h = bar.get_height()
-        ax.text(bar.get_x() + bar.get_width() / 2.0, h + error_bar + 0.01,
-                f"{h:.2f}", ha="center", va="bottom", fontsize=10, color="#1565C0")
+        ax.text(
+            bar.get_x() + bar.get_width() / 2.0,
+            h + error_bar + 0.01,
+            f"{h:.2f}",
+            ha="center",
+            va="bottom",
+            fontsize=10,
+            color="#1565C0",
+        )
 
     # Significance stars where Δ > 0.2
     for i, (iv, ov) in enumerate(zip(initial_vals, optimised_vals)):
         if ov - iv > 0.2:
             star_y = ov + error_bar + 0.045
-            ax.text(x[i] + width / 2, star_y, "*", ha="center", va="bottom",
-                    fontsize=14, color="#C62828", fontweight="bold")
+            ax.text(
+                x[i] + width / 2,
+                star_y,
+                "*",
+                ha="center",
+                va="bottom",
+                fontsize=14,
+                color="#C62828",
+                fontweight="bold",
+            )
 
     ax.set_xlabel("Performance Metric")
     ax.set_ylabel("Score (0–1)")
@@ -377,8 +441,17 @@ def create_quadrant_4_example(
     ax.set_xticklabels(metrics, fontsize=12)
     ax.legend(fontsize=11)
     ax.grid(True, alpha=0.3, axis="y")
-    ax.text(0.98, 0.04, "* p < 0.05 (Δ > 0.20)", transform=ax.transAxes,
-            ha="right", va="bottom", fontsize=9, style="italic", color="#C62828")
+    ax.text(
+        0.98,
+        0.04,
+        "* p < 0.05 (Δ > 0.20)",
+        transform=ax.transAxes,
+        ha="right",
+        va="bottom",
+        fontsize=9,
+        style="italic",
+        color="#C62828",
+    )
 
     plt.tight_layout()
 
@@ -390,9 +463,9 @@ def create_quadrant_4_example(
     figure_manager.register_figure(
         filename="quadrant_4_metadata_metacognitive.png",
         caption="Quadrant 4 example: Framework parameter optimisation results comparing "
-                "initial and optimised performance across four metrics. "
-                "Error bars show \\pm 0.03. Asterisk (*) marks metrics with "
-                "improvement exceeding 0.20.",
+        "initial and optimised performance across four metrics. "
+        "Error bars show \\pm 0.03. Asterisk (*) marks metrics with "
+        "improvement exceeding 0.20.",
         section="experimental_results",
         generated_by="generate_quadrant_examples.py",
     )

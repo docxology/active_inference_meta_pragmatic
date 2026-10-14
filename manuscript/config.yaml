@@ -5,14 +5,14 @@
 paper:
   title: "Active Inference as a Meta-Pragmatic and Meta-Epistemic Method"
   subtitle: "A Framework for Understanding Cognitive Science and Cognitive Security Implications"
-  version: "1.0"
+  version: "1.1"
   date: "" # Auto-generated if empty (uses current date)
 
 # Author information
 authors:
   - name: "Daniel Friedman"
-    orcid: "0000-0000-0000-0000" # TODO: Replace with actual ORCID
-    email: "daniel.friedman@example.com"
+    orcid: "" # Not supplied
+    email: "" # Not supplied
     affiliation: "Independent Researcher"
     corresponding: true
 
@@ -22,7 +22,9 @@ publication:
   journal: "" # For future publication
   volume: "" # For future publication
   pages: "" # For future publication
-  year: "2026" # Current year
+  year: "2026"
+  repository_url: "https://github.com/docxology/active_inference_meta_pragmatic"
+  repository_label: "Private source repository"
 
 # Keywords for metadata
 keywords:
@@ -47,21 +49,20 @@ metadata:
   license: "Apache-2.0"
   language: "en"
 
-# LLM Review Settings
-llm:
-  reviews:
-    enabled: true
-    types:
-      - executive_summary
-      - quality_review
-      - methodology_review
-      - improvement_suggestions
-  translations:
-    enabled: true # Set to false to disable translation generation
-    languages:
-      - zh # Chinese (Simplified)
-      - hi # Hindi
-      - ru # Russian
+# Publication rendering uses docxology/template via script 08.
+render:
+  formats:
+    pdf: true
+    html: true
+    slides: false
+    docx: false
+    epub: false
+  html:
+    asset_mode: cdn
+
+# Let sections flow rather than leaving isolated continuation pages.
+rendering:
+  section_breaks: false
 
 # Testing Configuration
 testing:

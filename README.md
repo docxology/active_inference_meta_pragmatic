@@ -1,246 +1,87 @@
 # Active Inference Meta-Pragmatic Framework
 
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
+A working research implementation of categorical active inference and a data/metadata × cognition/meta-cognition taxonomy. The manuscript combines a conceptual argument with a reproducible **synthetic** sensor experiment. It does not claim biological validation, universal performance improvements, or security guarantees.
 
-**Status**: Archived / Research Complete
+## Reproduce the research
 
-An implementation of Active Inference as a meta-(pragmatic/epistemic) methodology, featuring a 2×2 matrix framework for analyzing cognitive processes across multiple levels of abstraction.
-
-## Overview
-
-This project demonstrates that Active Inference operates not just as a theory of cognition, but as a meta-methodology that enables researchers to specify the very frameworks within which intelligence operates. Through a systematic 2×2 matrix analysis, we reveal how Active Inference transcends traditional approaches by providing meta-pragmatic and meta-epistemic control.
-
-## Key Features
-
-### Meta-Level Framework
-
-- **Meta-Pragmatic**: Specify pragmatic frameworks beyond simple rewards
-- **Meta-Epistemic**: Define epistemic boundaries and knowledge architectures
-- **2x2 Matrix Analysis**: Systematic framework for cognitive process analysis
-
-### Four Quadrants of Cognition
-
-- **Q1**: Data Processing (Cognitive) - Basic EFE computation
-- **Q2**: Meta-Data Organization (Cognitive) - processing with meta-information
-- **Q3**: Reflective Processing (Meta-Cognitive) - Self-monitoring and adaptation
-- **Q4**: Higher-Order Reasoning (Meta-Cognitive) - Framework-level optimization
-
-### Implementation
-
-- **Theoretical Models**: Free Energy Principle, generative models, meta-cognition
-- **Visualization Suite**: 8+ figures demonstrating key concepts
-- **Testing**: 17 test files, 435 tests, 90%+ coverage, no mocks
-- **Source Modules**: 11 modules across 4 subpackages (core, framework, analysis, visualization) + utils
-- **Research Manuscript**: 13-section paper with 52 bibliography entries
-
-## Quick Start
-
-### Installation
+Python 3.12 is the recorded environment; package support starts at Python 3.10.
 
 ```bash
-pip install -e .
+uv sync --locked --extra dev --extra research
+MPLBACKEND=Agg uv run pytest --cov=src --cov-report=term-missing
+uv run python scripts/07_analysis_pipeline.py
 ```
 
-### Basic Usage
+For pip users: `python -m pip install -e '.[dev,research]'`, followed by `python scripts/07_analysis_pipeline.py`.
+
+The pipeline produces CSV evidence, JSON estimates/tests, PNG/PDF/SVG figures, an offline HTML preview with MathML, and source/environment/output hashes in `results/`. `--dry-run` creates no outputs. `--stages 1 2` runs the requested stages and their dependencies. `--seeds`, `--trials`, and `--training` change the design and must be disclosed when reporting a new run.
+
+Publication editions use the pinned [docxology/template](https://github.com/docxology/template) combined renderers:
+
+```bash
+uv run python scripts/08_render_with_template.py --template-root /path/to/template
+uv run python scripts/09_validate_documentation.py
+```
+
+The template checkout, its separate Python environment, Pandoc, XeLaTeX and BibTeX are required for this step. The PDF/HTML editions and renderer receipt are retained in `results/template/`; [rendering setup and output details](docs/rendering_pipeline.md) explain the pin and prerequisites.
+
+## What is implemented
+
+- Column-stochastic A/B matrices, finite preference logits C, normalized state prior D, and shared validation contracts.
+- Exact categorical and normalized virtual-evidence Bayes updates, including zero support and impossible-evidence handling.
+- Open-loop EFE with information gain, preferences, normalized risk and ambiguity, explicit mean/sum horizon aggregation, and policy precision.
+- Exact categorical variational free energy and evidence-bound checks.
+- Paired seed-level statistics, bootstrap intervals, design-specific effect sizes and Holm correction.
+- Bounded synthetic reliability learning and adaptive sensing, with a misleading-metadata control.
+- Educational quadrant, modeler, confidence/attention and security diagnostics, with their limits documented.
+
+## Basic use
+
+The installed packages use `core`, `framework`, `analysis`, `visualization`, and `utils` imports.
 
 ```python
-from src.active_inference import ActiveInferenceFramework
-from src.generative_models import create_simple_generative_model
+from core.generative_models import create_simple_generative_model
+from core.active_inference import ActiveInferenceFramework
+from core.free_energy_principle import calculate_variational_free_energy
 
-# Create generative model
 model = create_simple_generative_model()
-
-# Initialize Active Inference framework
-framework = ActiveInferenceFramework(model)
-
-# Make inference
-observation = [0.8, 0.2]  # Sensory input
-posterior = framework.perception_as_inference(observation)
-
-# Calculate policy
-posterior_beliefs = [0.6, 0.4]
-policy = [0]  # Action selection
-efe, components = framework.calculate_expected_free_energy(posterior_beliefs, policy)
+agent = ActiveInferenceFramework(model)
+posterior = model.perform_inference([0.8, 0.2])  # normalized virtual evidence
+policy, details = agent.select_optimal_policy([[0], [1]], posterior)
+score, components = agent.calculate_expected_free_energy(posterior, policy)
+free_energy, bound = calculate_variational_free_energy(model, 0, posterior)
 ```
 
-### Run Analysis Pipeline
+`total` is the legacy raw-logit EFE score; `normalized_total` adds the preference log-normalizer and equals `risk + ambiguity`. The default horizon aggregation is the mean; pass `aggregation="sum"` for additive costs. A soft evidence vector is integrated through `A.T @ evidence`; it is not reduced to its largest entry. Uniform evidence preserves the prior.
 
-```bash
-# Generate visualizations
-python scripts/generate_quadrant_matrix.py
-python scripts/generate_active_inference_concepts.py
+The older model-free `FreeEnergyPrinciple` methods return explicitly labeled illustrative scores and trajectories. Use an explicit generative model or `calculate_variational_free_energy` for a genuine variational bound. Security integrity checks establish structural validity; they cannot establish absence of tampering.
 
-# Run analysis
-python scripts/analysis_pipeline.py --stages 1,2,3
-```
+## Retained results
 
-## Project Structure
+The default run uses 30 independent seeds, 400 held-out trials per seed, and separate training for the learned condition. Accuracy is 76.36% for fixed reliability, 84.68% for true reliability metadata, 90.34% for adaptive sensing, 84.68% for learned reliability, and 54.12% for misleading metadata. Adaptive sensing averages 3.89 observations per trial; other conditions use three. These results apply to the specified binary task. The manuscript and `results/summary.json` report paired differences, uncertainty, costs and assumptions.
 
-```text
-active_inference_meta_pragmatic/
-├── src/                          # Core implementation (11 modules, 4 subpackages)
-│   ├── core/                     # Foundational implementations
-│   │   ├── active_inference.py   # EFE calculations, policy selection, perception
-│   │   ├── free_energy_principle.py  # FEP, Markov blankets, structure preservation
-│   │   └── generative_models.py  # A, B, C, D matrix models
-│   ├── framework/                # Higher-level conceptual frameworks
-│   │   ├── quadrant_framework.py # 2×2 matrix framework
-│   │   ├── meta_cognition.py     # Meta-cognitive monitoring and control
-│   │   ├── modeler_perspective.py # Meta-level analysis (architect/subject)
-│   │   └── cognitive_security.py # Threat modeling and anomaly detection
-│   ├── analysis/                 # Data and validation tools
-│   │   ├── data_generator.py     # Synthetic data generation
-│   │   ├── statistical_analysis.py # Statistical testing and analysis
-│   │   └── validation.py         # Framework validation suite
-│   └── visualization/            # Plotting
-│       └── visualization.py      # Publication-quality figures
-├── tests/                        # Test suite (17 test files, 435 tests, 90%+ coverage)
-│   └── test_*.py                 # Unit and integration tests
-├── scripts/                      # Analysis workflows
-│   ├── analysis_pipeline.py      # 6-stage pipeline orchestrator
-│   ├── generate_*.py             # Visualization scripts
-│   └── insert_all_figures.py     # Manuscript figure integration
-├── manuscript/                   # Research paper (13 sections)
-│   ├── 01_abstract.md            # Abstract with keywords
-│   ├── 02_introduction.md        # Motivation, contributions, paper organization
-│   ├── 03_related_work.md        # Active Inference, meta-cognition, predictive processing, AI safety, cognitive security
-│   ├── 04_background.md          # FEP, EFE, generative models, meta-aspects
-│   ├── 05_methodology.md         # Theoretical approach and computational validation
-│   ├── 06_quadrant_model.md      # 2x2 framework with Q1-Q4
-│   ├── 07_security_implications.md # Threat model, cognitive security, AI safety
-│   ├── 08_discussion.md          # Theoretical contributions and limitations
-│   ├── 09_conclusion.md          # Summary, insights, future directions
-│   ├── 10_acknowledgments.md     # Acknowledgments
-│   ├── 11_appendix.md            # Mathematical derivations, algorithms, benchmarks
-│   ├── 98_symbols_glossary.md    # Mathematical notation and glossary
-│   ├── 99_references.md          # Bibliography references
-│   ├── config.yaml               # Paper metadata
-│   ├── preamble.md               # LaTeX preamble
-│   └── references.bib            # BibTeX bibliography (52 entries)
-├── doc/                          # Documentation
-│   ├── architecture.md           # System architecture and design decisions
-│   ├── api_reference.md          # Comprehensive API reference
-│   ├── theoretical_primer.md     # Accessible introduction to Active Inference
-│   └── quickstart.md             # 5-minute getting-started guide
-├── output/                       # Generated outputs
-│   ├── figures/                  # Visualizations
-│   ├── data/                     # Analysis data
-│   └── reports/                  # Pipeline reports
-└── pyproject.toml                # Project configuration
-```
+## Repository guide
 
-## Documentation
+| Location | Purpose |
+|---|---|
+| `src/core/` | Probability contracts, inference and free-energy mathematics |
+| `src/framework/` | Taxonomy, illustrative meta-cognition/modeler/security APIs |
+| `src/analysis/` | Generators, statistics, validation and experiments |
+| `src/visualization/` | Educational and source-backed experiment figures |
+| `src/utils/` | Figure registry, Markdown, manuscript rendering, provenance |
+| `scripts/01_*.py` through `05_*.py` | Educational diagrams under `output/figures/` |
+| `scripts/06_insert_all_figures.py` | Strict manuscript validation; `--render` builds HTML |
+| `scripts/07_analysis_pipeline.py` | Standalone research workflow |
+| `scripts/08_render_with_template.py` | Pinned template PDF/HTML publication editions |
+| `scripts/09_validate_documentation.py` | Documentation index and local-link validation |
+| `manuscript/` | Numbered manuscript source and curated bibliography |
+| `results/` | Retained numerical evidence, manuscript and figures |
+| `docs/` | Methods, API, architecture, scholarship and review notes |
 
-- [Quickstart Guide](doc/quickstart.md) -- Get running in 5 minutes
-- [Theoretical Primer](doc/theoretical_primer.md) -- Accessible introduction to Active Inference and the 2x2 framework
-- [API Reference](doc/api_reference.md) -- Comprehensive class and method documentation
-- [Architecture](doc/architecture.md) -- System design, module dependencies, data flow
+[Documentation index](docs/README.md) · [Quickstart](docs/quickstart.md) · [Methods and interpretation](docs/theoretical_primer.md) · [API](docs/api_reference.md) · [Architecture](docs/architecture.md) · [Scholarship audit](docs/scholarship_audit.md) · [Review record](docs/review_2026-10-13.md)
 
-## Theoretical Foundation
+## Citation and license
 
-### Active Inference as Meta-Methodology
+This repository is a working manuscript, without an assigned publication DOI. Cite its author, title, commit and version/date rather than implying peer review. Author-supplied publication metadata belongs in `manuscript/config.yaml`; unknown identifiers and declarations are left unspecified.
 
-Active Inference is revealed as a meta-(pragmatic/epistemic) methodology through:
-
-1. **Epistemic Framework Specification**: Define what agents can know via matrix A
-2. **Pragmatic Landscape Design**: Specify value systems through matrix C
-3. **Meta-Cognitive Control**: Self-monitoring via quadrant 3 operations
-4. **Framework Optimization**: Higher-order adaptation in quadrant 4
-
-### Key Insights
-
-- **Intelligence as Framework Design**: Cognition involves designing and adapting fundamental frameworks
-- **Recursive Self-Understanding**: Active Inference enables modeling cognition with cognition
-- **Meta-Level Security**: Framework-level vulnerabilities and defenses
-- **Unified Cognitive Architecture**: Single formalism spanning biological and artificial systems
-
-## Research Contributions
-
-### Theoretical
-
-- Meta-level interpretation of Active Inference
-- 2×2 matrix framework for cognitive analysis
-- Integration with Free Energy Principle
-- Recursive modeler perspective
-
-### Methodological
-
-- generative model implementations
-- Meta-cognitive monitoring systems
-- Framework optimization algorithms
-- Theoretical validation suite
-
-### Practical
-
-- Visualization tools for complex concepts
-- Reproducible research pipeline
-- Educational framework for cognitive science
-- Foundation for meta-level AI development
-
-## Validation Results
-
-### Theoretical Correctness
-
-- ✅ EFE calculations match mathematical derivations
-- ✅ Free energy minimization follows FEP principles
-- ✅ Bayesian inference properly implemented
-- ✅ Meta-cognitive operations theoretically sound
-
-### Implementation Quality
-
-- ✅ Core functionality tested and validated
-- ✅ Numerical stability verified for key operations
-- ✅ Error handling with proper validation
-- ✅ Type hints and documentation
-
-### Research Standards
-
-- 13-section manuscript with cross-references
-- 52-entry bibliography spanning 6 research traditions
-- Mathematical notation standardized (symbols glossary)
-- Figures properly integrated with LaTeX labels
-
-## Applications
-
-### Cognitive Science
-
-- Understanding meta-cognitive development
-- Analyzing cognitive security vulnerabilities
-- Designing educational interventions
-- Modeling cultural cognitive frameworks
-
-### Artificial Intelligence
-
-- Meta-learning system development
-- Value alignment frameworks
-- Self-improving AI architectures
-- Robust AI safety mechanisms
-
-### Neuroscience
-
-- Meta-cognitive brain mechanisms
-- Higher-order cognitive processes
-- Consciousness and self-awareness
-- Cognitive development trajectories
-
-## Citation
-
-If you use this work, please cite:
-
-```bibtex
-@misc{friedman2026active,
-  title={Active Inference as a Meta-(Pragmatic/Epistemic) Method},
-  author={Friedman, Daniel},
-  year={2026},
-  note={Active Inference Meta-Pragmatic Framework Implementation}
-}
-```
-
-## License
-
-This project is licensed under the Apache License 2.0 - see the [LICENSE](../../LICENSE) file for details.
-
-## Acknowledgments
-
-Special thanks to Karl Friston and the Active Inference research community for foundational theoretical work.
+Software license: [Apache-2.0](LICENSE).

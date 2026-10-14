@@ -19,6 +19,7 @@ from typing import Dict, List, Optional, Tuple, Union
 
 import numpy as np
 from numpy.typing import NDArray
+from core.probability import probability_vector, entropy
 from utils.exceptions import ValidationError
 from utils.logging import get_logger
 
@@ -32,13 +33,24 @@ class MetaCognitiveSystem:
     making adjustments to improve performance and adapt to changing conditions.
     """
 
-    def __init__(self, confidence_threshold: float = 0.7, adaptation_rate: float = 0.1) -> None:
+    def __init__(
+        self, confidence_threshold: float = 0.7, adaptation_rate: float = 0.1
+    ) -> None:
         """Initialize meta-cognitive system.
 
         Args:
             confidence_threshold: Threshold for triggering meta-cognitive evaluation
             adaptation_rate: Rate of meta-cognitive adaptation
         """
+        if (
+            not np.isfinite(confidence_threshold)
+            or not 0 <= confidence_threshold <= 1
+            or not np.isfinite(adaptation_rate)
+            or not 0 <= adaptation_rate <= 1
+        ):
+            raise ValidationError(
+                "Confidence threshold and adaptation rate must be in [0,1]"
+            )
         self.confidence_threshold = confidence_threshold
         self.adaptation_rate = adaptation_rate
 
@@ -64,6 +76,12 @@ class MetaCognitiveSystem:
             Dictionary containing confidence metrics and assessment
         """
         try:
+            posterior_beliefs = probability_vector(posterior_beliefs)
+            if (
+                not np.isfinite(observation_uncertainty)
+                or not 0 <= observation_uncertainty <= 1
+            ):
+                raise ValidationError("Observation uncertainty must be in [0,1]")
             # Calculate confidence metrics
             entropy = self._calculate_belief_entropy(posterior_beliefs)
             max_belief = np.max(posterior_beliefs)
@@ -96,9 +114,8 @@ class MetaCognitiveSystem:
             raise ValidationError(f"Confidence assessment failed: {e}") from e
 
     def _calculate_belief_entropy(self, beliefs: NDArray) -> float:
-        """Calculate entropy of belief distribution."""
-        beliefs = np.clip(beliefs, 1e-10, 1.0)
-        return -np.sum(beliefs * np.log(beliefs))
+        """Return Shannon entropy of a validated belief distribution."""
+        return entropy(probability_vector(beliefs))
 
     def _calculate_confidence_score(
         self,
@@ -153,9 +170,19 @@ class MetaCognitiveSystem:
             if not available_resources:
                 raise ValidationError("Available resources cannot be empty")
 
-            # Base allocation
+            if (
+                any(not np.isfinite(v) or v < 0 for v in available_resources.values())
+                or sum(available_resources.values()) <= 0
+            ):
+                raise ValidationError(
+                    "Resource capacities must be nonnegative with positive total"
+                )
+            if not np.isfinite(confidence_score) or not 0 <= confidence_score <= 1:
+                raise ValidationError("Confidence score must be in [0,1]")
+            # Allocate in proportion to actual available capacity.
             base_allocation = {
-                k: 1.0 / len(available_resources) for k in available_resources.keys()
+                k: v / sum(available_resources.values())
+                for k, v in available_resources.items()
             }
 
             # Adjust based on confidence
@@ -218,10 +245,22 @@ class MetaCognitiveSystem:
             }
 
             effectiveness_score = sum(
-                weights[metric] * performance_metrics.get(metric, 0.5) for metric in weights.keys()
+                weights[metric] * performance_metrics.get(metric, 0.5)
+                for metric in weights.keys()
             )
 
-            # Update strategy tracking
+            if any(
+                not np.isfinite(v) or not 0 <= v <= 1
+                for v in performance_metrics.values()
+            ):
+                raise ValidationError("Performance metrics must be finite and in [0,1]")
+            previous = self.strategy_effectiveness.get(
+                strategy_name, effectiveness_score
+            )
+            effectiveness_score = (
+                1 - self.adaptation_rate
+            ) * previous + self.adaptation_rate * effectiveness_score
+            # Track a bounded exponential moving average across evaluations.
             self.strategy_effectiveness[strategy_name] = effectiveness_score
 
             assessment = {
@@ -243,7 +282,9 @@ class MetaCognitiveSystem:
             logger.error(f"Error evaluating strategy effectiveness: {e}")
             raise ValidationError(f"Strategy evaluation failed: {e}") from e
 
-    def _generate_strategy_recommendation(self, effectiveness: float, strategy: str) -> str:
+    def _generate_strategy_recommendation(
+        self, effectiveness: float, strategy: str
+    ) -> str:
         """Generate recommendation based on strategy effectiveness."""
         if effectiveness >= 0.8:
             return f"Continue using {strategy} - highly effective"
@@ -263,7 +304,9 @@ class MetaCognitiveSystem:
             self.strategy_effectiveness.items(), key=lambda x: x[1], reverse=True
         )
 
-        rank = next(i + 1 for i, (name, _) in enumerate(sorted_strategies) if name == strategy)
+        rank = next(
+            i + 1 for i, (name, _) in enumerate(sorted_strategies) if name == strategy
+        )
         total = len(sorted_strategies)
 
         return f"Rank {rank}/{total} among evaluated strategies"
@@ -347,7 +390,9 @@ class MetaCognitiveSystem:
 
         except Exception as e:
             logger.error(f"Error implementing meta-cognitive control: {e}")
-            raise ValidationError(f"Meta-cognitive control implementation failed: {e}") from e
+            raise ValidationError(
+                f"Meta-cognitive control implementation failed: {e}"
+            ) from e
 
     def _generate_control_rationale(self, confidence_score: float) -> str:
         """Generate rationale for control decisions."""

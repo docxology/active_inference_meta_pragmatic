@@ -27,6 +27,7 @@ sys.path.insert(0, str(project_root / "src"))
 from core.active_inference import demonstrate_active_inference_concepts
 from core.generative_models import create_simple_generative_model
 from utils.figure_manager import FigureManager
+
 # Local imports
 from utils.logging import get_logger
 from visualization import VisualizationEngine
@@ -44,7 +45,7 @@ def main() -> None:
 
     # Initialize components
     viz_engine = VisualizationEngine(output_dir=str(output_dir))
-    figure_manager = FigureManager()
+    figure_manager = FigureManager(str(output_dir / "figure_registry.json"))
 
     # Generate EFE decomposition visualization
     create_efe_decomposition_diagram(viz_engine, figure_manager)

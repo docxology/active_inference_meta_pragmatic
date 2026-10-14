@@ -1,0 +1,91 @@
+{
+  "algorithm": "web-renderer-combine-v1",
+  "binding_sha256": "b808733809ea4771fa4da03616daf9cd48cd73adc73fd51079e220129753241d",
+  "combined_path": "output/web/_combined_manuscript.md",
+  "combined_sha256": "5e6e4994dc83c203c96fa48ede2b03df6c9a84cad36e8093ac484b212b91b65f",
+  "combined_size_bytes": 38366,
+  "input_root_kind": "hydrated",
+  "ordered_inputs": [
+    {
+      "ordinal": 1,
+      "path": "output/manuscript/01_abstract.md",
+      "sha256": "b63a9027ac12b187f5d39806380dc8dd467676e941793ffd14de4f600e341ad2",
+      "size_bytes": 1635
+    },
+    {
+      "ordinal": 2,
+      "path": "output/manuscript/02_introduction.md",
+      "sha256": "d940ac0fdc7e2782cbb3ffc525bd4c02168e5420a8246757308ded3208663e7d",
+      "size_bytes": 2238
+    },
+    {
+      "ordinal": 3,
+      "path": "output/manuscript/03_related_work.md",
+      "sha256": "5e881ccc5e1ec1cae1a9ae6dee8acd360d3df4ec5b10ee5c739e4826de6863cc",
+      "size_bytes": 3679
+    },
+    {
+      "ordinal": 4,
+      "path": "output/manuscript/04_background.md",
+      "sha256": "66791dbe2fafb5ea784fa7709675bf5d1492d73cc03748a6556f82c41cb2e52b",
+      "size_bytes": 4511
+    },
+    {
+      "ordinal": 5,
+      "path": "output/manuscript/05_methodology.md",
+      "sha256": "8f346446a9a6a9c2298b0095afd6a0f22d37a3f4c8fa1571a4cb393272658825",
+      "size_bytes": 5807
+    },
+    {
+      "ordinal": 6,
+      "path": "output/manuscript/06_quadrant_model.md",
+      "sha256": "78c2c46a7a73743480fbed2ff7b92792b025f3916861e7f3435a8528cc349999",
+      "size_bytes": 4505
+    },
+    {
+      "ordinal": 7,
+      "path": "output/manuscript/07_security_implications.md",
+      "sha256": "72abe521e12037eeb8e53f0add448a404668260f4c04820205a591a838e84756",
+      "size_bytes": 3671
+    },
+    {
+      "ordinal": 8,
+      "path": "output/manuscript/08_discussion.md",
+      "sha256": "30fdc29b5d92814836dfc25fc5589740ed2605cf29a7810edbeec6b82aa23687",
+      "size_bytes": 4124
+    },
+    {
+      "ordinal": 9,
+      "path": "output/manuscript/09_conclusion.md",
+      "sha256": "9d45a5c428c1f47b89b90b1fa4cf708aa326141d2a758de47ff60cb5a5ce646d",
+      "size_bytes": 1405
+    },
+    {
+      "ordinal": 10,
+      "path": "output/manuscript/10_acknowledgments.md",
+      "sha256": "29c2a471fc2553e10ae6b2303916f1a43de7c67d691e017be83ec0bfd2373d80",
+      "size_bytes": 806
+    },
+    {
+      "ordinal": 11,
+      "path": "output/manuscript/11_appendix.md",
+      "sha256": "de9d4981631c7c3f71dba0fed20f1531d27e0594267241cd1ea9cd15a8e506a9",
+      "size_bytes": 4287
+    },
+    {
+      "ordinal": 12,
+      "path": "output/manuscript/98_symbols_glossary.md",
+      "sha256": "1c4fca8df3171ba0328a154ec12798fcc20b29c7611c04d454adddc65d267a58",
+      "size_bytes": 1366
+    },
+    {
+      "ordinal": 13,
+      "path": "output/manuscript/99_references.md",
+      "sha256": "0f0ecfd8d75ecf20997a2d53125537342259106b3ffc0e90c17126b7f0f5a6f7",
+      "size_bytes": 216
+    }
+  ],
+  "ordered_inputs_sha256": "00e0d3b57c248039a15fb6d1f5e4ed5fdd64d509108adbb615c5065974b3fe69",
+  "project": "active_inference_meta_pragmatic",
+  "schema_version": "template-manuscript-composition-v1"
+}

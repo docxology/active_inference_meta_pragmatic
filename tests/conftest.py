@@ -49,24 +49,30 @@ def simple_generative_model():
     n_actions = 2
 
     # A: observation likelihood (columns sum to 1)
-    A = np.array([
-        [0.8, 0.1, 0.1],
-        [0.1, 0.8, 0.1],
-        [0.1, 0.1, 0.8],
-    ])
+    A = np.array(
+        [
+            [0.8, 0.1, 0.1],
+            [0.1, 0.8, 0.1],
+            [0.1, 0.1, 0.8],
+        ]
+    )
 
     # B: transition matrix (columns sum to 1 per action)
     B = np.zeros((n_states, n_states, n_actions))
-    B[:, :, 0] = np.array([
-        [0.9, 0.05, 0.05],
-        [0.05, 0.9, 0.05],
-        [0.05, 0.05, 0.9],
-    ])
-    B[:, :, 1] = np.array([
-        [0.1, 0.45, 0.45],
-        [0.45, 0.1, 0.45],
-        [0.45, 0.45, 0.1],
-    ])
+    B[:, :, 0] = np.array(
+        [
+            [0.9, 0.05, 0.05],
+            [0.05, 0.9, 0.05],
+            [0.05, 0.05, 0.9],
+        ]
+    )
+    B[:, :, 1] = np.array(
+        [
+            [0.1, 0.45, 0.45],
+            [0.45, 0.1, 0.45],
+            [0.45, 0.45, 0.1],
+        ]
+    )
 
     # C: preferences (log priors over observations)
     C = np.array([2.0, 0.0, -2.0])

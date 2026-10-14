@@ -1,0 +1,45 @@
+name: Research validation
+on:
+  push:
+  pull_request:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.10', '3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python }}
+      - run: uv sync --locked --extra dev --extra research --python ${{ matrix.python }}
+      - run: uv run --python ${{ matrix.python }} pytest --cov=src --cov-report=term-missing
+        env:
+          MPLBACKEND: Agg
+      - run: uv run --python ${{ matrix.python }} python scripts/07_analysis_pipeline.py
+        env:
+          MPLBACKEND: Agg
+          LOG_LEVEL: '2'
+      - run: uv run --python ${{ matrix.python }} python scripts/06_insert_all_figures.py
+      - run: uv run --python ${{ matrix.python }} python scripts/09_validate_documentation.py
+      - run: uv build
+
+  template-render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: docxology/template
+          ref: 192c8bda16c08d06ae2fee4eac71d56901d3ad22
+          path: .template
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v6
+      - run: sudo apt-get update && sudo apt-get install -y pandoc texlive-xetex texlive-latex-extra texlive-science texlive-fonts-recommended
+      - run: uv sync --locked --extra dev --extra research --python 3.12
+      - run: uv sync --project .template --locked --no-default-groups --python 3.14
+      - run: uv run --python 3.12 python scripts/07_analysis_pipeline.py
+        env:
+          MPLBACKEND: Agg
+      - run: uv run --python 3.12 python scripts/08_render_with_template.py --template-root .template

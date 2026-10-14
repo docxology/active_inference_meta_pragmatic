@@ -6,9 +6,11 @@ inference, prediction, and modeler specifications.
 
 import numpy as np
 import pytest
-from core.generative_models import (GenerativeModel,
-                                        create_simple_generative_model,
-                                        demonstrate_generative_model_concepts)
+from core.generative_models import (
+    GenerativeModel,
+    create_simple_generative_model,
+    demonstrate_generative_model_concepts,
+)
 from analysis.validation import ValidationFramework
 
 
@@ -118,7 +120,9 @@ class TestGenerativeModel:
 
         posterior = simple_model.perform_inference(observation, prior)
         assert len(posterior) == simple_model.n_states
-        assert posterior[0] > prior[0]  # Should strengthen prior belief
+        np.testing.assert_allclose(
+            posterior, prior
+        )  # Uniform virtual evidence preserves the prior
 
 
 class TestGenerativeModelConcepts:

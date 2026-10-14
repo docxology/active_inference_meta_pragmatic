@@ -39,8 +39,12 @@ class TestEndToEndQuadrantAnalysis:
         assert isinstance(efe, float)
 
         # Analyze all quadrants
-        for qid in ["Q1_data_cognitive", "Q2_metadata_cognitive",
-                     "Q3_data_metacognitive", "Q4_metadata_metacognitive"]:
+        for qid in [
+            "Q1_data_cognitive",
+            "Q2_metadata_cognitive",
+            "Q3_data_metacognitive",
+            "Q4_metadata_metacognitive",
+        ]:
             q_info = quadrant.get_quadrant(qid)
             assert "name" in q_info
             assert "description" in q_info
@@ -149,6 +153,7 @@ class TestFigureGenerationIntegration:
         # Create a simple figure (returns (fig, ax) tuple)
         fig, ax = viz.create_figure(figsize=(8, 6))
         import matplotlib.pyplot as plt
+
         ax.plot([1, 2, 3], [1, 4, 9])
         ax.set_title("Integration Test Figure")
 
@@ -174,6 +179,7 @@ class TestFigureGenerationIntegration:
         assert Path(saved["png"]).exists()
 
         import matplotlib.pyplot as plt
+
         plt.close(fig)
 
 
@@ -196,9 +202,7 @@ class TestCognitiveSecurityIntegration:
         assert integrity["is_valid"]
 
         # Simulate drift on model parameters
-        drift = analyzer.simulate_parameter_drift(
-            params, noise_level=0.01, steps=50
-        )
+        drift = analyzer.simulate_parameter_drift(params, noise_level=0.01, steps=50)
         assert drift["total_drift"] >= 0
 
         # Detect anomaly in beliefs

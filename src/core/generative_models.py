@@ -20,6 +20,13 @@ from typing import Dict, List, Optional, Tuple, Union
 
 import numpy as np
 from numpy.typing import NDArray
+from .probability import (
+    model_matrices,
+    probability_vector,
+    observation_likelihood,
+    bayesian_update,
+)
+from scipy.special import softmax
 from utils.exceptions import ValidationError
 from utils.logging import get_logger
 
@@ -45,15 +52,12 @@ class GenerativeModel:
         Raises:
             ValidationError: If matrices have incompatible dimensions
         """
-        self.A = A  # P(o|s) - observation likelihoods
-        self.B = B  # P(s'|s,a) - state transitions
-        self.C = C  # Preference priors (log probabilities)
-        self.D = D  # Prior beliefs P(s)
+        self.A, self.B, self.C, self.D = model_matrices(A, B, C, D)
 
         self._validate_matrices()
-        self.n_states = D.shape[0]
-        self.n_observations = A.shape[0]
-        self.n_actions = B.shape[2] if len(B.shape) > 2 else 1
+        self.n_states = self.D.size
+        self.n_observations = self.A.shape[0]
+        self.n_actions = self.B.shape[2]
 
         logger.info(
             f"Initialized generative model: {self.n_states} states, "
@@ -61,152 +65,80 @@ class GenerativeModel:
         )
 
     def _validate_matrices(self) -> None:
-        """Validate matrix dimensions and compatibility.
-
-        Raises:
-            ValidationError: If matrices are malformed or incompatible
-        """
-        # Check basic shapes
-        if len(self.A.shape) != 2:
-            raise ValidationError("Matrix A must be 2-dimensional")
-        if len(self.D.shape) != 1:
-            raise ValidationError("Matrix D must be 1-dimensional")
-        if len(self.C.shape) != 1:
-            raise ValidationError("Matrix C must be 1-dimensional")
-
-        n_states = self.D.shape[0]
-        n_observations = self.A.shape[0]
-
-        # Check compatibility
-        if self.A.shape[1] != n_states:
-            raise ValidationError(
-                f"A matrix columns ({self.A.shape[1]}) must match D length ({n_states})"
-            )
-
-        if self.C.shape[0] != n_observations:
-            raise ValidationError(
-                f"C matrix length ({self.C.shape[0]}) must match A rows ({n_observations})"
-            )
-
-        if len(self.B.shape) == 3:
-            if self.B.shape[0] != n_states or self.B.shape[1] != n_states:
-                raise ValidationError(
-                    f"B matrix first two dimensions must be ({n_states}, {n_states})"
-                )
-
-        # Validate D is a valid probability distribution
-        if not np.isclose(np.sum(self.D), 1.0, atol=1e-6):
-            raise ValidationError(f"D matrix must sum to 1.0 (current sum: {np.sum(self.D):.6f})")
+        """Validate all probability, shape, finiteness, and support contracts."""
+        self.A, self.B, self.C, self.D = model_matrices(self.A, self.B, self.C, self.D)
 
     def predict_observations(self, state: Union[int, NDArray]) -> NDArray:
-        """Predict observations given hidden state.
+        """Predict P(o) from a state index or normalized belief vector."""
+        if isinstance(state, (int, np.integer)) and not isinstance(state, bool):
+            if not 0 <= state < self.n_states:
+                raise ValidationError("State index out of range")
+            return self.A[:, int(state)].copy()
+        return self.A @ probability_vector(state, self.n_states, "state beliefs")
 
-        Args:
-            state: Hidden state (index or distribution)
+    def predict_state_transition(
+        self, current_state: Union[int, NDArray], action: int
+    ) -> NDArray:
+        """Predict next-state beliefs using B[next_state, current_state, action]."""
+        if (
+            not isinstance(action, (int, np.integer))
+            or isinstance(action, bool)
+            or not 0 <= action < self.n_actions
+        ):
+            raise ValidationError("Action must be an integer index in range")
+        if isinstance(current_state, (int, np.integer)) and not isinstance(
+            current_state, bool
+        ):
+            if not 0 <= current_state < self.n_states:
+                raise ValidationError("State index out of range")
+            return self.B[:, int(current_state), int(action)].copy()
+        return self.B[:, :, int(action)] @ probability_vector(
+            current_state, self.n_states, "state beliefs"
+        )
 
-        Returns:
-            Predicted observation distribution P(o|s)
+    def calculate_preference_likelihood(
+        self, observation: Union[int, NDArray], normalized: bool = False
+    ) -> float:
+        """Return preference strength, or normalized preference probability.
+
+        The legacy unnormalized exp(C) path rejects overflow. Use normalized=True
+        or preference_distribution() for shift-invariant probabilities.
         """
         try:
-            if isinstance(state, (int, np.integer)):
-                # Single state index
-                prediction = self.A[:, state]
-            else:
-                # State distribution - marginalize
-                prediction = self.A @ state
-
-            # Ensure proper probability distribution
-            prediction = np.clip(prediction, 0, 1)
-            if prediction.sum() > 0:
-                prediction = prediction / prediction.sum()
-
-            return prediction
-
-        except Exception as e:
-            logger.error(f"Error predicting observations: {e}")
-            raise ValidationError(f"Observation prediction failed: {e}") from e
-
-    def predict_state_transition(self, current_state: Union[int, NDArray], action: int) -> NDArray:
-        """Predict state transition given current state and action.
-
-        Args:
-            current_state: Current hidden state (index or distribution)
-            action: Action index
-
-        Returns:
-            Predicted next state distribution P(s'|s,a)
-        """
-        try:
-            if isinstance(current_state, (int, np.integer)):
-                # Single state - use transition matrix directly
-                transition = self.B[:, current_state, action]
-            else:
-                # State distribution - matrix multiplication
-                transition_matrix = self.B[:, :, action]
-                transition = transition_matrix @ current_state
-
-            # Ensure proper probability distribution
-            transition = np.clip(transition, 0, 1)
-            if transition.sum() > 0:
-                transition = transition / transition.sum()
-
-            return transition
-
-        except Exception as e:
-            logger.error(f"Error predicting state transition: {e}")
-            raise ValidationError(f"State transition prediction failed: {e}") from e
-
-    def calculate_preference_likelihood(self, observation: Union[int, NDArray]) -> float:
-        """Calculate preference likelihood for observation.
-
-        Args:
-            observation: Observation (index or distribution)
-
-        Returns:
-            Preference likelihood (exp(C) gives preference strength)
-        """
-        try:
-            if isinstance(observation, (int, np.integer)):
-                # Single observation
-                preference = np.exp(self.C[observation])
-            else:
-                # Observation distribution - expected preference
-                preference = np.exp(self.C) @ observation
-
-            return float(preference)
-
-        except Exception as e:
-            logger.error(f"Error calculating preference likelihood: {e}")
-            raise ValidationError(f"Preference calculation failed: {e}") from e
+            with np.errstate(over="raise"):
+                preference = (
+                    self.preference_distribution() if normalized else np.exp(self.C)
+                )
+            if isinstance(observation, (int, np.integer)) and not isinstance(
+                observation, bool
+            ):
+                if not 0 <= observation < self.n_observations:
+                    raise ValidationError("Observation index out of range")
+                return float(preference[int(observation)])
+            evidence = probability_vector(
+                observation, self.n_observations, "observation evidence"
+            )
+            return float(preference @ evidence)
+        except (FloatingPointError, ValueError, TypeError) as exc:
+            raise ValidationError(
+                "Unnormalized preference overflow; use normalized=True"
+            ) from exc
 
     def perform_inference(
         self, observation: NDArray, prior_beliefs: Optional[NDArray] = None
     ) -> NDArray:
-        """Perform inference to update beliefs given observation.
+        """Update beliefs from a category or normalized virtual evidence vector.
 
-        Args:
-            observation: Observed data
-            prior_beliefs: Prior beliefs (uses D if None)
-
-        Returns:
-            Posterior beliefs over hidden states
+        Soft evidence uses L(s) = A.T @ observation. Impossible observations
+        raise ValidationError rather than inventing support with clipping.
         """
-        try:
-            prior = prior_beliefs if prior_beliefs is not None else self.D
+        return bayesian_update(
+            self.A, observation, self.D if prior_beliefs is None else prior_beliefs
+        )
 
-            # Simple Bayesian inference: posterior ∝ likelihood × prior
-            likelihood = self.A[observation.argmax()] if len(observation.shape) > 0 else self.A[0]
-            posterior = likelihood * prior
-
-            # Normalize
-            posterior = np.clip(posterior, 1e-10, 1.0)
-            posterior = posterior / posterior.sum()
-
-            return posterior
-
-        except Exception as e:
-            logger.error(f"Error performing inference: {e}")
-            raise ValidationError(f"Inference failed: {e}") from e
+    def preference_distribution(self) -> NDArray:
+        """Return normalized outcome preferences using stable log-softmax."""
+        return softmax(self.C)
 
     def demonstrate_modeler_specifications(self) -> Dict[str, Union[str, Dict]]:
         """Demonstrate how the modeler specifies different aspects of the agent.
@@ -259,7 +191,9 @@ class GenerativeModel:
             },
         }
 
-        logger.info("Demonstrated modeler specification capabilities in generative models")
+        logger.info(
+            "Demonstrated modeler specification capabilities in generative models"
+        )
         return specifications
 
 

@@ -1,0 +1,6 @@
+# Preserve the exact scientific output bytes bound by SHA-256 manifests.
+results/** -text
+# Python's CSV writer emits valid CRLF record separators.
+results/*.csv whitespace=cr-at-eol
+# Matplotlib SVG path formatting is an immutable producer output.
+results/**/*.svg -whitespace

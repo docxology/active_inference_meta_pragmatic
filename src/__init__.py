@@ -12,13 +12,14 @@ Subpackages:
 - utils: Logging, exceptions, figure management, markdown integration
 """
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 __author__ = "Daniel Friedman"
 __description__ = "Active Inference as a Meta-(Pragmatic/Epistemic) Method"
 
 from core import (
     ActiveInferenceFramework,
     FreeEnergyPrinciple,
+    calculate_variational_free_energy,
     GenerativeModel,
     create_simple_generative_model,
     define_what_is_a_thing,
@@ -57,6 +58,7 @@ __all__ = [
     "ActiveInferenceFramework",
     "demonstrate_active_inference_concepts",
     "FreeEnergyPrinciple",
+    "calculate_variational_free_energy",
     "define_what_is_a_thing",
     "demonstrate_fep_concepts",
     "GenerativeModel",

@@ -1,0 +1,618 @@
+{
+  "stages_completed": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "mathematical_checks": {
+    "seed": 1729,
+    "n_models": 50,
+    "n_policy_checks": 200,
+    "max_efe_identity_error": 4.440892098500626e-16,
+    "max_vfe_identity_error": 8.881784197001252e-16,
+    "passed": true
+  },
+  "experiment": {
+    "config": {
+      "n_seeds": 30,
+      "n_trials": 400,
+      "n_training": 200,
+      "first_seed": 0,
+      "sensor_reliabilities": [
+        0.55,
+        0.65,
+        0.85,
+        0.8,
+        0.8
+      ],
+      "assumed_reliability": 0.8,
+      "confidence_threshold": 0.9,
+      "bootstrap_resamples": 5000
+    },
+    "data_kind": "synthetic",
+    "learned_reliabilities": [
+      {
+        "seed": 0,
+        "reliabilities": [
+          0.5544554455445545,
+          0.6039603960396039,
+          0.8712871287128713
+        ]
+      },
+      {
+        "seed": 1,
+        "reliabilities": [
+          0.5742574257425742,
+          0.7079207920792079,
+          0.8613861386138614
+        ]
+      },
+      {
+        "seed": 2,
+        "reliabilities": [
+          0.5297029702970297,
+          0.7029702970297029,
+          0.8514851485148515
+        ]
+      },
+      {
+        "seed": 3,
+        "reliabilities": [
+          0.5,
+          0.7128712871287128,
+          0.8465346534653465
+        ]
+      },
+      {
+        "seed": 4,
+        "reliabilities": [
+          0.5445544554455446,
+          0.6336633663366337,
+          0.8663366336633663
+        ]
+      },
+      {
+        "seed": 5,
+        "reliabilities": [
+          0.5891089108910891,
+          0.7029702970297029,
+          0.8564356435643564
+        ]
+      },
+      {
+        "seed": 6,
+        "reliabilities": [
+          0.5841584158415841,
+          0.6881188118811881,
+          0.8168316831683168
+        ]
+      },
+      {
+        "seed": 7,
+        "reliabilities": [
+          0.5,
+          0.6039603960396039,
+          0.8168316831683168
+        ]
+      },
+      {
+        "seed": 8,
+        "reliabilities": [
+          0.5099009900990099,
+          0.6336633663366337,
+          0.7970297029702971
+        ]
+      },
+      {
+        "seed": 9,
+        "reliabilities": [
+          0.5643564356435643,
+          0.7376237623762376,
+          0.8168316831683168
+        ]
+      },
+      {
+        "seed": 10,
+        "reliabilities": [
+          0.5198019801980198,
+          0.6336633663366337,
+          0.8316831683168316
+        ]
+      },
+      {
+        "seed": 11,
+        "reliabilities": [
+          0.5693069306930693,
+          0.6188118811881188,
+          0.8415841584158416
+        ]
+      },
+      {
+        "seed": 12,
+        "reliabilities": [
+          0.5396039603960396,
+          0.6633663366336634,
+          0.8217821782178217
+        ]
+      },
+      {
+        "seed": 13,
+        "reliabilities": [
+          0.5346534653465347,
+          0.6386138613861386,
+          0.8415841584158416
+        ]
+      },
+      {
+        "seed": 14,
+        "reliabilities": [
+          0.5693069306930693,
+          0.6089108910891089,
+          0.8465346534653465
+        ]
+      },
+      {
+        "seed": 15,
+        "reliabilities": [
+          0.5396039603960396,
+          0.599009900990099,
+          0.8316831683168316
+        ]
+      },
+      {
+        "seed": 16,
+        "reliabilities": [
+          0.599009900990099,
+          0.6435643564356436,
+          0.8217821782178217
+        ]
+      },
+      {
+        "seed": 17,
+        "reliabilities": [
+          0.5643564356435643,
+          0.6435643564356436,
+          0.8712871287128713
+        ]
+      },
+      {
+        "seed": 18,
+        "reliabilities": [
+          0.6089108910891089,
+          0.7079207920792079,
+          0.8267326732673267
+        ]
+      },
+      {
+        "seed": 19,
+        "reliabilities": [
+          0.5099009900990099,
+          0.6831683168316832,
+          0.7623762376237624
+        ]
+      },
+      {
+        "seed": 20,
+        "reliabilities": [
+          0.5841584158415841,
+          0.6683168316831684,
+          0.8663366336633663
+        ]
+      },
+      {
+        "seed": 21,
+        "reliabilities": [
+          0.5495049504950495,
+          0.6534653465346535,
+          0.8613861386138614
+        ]
+      },
+      {
+        "seed": 22,
+        "reliabilities": [
+          0.5396039603960396,
+          0.693069306930693,
+          0.8267326732673267
+        ]
+      },
+      {
+        "seed": 23,
+        "reliabilities": [
+          0.5148514851485149,
+          0.6287128712871287,
+          0.8564356435643564
+        ]
+      },
+      {
+        "seed": 24,
+        "reliabilities": [
+          0.4801980198019802,
+          0.6782178217821783,
+          0.8267326732673267
+        ]
+      },
+      {
+        "seed": 25,
+        "reliabilities": [
+          0.5297029702970297,
+          0.6683168316831684,
+          0.8366336633663366
+        ]
+      },
+      {
+        "seed": 26,
+        "reliabilities": [
+          0.5495049504950495,
+          0.698019801980198,
+          0.8168316831683168
+        ]
+      },
+      {
+        "seed": 27,
+        "reliabilities": [
+          0.5297029702970297,
+          0.6138613861386139,
+          0.8267326732673267
+        ]
+      },
+      {
+        "seed": 28,
+        "reliabilities": [
+          0.5495049504950495,
+          0.6188118811881188,
+          0.8514851485148515
+        ]
+      },
+      {
+        "seed": 29,
+        "reliabilities": [
+          0.5594059405940595,
+          0.6534653465346535,
+          0.8217821782178217
+        ]
+      }
+    ],
+    "summary": {
+      "Q1_fixed": {
+        "accuracy": {
+          "mean": 0.7635833333333332,
+          "lower_bound": 0.7581645833333333,
+          "upper_bound": 0.7689166666666668,
+          "confidence_level": 0.95,
+          "sample_size": 30,
+          "method": "percentile bootstrap",
+          "n_resamples": 5000,
+          "seed": 42
+        },
+        "brier": {
+          "mean": 0.17808573964497043,
+          "lower_bound": 0.17440307248520712,
+          "upper_bound": 0.18176616863905326,
+          "confidence_level": 0.95,
+          "sample_size": 30,
+          "method": "percentile bootstrap",
+          "n_resamples": 5000,
+          "seed": 42
+        },
+        "log_loss": {
+          "mean": 0.5519205848644542,
+          "lower_bound": 0.5402623037828207,
+          "upper_bound": 0.5639438879024201,
+          "confidence_level": 0.95,
+          "sample_size": 30,
+          "method": "percentile bootstrap",
+          "n_resamples": 5000,
+          "seed": 42
+        },
+        "mean_observations": {
+          "mean": 3.0,
+          "lower_bound": 3.0,
+          "upper_bound": 3.0,
+          "confidence_level": 0.95,
+          "sample_size": 30,
+          "method": "percentile bootstrap",
+          "n_resamples": 5000,
+          "seed": 42
+        }
+      },
+      "Q2_metadata": {
+        "accuracy": {
+          "mean": 0.8468333333333334,
+          "lower_bound": 0.8391666666666667,
+          "upper_bound": 0.8542500000000002,
+          "confidence_level": 0.95,
+          "sample_size": 30,
+          "method": "percentile bootstrap",
+          "n_resamples": 5000,
+          "seed": 42
+        },
+        "brier": {
+          "mean": 0.12354745314398065,
+          "lower_bound": 0.11893204782552307,
+          "upper_bound": 0.1281852105315457,
+          "confidence_level": 0.95,
+          "sample_size": 30,
+          "method": "percentile bootstrap",
+          "n_resamples": 5000,
+          "seed": 42
+        },
+        "log_loss": {
+          "mean": 0.40506710685094893,
+          "lower_bound": 0.39325135539036826,
+          "upper_bound": 0.41699488225993764,
+          "confidence_level": 0.95,
+          "sample_size": 30,
+          "method": "percentile bootstrap",
+          "n_resamples": 5000,
+          "seed": 42
+        },
+        "mean_observations": {
+          "mean": 3.0,
+          "lower_bound": 3.0,
+          "upper_bound": 3.0,
+          "confidence_level": 0.95,
+          "sample_size": 30,
+          "method": "percentile bootstrap",
+          "n_resamples": 5000,
+          "seed": 42
+        }
+      },
+      "Q3_adaptive": {
+        "accuracy": {
+          "mean": 0.9034166666666668,
+          "lower_bound": 0.8974166666666668,
+          "upper_bound": 0.90925,
+          "confidence_level": 0.95,
+          "sample_size": 30,
+          "method": "percentile bootstrap",
+          "n_resamples": 5000,
+          "seed": 42
+        },
+        "brier": {
+          "mean": 0.08118385850841352,
+          "lower_bound": 0.07662724032757431,
+          "upper_bound": 0.08584421813510784,
+          "confidence_level": 0.95,
+          "sample_size": 30,
+          "method": "percentile bootstrap",
+          "n_resamples": 5000,
+          "seed": 42
+        },
+        "log_loss": {
+          "mean": 0.28955945836527447,
+          "lower_bound": 0.2760094076519089,
+          "upper_bound": 0.30358202739942675,
+          "confidence_level": 0.95,
+          "sample_size": 30,
+          "method": "percentile bootstrap",
+          "n_resamples": 5000,
+          "seed": 42
+        },
+        "mean_observations": {
+          "mean": 3.8916666666666666,
+          "lower_bound": 3.8794166666666663,
+          "upper_bound": 3.9034166666666668,
+          "confidence_level": 0.95,
+          "sample_size": 30,
+          "method": "percentile bootstrap",
+          "n_resamples": 5000,
+          "seed": 42
+        }
+      },
+      "Q4_learned": {
+        "accuracy": {
+          "mean": 0.8468333333333334,
+          "lower_bound": 0.8391666666666667,
+          "upper_bound": 0.8542500000000002,
+          "confidence_level": 0.95,
+          "sample_size": 30,
+          "method": "percentile bootstrap",
+          "n_resamples": 5000,
+          "seed": 42
+        },
+        "brier": {
+          "mean": 0.125841965640655,
+          "lower_bound": 0.1215220157644802,
+          "upper_bound": 0.13026976136643284,
+          "confidence_level": 0.95,
+          "sample_size": 30,
+          "method": "percentile bootstrap",
+          "n_resamples": 5000,
+          "seed": 42
+        },
+        "log_loss": {
+          "mean": 0.4113859952823834,
+          "lower_bound": 0.40022340043281296,
+          "upper_bound": 0.42265296148729115,
+          "confidence_level": 0.95,
+          "sample_size": 30,
+          "method": "percentile bootstrap",
+          "n_resamples": 5000,
+          "seed": 42
+        },
+        "mean_observations": {
+          "mean": 3.0,
+          "lower_bound": 3.0,
+          "upper_bound": 3.0,
+          "confidence_level": 0.95,
+          "sample_size": 30,
+          "method": "percentile bootstrap",
+          "n_resamples": 5000,
+          "seed": 42
+        }
+      },
+      "Q2_misleading": {
+        "accuracy": {
+          "mean": 0.5411666666666668,
+          "lower_bound": 0.5312479166666667,
+          "upper_bound": 0.55075,
+          "confidence_level": 0.95,
+          "sample_size": 30,
+          "method": "percentile bootstrap",
+          "n_resamples": 5000,
+          "seed": 42
+        },
+        "brier": {
+          "mean": 0.33061491984184455,
+          "lower_bound": 0.3236858339009155,
+          "upper_bound": 0.3378627659686022,
+          "confidence_level": 0.95,
+          "sample_size": 30,
+          "method": "percentile bootstrap",
+          "n_resamples": 5000,
+          "seed": 42
+        },
+        "log_loss": {
+          "mean": 1.186143335663142,
+          "lower_bound": 1.1570681421491285,
+          "upper_bound": 1.2164950715226763,
+          "confidence_level": 0.95,
+          "sample_size": 30,
+          "method": "percentile bootstrap",
+          "n_resamples": 5000,
+          "seed": 42
+        },
+        "mean_observations": {
+          "mean": 3.0,
+          "lower_bound": 3.0,
+          "upper_bound": 3.0,
+          "confidence_level": 0.95,
+          "sample_size": 30,
+          "method": "percentile bootstrap",
+          "n_resamples": 5000,
+          "seed": 42
+        }
+      }
+    },
+    "comparisons": {
+      "H1": {
+        "treated": "Q2_metadata",
+        "control": "Q1_fixed",
+        "accuracy_difference": {
+          "mean": 0.08325000000000002,
+          "lower_bound": 0.07441666666666666,
+          "upper_bound": 0.09216666666666665,
+          "confidence_level": 0.95,
+          "sample_size": 30,
+          "method": "percentile bootstrap",
+          "n_resamples": 5000,
+          "seed": 42
+        },
+        "paired_t_test": {
+          "test": "Paired t-test",
+          "test_type": "paired",
+          "t_statistic": 18.838883795366876,
+          "p_value": 8.250232322355704e-18,
+          "significant": true,
+          "mean_difference": 0.08325000000000027,
+          "cohens_d": 4.50628028241089,
+          "signed_cohens_d": 4.50628028241089,
+          "hedges_g": 4.447757161860099,
+          "paired_d_z": 3.439493870980335,
+          "effect_size_definition": "pooled-SD d; paired_d_z uses SD of within-pair differences",
+          "test_defined": true,
+          "group1_size": 30,
+          "group2_size": 30,
+          "effect_size_interpretation": "large effect",
+          "interpretation": "significant difference with large effect (p=0.000, d=4.506)"
+        },
+        "p_sign_flip": 9.999000099990002e-05,
+        "independent_unit": "seed",
+        "n_pairs": 30,
+        "p_sign_flip_holm": 0.00029997000299970003,
+        "reject_at_0_05": true
+      },
+      "H2": {
+        "treated": "Q3_adaptive",
+        "control": "Q2_metadata",
+        "accuracy_difference": {
+          "mean": 0.056583333333333326,
+          "lower_bound": 0.050583333333333334,
+          "upper_bound": 0.06266666666666666,
+          "confidence_level": 0.95,
+          "sample_size": 30,
+          "method": "percentile bootstrap",
+          "n_resamples": 5000,
+          "seed": 42
+        },
+        "paired_t_test": {
+          "test": "Paired t-test",
+          "test_type": "paired",
+          "t_statistic": 17.938597498783196,
+          "p_value": 3.062023512793416e-17,
+          "significant": true,
+          "mean_difference": 0.05658333333333332,
+          "cohens_d": 2.9715342308492843,
+          "signed_cohens_d": 2.9715342308492843,
+          "hedges_g": 2.932942877201891,
+          "paired_d_z": 3.275124833363102,
+          "effect_size_definition": "pooled-SD d; paired_d_z uses SD of within-pair differences",
+          "test_defined": true,
+          "group1_size": 30,
+          "group2_size": 30,
+          "effect_size_interpretation": "large effect",
+          "interpretation": "significant difference with large effect (p=0.000, d=2.972)"
+        },
+        "p_sign_flip": 9.999000099990002e-05,
+        "independent_unit": "seed",
+        "n_pairs": 30,
+        "p_sign_flip_holm": 0.00029997000299970003,
+        "reject_at_0_05": true
+      },
+      "H3": {
+        "treated": "Q4_learned",
+        "control": "Q1_fixed",
+        "accuracy_difference": {
+          "mean": 0.08325000000000002,
+          "lower_bound": 0.07441666666666666,
+          "upper_bound": 0.09216666666666665,
+          "confidence_level": 0.95,
+          "sample_size": 30,
+          "method": "percentile bootstrap",
+          "n_resamples": 5000,
+          "seed": 42
+        },
+        "paired_t_test": {
+          "test": "Paired t-test",
+          "test_type": "paired",
+          "t_statistic": 18.838883795366876,
+          "p_value": 8.250232322355704e-18,
+          "significant": true,
+          "mean_difference": 0.08325000000000027,
+          "cohens_d": 4.50628028241089,
+          "signed_cohens_d": 4.50628028241089,
+          "hedges_g": 4.447757161860099,
+          "paired_d_z": 3.439493870980335,
+          "effect_size_definition": "pooled-SD d; paired_d_z uses SD of within-pair differences",
+          "test_defined": true,
+          "group1_size": 30,
+          "group2_size": 30,
+          "effect_size_interpretation": "large effect",
+          "interpretation": "significant difference with large effect (p=0.000, d=4.506)"
+        },
+        "p_sign_flip": 9.999000099990002e-05,
+        "independent_unit": "seed",
+        "n_pairs": 30,
+        "p_sign_flip_holm": 0.00029997000299970003,
+        "reject_at_0_05": true
+      }
+    },
+    "limitations": [
+      "Known reliability is privileged metadata, not a free benefit.",
+      "Q3 consumes more observations; accuracy and sensing cost must be considered jointly.",
+      "Q4 requires external labeled training; it does not establish autonomous framework optimization.",
+      "Results concern this binary sensor task, not biological cognition or security efficacy."
+    ]
+  },
+  "manuscript_validation": {
+    "valid": true,
+    "sections": 13,
+    "labels": 23,
+    "unique_citations": 19,
+    "bibliography_entries": 19,
+    "figures": 2
+  }
+}
