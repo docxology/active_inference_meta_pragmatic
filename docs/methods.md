@@ -15,3 +15,7 @@ The state is fixed within a trial and independently reset between trials. Equal 
 The design measures state estimation, acquisition and reliability learning. It does not compare full EFE planners or establish a biological quadrant partition. Q2 has an oracle advantage, Q3 purchases extra evidence, and Q4 uses external labels. These costs constrain any comparison. See [statistics](statistics.md) for the seed-level inference and [theory](theoretical_primer.md) for the separate EFE/VFE identities.
 
 `--seeds`, `--trials` and `--training` create a different design. Use a separate `--output-dir` and disclose changes; the authored paper's default estimates are not automatically rewritten for a custom experiment.
+
+The GNN revision adds fixed four- and five-observation schedules using oracle reliability. There are now seven conditions and 210 seed-by-condition rows. These additional resource comparators are descriptive; the original H1–H3 inferential family is preserved. All model realizations are materialized in GNN and imported through the actual upstream parser. See [the model contract](gnn_models.md).
+
+The resource figure compares retained accuracy and observations per trial. Its calibration panel pools held-out trials in ten fixed probability bins and has no inferential intervals. Brier and logarithmic losses are probabilistic scores, not pure calibration measurements. Training requires 200 labels and three sensor observations per training trial for Q4, separate from the reported test-sensing budget.

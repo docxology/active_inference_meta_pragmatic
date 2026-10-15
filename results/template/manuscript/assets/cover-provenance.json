@@ -1,0 +1,8 @@
+{
+  "kind": "conceptual-artwork",
+  "generator": "Built-in OpenAI image generation tool",
+  "generated_date": "2026-10-14",
+  "asset": "model-reflection-cover.png",
+  "prompt": "Use case: stylized-concept. Asset type: cover artwork for a scientific philosophical manuscript on active inference, evidence, model specification and responsible model revision. Create a refined editorial illustration, landscape 3:2 composition: a translucent geometric model suspended above a field of noisy observations, connected by fine measured lines, with a second elegant translucent frame surrounding it to suggest reflection on the model. Luminous teal and muted copper on warm ivory, precise restrained scientific aesthetic, spacious composition suitable for a journal manuscript title page. Abstract conceptual artwork, no brains, no robots, no humanoids, no claims of biological realism, no charts, no numbers, no text, no logos, no watermarks. Render at high resolution. The image will be explicitly labeled conceptual artwork rather than research data.",
+  "scientific_role": "Illustrates reflection on model specification; no anatomical, statistical or empirical content is claimed."
+}

@@ -1,0 +1,42 @@
+{
+  "kind": "Scientific graphical abstract generated from retained synthetic estimates and exact GNN/EFE evaluations",
+  "generator": "src/visualization/graphical_abstract.py",
+  "research_config": {
+    "n_seeds": 30,
+    "n_trials": 400,
+    "n_training": 200,
+    "first_seed": 0,
+    "sensor_reliabilities": [
+      0.55,
+      0.65,
+      0.85,
+      0.8,
+      0.8
+    ],
+    "assumed_reliability": 0.8,
+    "confidence_threshold": 0.9,
+    "bootstrap_resamples": 5000
+  },
+  "active_sensing_config": {
+    "n_seeds": 30,
+    "n_trials": 200,
+    "first_seed": 10000,
+    "reliability": 0.85,
+    "safe_logit": 0.15,
+    "policy_precision": 4,
+    "bootstrap_resamples": 5000,
+    "upstream_revision": "46459949944e3217f8a6a804d4ff8c52829ef275",
+    "simulation_model_sha256": "f2ac5fa5feed26db5dc93b09a75c55609da9b24e73ee78a149c71859469bdbd3",
+    "status": "Exploratory synthetic action task; separate from H1-H3"
+  },
+  "assets_sha256": {
+    "scientific_graphical_abstract.png": "80290396d89926309f644589c474b8fa6a29c36dbdda9ece6b45efe94b863f3a",
+    "scientific_graphical_abstract.pdf": "e1a16161e677516e3f5b1614f4a3a4795b24207bc3814bfa9ea369a3b2da778a",
+    "scientific_graphical_abstract.svg": "4e298dc5f17697c04b0fdbb11e2ec1cf25adc72104946fa36edf24e6cf2618a7"
+  },
+  "data_sources": [
+    "results/summary.json",
+    "results/active_sensing_estimates.csv"
+  ],
+  "ai_image_generation": false
+}

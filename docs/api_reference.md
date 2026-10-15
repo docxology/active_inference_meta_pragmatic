@@ -44,6 +44,10 @@ Components include `epistemic` (negative information gain), `pragmatic` (negativ
 
 `analysis.research_pipeline.run_pipeline(project_root, output_dir, config=..., stages=None)` executes earlier dependencies for requested stages. Stage 5 validates and renders numbered manuscript sources; stage 6 hashes source and outputs. The CLI is `scripts/07_analysis_pipeline.py`.
 
+## World and agent evaluation
+
+`core.simulation.sample_potential_outcomes(world, n_trials, rng)` returns paired one-step world draws; see [sampling contracts](world_simulation.md). `analysis.model_robustness.exact_context_scores(world, agent, actions)` returns exact predictive scores and conditional calibration cells for the four-state context task; see [supported semantics and singularities](model_robustness.md). `reliability_robustness()` produces the retained fixed-agent sensitivity grid. These interfaces keep world sampling, agent inference and evaluation separate.
+
 ## Framework and utilities
 
 `MetaCognitiveSystem` implements a heuristic confidence score, capacity-aware attention allocation, bounded strategy-effectiveness moving averages and illustrative control rules. These are not fitted psychological measures.

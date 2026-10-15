@@ -1,54 +1,17 @@
-# Background and Numerical Conventions {#sec:background}
+# Executable Generative Models of Evidence, Decisions, and Action {#sec:background}
 
-## Discrete generative model
+A generative model expresses how hidden conditions could produce observations and how actions could change what happens next. Active inference uses that model both to interpret evidence and to evaluate possible action. The crucial distinction is between a world that generates an observation and an agent's assumptions about that world. An agent can execute its assumptions precisely while misunderstanding the reliability of what it observes.
 
-Let $s$ index hidden states, $o$ observations, and $a$ actions. The implementation uses $A_{o,s}=p(o\mid s)$, $B_{s',s,a}=p(s'\mid s,a)$, finite outcome preference logits $C_o$, and a normalized initial prior $D_s$. Columns of $A$ and of each action slice of $B$ sum to one. A two-dimensional $B$ is promoted to a single-action tensor. Arrays with incompatible dimensions, empty axes, negative probabilities, nonfinite values, or invalid normalization are rejected.
+## Two experimental models and their distinct explanatory questions
 
-The normalized outcome preference is $p_C(o)=\exp(C_o)/\sum_j\exp(C_j)$. Logits are not probabilities; adding a constant to all entries leaves the normalized preference unchanged. Model validation copies inputs so that later mutation of caller-owned arrays does not silently change an initialized model. Public model arrays remain inspectable and mutable; callers must validate deliberate revisions.
+Figure [2](#fig:executed_models) separates the two experimental settings. The sensor study asks how beliefs change when the reliability of an observation is ignored, correctly supplied, learned or falsely reported. Its hidden context remains fixed during a trial. Several sensors offer conditionally independent views of that context; acquiring another view consumes an explicit resource. A confidence-triggered acquisition rule is a monitoring mechanism, not an EFE policy.
 
-## Bayesian state inference
+The action study asks a different question: when does an agent choose an informative observation? Its hidden state combines context with observation mode. Actions preserve context while choosing between a blind mode, which returns a null observation, and an informative mode, which provides a noisy indication of context. Expected free energy evaluates the consequences of these actions under declared preferences as well as their information value. Neither the preference specification nor a successful calculation establishes which ends should be adopted.
 
-For a categorical observation, Bayes' rule gives:
+![Two executable models and the evidence each can supply. (a) A shared binary context generates five potential sensor reports; percentages give each sensor's probability of reporting the true context. All strategies begin with sensors 1--3. Additional observations follow a fixed budget or a confidence rule; fitted reliability uses separate labeled training. (b) The imported GNN action model preserves context while choosing blind or informative observation mode. Arrows show nonself transitions, with self transitions implicit. Likelihood A, transitions B, preference logits C and initial beliefs D define the agent; external context labels assess forecasts rather than supplying the agent's confidence.](../figures/executed_models.png){#fig:executed_models width=95%}
 
-::: {#eq:bayes}
-$$
-q(s\mid o)=\frac{A_{o,s}D_s}{\sum_j A_{o,j}D_j}.
-\tag{1}
-$$
-:::
+## Executable declarations make modeling commitments inspectable
 
-For a normalized nonnegative virtual-evidence vector $e(o)$, the implementation uses $L_e(s)=\sum_o e(o)A_{o,s}$ and replaces $A_{o,s}$ with $L_e(s)$ in Equation [(1)](#eq:bayes). This convention models evidence about possible outcomes. It differs from a Jeffrey update, which mixes already-conditioned posteriors. A uniform evidence vector is uninformative because each likelihood column sums to one. Zero-probability states retain zero mass; evidence impossible under the model and prior raises an error instead of being repaired by clipping.
+The models declare observation likelihoods, action-dependent transitions, preferences and initial beliefs in real GNN specifications. The upstream reference parser supplies the tensors consumed by the local categorical runtime. This connects a readable declaration to the calculation actually performed; it does not certify the declaration's truth. The supplementary tensor atlas, Figure [7](#fig:canonical_model_atlas), also shows the packaged stay/switch control model used for numerical checks. It is distinct from the two retained experimental tasks.
 
-## Variational free energy
-
-Given an explicit joint distribution and a normalized candidate posterior $q$, variational free energy is:
-
-::: {#eq:vfe}
-$$
-F(q,o)=\sum_s q(s)\left[\log q(s)-\log p(o,s)\right]
-=-\log p(o)+D_{\mathrm{KL}}\left[q(s)\Vert p(s\mid o)\right].
-\tag{2}
-$$
-:::
-
-Equation [(2)](#eq:vfe) bounds negative log evidence and reaches the bound at the exact posterior. Candidate beliefs assigning positive mass outside posterior support have infinite free energy. The exact implementation is `calculate_variational_free_energy`; the older model-free `FreeEnergyPrinciple.calculate_free_energy` path remains an explicitly labeled schematic score for compatibility. Its trajectories and state-boundary diagrams do not establish a variational bound, conditional independence, or the physical claims of the FEP. Supplying a generative model to that class selects the exact calculation.
-
-## Expected free energy
-
-For each future policy step, propagate $q_\tau=B(a_\tau)q_{\tau-1}$ and predict $q_o=Aq_\tau$. With an exact conditional update, state information gain is $I(s;o)=H(q_o)-\sum_s q_\tau(s)H(A_{:,s})$. Our normalized planning score is:
-
-::: {#eq:efe}
-$$
-G_\tau=-I(s;o\mid\pi)-\sum_o q_o(o)\log p_C(o)
-=D_{\mathrm{KL}}[q_o\Vert p_C]+\sum_s q_\tau(s)H(A_{:,s}).
-\tag{3}
-$$
-:::
-
-The equivalence in Equation [(3)](#eq:efe) follows by expanding mutual information and KL divergence. It is exact for this finite, known-likelihood predictive model. It does not include uncertainty about parameters, posterior approximation error, or observation-contingent replanning.
-
-For compatibility, the returned `total` uses the raw-logit score $-I-\mathbb{E}[C]$. `normalized_total` adds `logsumexp(C)` per step and equals risk plus ambiguity. Normalized values are evaluated directly from stable log preferences to avoid cancellation under large constant logit shifts. Policy rankings agree mathematically for a fixed model and horizon convention. Mean aggregation is the legacy default; sum aggregation implements additive finite-horizon costs. Comparing different horizons or different preference models requires specifying this convention and normalization explicitly.
-
-Policy selection accepts current posterior beliefs, with $D$ used when beliefs are omitted. It returns an argmin and a policy distribution proportional to $\exp(-\gamma G)$, where $\gamma>0$ is precision. Increasing precision concentrates this distribution; it does not change an exact argmin. Equal scores retain a uniform distribution. All entropy and KL quantities use natural logarithms and are measured in nats.
-
-![Exact EFE sensitivity for a binary symmetric observation model, uniform state beliefs, identity dynamics and C=(1,-1). Curves are mathematical evaluations, without sampling intervals.](../figures/efe_sensitivity.png){#fig:efe_sensitivity width=95%}
+Bayesian updating revises beliefs conditional on a model. Expected free energy evaluates prospective information and preferred outcomes within that model [@dacosta2020active; @friston2015epistemic]. Criticism asks whether the model deserves continued use [@gelman2013philosophy]. Keeping these activities distinct prevents an exact posterior from becoming a certificate of adequate representation. The equations, probability conventions, numerical contracts and implementation boundaries are collected in Supplement [11.2](#sec:formal_contracts); the complete notation guide is in Supplement [12](#sec:symbols).

@@ -48,6 +48,9 @@ def write_manifest(project_root: Path, output_dir: Path, config: dict) -> Path:
         path = project_root / filename
         if path.exists():
             sources[filename] = sha256(path)
+    for path in sorted((project_root / "manuscript/assets").rglob("*")):
+        if path.is_file():
+            sources[str(path.relative_to(project_root))] = sha256(path)
     outputs = {
         str(path.relative_to(output_dir)): sha256(path)
         for path in sorted(output_dir.rglob("*"))

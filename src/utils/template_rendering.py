@@ -9,6 +9,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import yaml
 
 from .exceptions import ValidationError
 
@@ -21,6 +22,34 @@ def _git(root: Path, *arguments: str) -> str:
         text=True,
         check=True,
     ).stdout.strip()
+
+
+def _cover_details(manuscript: Path) -> tuple[Path | None, str]:
+    configuration = yaml.safe_load((manuscript / "config.yaml").read_text())
+    if configuration is None:
+        configuration = {}
+    if not isinstance(configuration, dict) or not isinstance(
+        configuration.get("paper", {}), dict
+    ):
+        raise ValidationError(
+            "Manuscript configuration and paper metadata must be mappings"
+        )
+    cover = configuration.get("paper", {}).get("cover", {})
+    if not isinstance(cover, dict):
+        raise ValidationError("Cover configuration must be a mapping")
+    name, description = cover.get("image"), cover.get("alt", "")
+    if name is None or name == "":
+        return None, ""
+    if (
+        not isinstance(name, str)
+        or not isinstance(description, str)
+        or not description.strip()
+    ):
+        raise ValidationError("Configured cover requires an image path and description")
+    path = (manuscript / name).resolve()
+    if not path.is_relative_to(manuscript.resolve()) or not path.is_file():
+        raise ValidationError("Configured cover must be an existing manuscript asset")
+    return path, description
 
 
 def check_template_checkout(project_root: Path, template_root: Path) -> dict:
@@ -101,6 +130,9 @@ def prepare_web_sources(
         shutil.copy2(
             Path(project_root) / "manuscript" / filename, destination / filename
         )
+    assets = Path(project_root) / "manuscript/assets"
+    if assets.is_dir():
+        shutil.copytree(assets, destination / "assets", dirs_exist_ok=True)
     projected = []
     for source in sources:
         text = source.read_text()
@@ -153,6 +185,13 @@ def prepare_web_sources(
             r"```\{=latex\}\s*\n.*?\n```", project_block, text, flags=re.DOTALL
         )
         text = text.replace("../results/figures/", "../figures/")
+        if source.name.startswith("01_"):
+            cover, description = _cover_details(project_root / "manuscript")
+            style = assets / "publication.css"
+            if style.is_file():
+                text = "<style>\n" + style.read_text() + "\n</style>\n\n" + text
+        if source.name.startswith("01_") and cover is not None:
+            text = f"![{description}](../figures/{cover.name})\n\n" + text
         target = destination / source.name
         target.write_text(text)
         projected.append(target)
@@ -196,6 +235,9 @@ def template_worker(project_root: Path, template_root: Path, output_dir: Path) -
     shutil.copytree(
         project_root / "results/figures", runtime / "figures", dirs_exist_ok=True
     )
+    cover, _ = _cover_details(manuscript)
+    if cover is not None:
+        shutil.copy2(cover, runtime / "figures" / cover.name)
     config = RenderingConfig(
         manuscript_dir=str(manuscript),
         figures_dir=str(runtime / "figures"),
@@ -209,13 +251,15 @@ def template_worker(project_root: Path, template_root: Path, output_dir: Path) -
         config=config, manuscript_dir=manuscript, figures_dir=runtime / "figures"
     )
     pdf = manager.render_combined_pdf(
-        sources, manuscript, project_name=project_root.name
+        sources, manuscript, project_name="active_inference_meta_pragmatic"
     )
     web_sources, projection = prepare_web_sources(
         project_root, sources, runtime / "pdf/_combined_manuscript.aux"
     )
     web = manager.render_combined_web(
-        web_sources, runtime / "manuscript", project_name=project_root.name
+        web_sources,
+        runtime / "manuscript",
+        project_name="active_inference_meta_pragmatic",
     )
     if not pdf.is_file() or not web.is_file():
         raise ValidationError("Both template PDF and HTML editions are required")
@@ -229,6 +273,8 @@ def template_worker(project_root: Path, template_root: Path, output_dir: Path) -
     shutil.copytree(
         project_root / "results/figures", output_dir / "figures", dirs_exist_ok=True
     )
+    if cover is not None:
+        shutil.copy2(cover, output_dir / "figures" / cover.name)
     shutil.copy2(
         runtime / "reports/manuscript_composition.json",
         output_dir / "manuscript_composition.json",
@@ -266,6 +312,7 @@ def template_worker(project_root: Path, template_root: Path, output_dir: Path) -
                 manuscript / "preamble.md",
                 manuscript / "references.bib",
                 project_root / "template.lock.json",
+                *sorted((manuscript / "assets").glob("*")),
             ]
         },
         "output_sha256": {

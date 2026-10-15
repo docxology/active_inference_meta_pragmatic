@@ -7,9 +7,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: ['3.10', '3.12', '3.13']
+        python: ['3.11', '3.12', '3.13']
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: ActiveInferenceInstitute/Generalized_Notation_Notation
+          ref: 46459949944e3217f8a6a804d4ff8c52829ef275
+          path: .gnn
+          persist-credentials: false
       - uses: astral-sh/setup-uv@v6
         with:
           python-version: ${{ matrix.python }}
@@ -17,10 +23,12 @@ jobs:
       - run: uv run --python ${{ matrix.python }} pytest --cov=src --cov-report=term-missing
         env:
           MPLBACKEND: Agg
+          GNN_ROOT: ${{ github.workspace }}/.gnn
       - run: uv run --python ${{ matrix.python }} python scripts/07_analysis_pipeline.py
         env:
           MPLBACKEND: Agg
           LOG_LEVEL: '2'
+          GNN_ROOT: ${{ github.workspace }}/.gnn
       - run: uv run --python ${{ matrix.python }} python scripts/06_insert_all_figures.py
       - run: uv run --python ${{ matrix.python }} python scripts/09_validate_documentation.py
       - run: uv build
@@ -29,6 +37,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: ActiveInferenceInstitute/Generalized_Notation_Notation
+          ref: 46459949944e3217f8a6a804d4ff8c52829ef275
+          path: .gnn
+          persist-credentials: false
       - uses: actions/checkout@v4
         with:
           repository: docxology/template
@@ -42,4 +56,5 @@ jobs:
       - run: uv run --python 3.12 python scripts/07_analysis_pipeline.py
         env:
           MPLBACKEND: Agg
+          GNN_ROOT: ${{ github.workspace }}/.gnn
       - run: uv run --python 3.12 python scripts/08_render_with_template.py --template-root .template

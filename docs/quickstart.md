@@ -1,6 +1,6 @@
 # Quickstart
 
-Run from this repository. Numerical reproduction is standalone. Publication rendering uses the separately configured, pinned docxology/template checkout.
+Run from this repository with Python 3.11 or newer. Numerical reproduction imports the pinned GNN reference parser. Set `GNN_ROOT` to the actual `Generalized_Notation_Notation` checkout at the revision in `src/core/gnn_models/upstream.lock.json`; canonical GitVault placement is detected automatically. Publication rendering uses the separately configured, pinned docxology/template checkout.
 
 ```bash
 uv sync --locked --extra dev --extra research

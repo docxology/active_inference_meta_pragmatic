@@ -186,17 +186,19 @@ def render_manuscript(directory: Path, destination: Path) -> Path:
         else ""
     )
     names = re.findall(r'^\s*- name:\s*"([^"]+)"', configuration, re.M)
+    titles = re.findall(r'^\s*title:\s*"([^"]+)"', configuration, re.M)
+    title = html.escape(titles[0] if titles else "Active Inference as a Meta-Pragmatic and Meta-Epistemic Method")
     author_line = " · ".join(html.escape(name) for name in names)
     body = (
-        "<header><h1>Active Inference as a Meta-Pragmatic and Meta-Epistemic Method</h1><p>"
+        "<header><h1>" + title + "</h1><p>"
         + author_line
         + "</p><p>Working manuscript · Synthetic computational demonstration</p></header>"
         + body
     )
-    css = "body{max-width:900px;margin:40px auto;padding:0 24px;font:17px/1.6 Georgia,serif;color:#222}h1,h2,h3{line-height:1.25}a{color:#176a9a}img{max-width:100%}figure{margin:28px 0}figcaption{font-size:14px}table{border-collapse:collapse;width:100%;font-size:15px}th,td{padding:8px;border-bottom:1px solid #ddd;text-align:left}.equation{overflow-x:auto;margin:20px 0}pre{white-space:pre-wrap;background:#f4f4f4;padding:12px}@media print{body{font-size:11pt;margin:0}h1,h2,h3{break-after:avoid}figure,table{break-inside:avoid}}"
+    css = "body{max-width:900px;margin:40px auto;padding:0 24px;font:17px/1.6 Georgia,serif;color:#222}h1,h2,h3{line-height:1.25}a:any-link{color:#cc0000}img{max-width:100%}figure{margin:28px 0}figcaption{font-size:14px}table{border-collapse:collapse;width:100%;font-size:15px}th,td{padding:8px;border-bottom:1px solid #ddd;text-align:left}.equation{overflow-x:auto;margin:20px 0}pre{white-space:pre-wrap;background:#f4f4f4;padding:12px}@media print{body{font-size:11pt;margin:0}h1,h2,h3{break-after:avoid}figure,table{break-inside:avoid}}"
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(
-        '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Active Inference as a Meta-Pragmatic and Meta-Epistemic Method</title><style>'
+        '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + title + '</title><style>'
         + css
         + "</style><body>"
         + body

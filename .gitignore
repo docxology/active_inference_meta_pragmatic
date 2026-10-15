@@ -1,4 +1,6 @@
 .venv/
+.venv-*/
+.gnn/
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -11,3 +13,6 @@ dist/
 output/
 .DS_Store
 .template/
+.env
+.env.*
+!.env.example

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="620.39952pt" height="512.39952pt" viewBox="0 0 620.39952 512.39952" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-10-15T09:06:55.800019</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 512.39952
+L 620.39952 512.39952
+L 620.39952 0
+L 0 0
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 95.251212 252.765281
+L 328.327951 252.765281
+Q 334.54333 252.765281 334.54333 247.613561
+L 334.54333 88.768887
+Q 334.54333 83.617168 328.327951 83.617168
+L 95.251212 83.617168
+Q 89.035833 83.617168 89.035833 88.768887
+L 89.035833 247.613561
+Q 89.035833 252.765281 95.251212 252.765281
+z
+" clip-path="url(#p5a729ca891)" style="fill: #e5edf4; stroke: #8c9ba1; stroke-width: 0.9; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 359.404849 252.765281
+L 592.481588 252.765281
+Q 598.696967 252.765281 598.696967 247.613561
+L 598.696967 88.768887
+Q 598.696967 83.617168 592.481588 83.617168
+L 359.404849 83.617168
+Q 353.18947 83.617168 353.18947 88.768887
+L 353.18947 247.613561
+Q 353.18947 252.765281 359.404849 252.765281
+z
+" clip-path="url(#p5a729ca891)" style="fill: #dff0ee; stroke: #8c9ba1; stroke-width: 0.9; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 95.251212 450.247849
+L 328.327951 450.247849
+Q 334.54333 450.247849 334.54333 445.09613
+L 334.54333 286.251455
+Q 334.54333 281.099736 328.327951 281.099736
+L 95.251212 281.099736
+Q 89.035833 281.099736 89.035833 286.251455
+L 89.035833 445.09613
+Q 89.035833 450.247849 95.251212 450.247849
+z
+" clip-path="url(#p5a729ca891)" style="fill: #f5eadc; stroke: #8c9ba1; stroke-width: 0.9; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 359.404849 450.247849
+L 592.481588 450.247849
+Q 598.696967 450.247849 598.696967 445.09613
+L 598.696967 286.251455
+Q 598.696967 281.099736 592.481588 281.099736
+L 359.404849 281.099736
+Q 353.18947 281.099736 353.18947 286.251455
+L 353.18947 445.09613
+Q 353.18947 450.247849 359.404849 450.247849
+z
+" clip-path="url(#p5a729ca891)" style="fill: #ece7f3; stroke: #8c9ba1; stroke-width: 0.9; stroke-linejoin: miter"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #245d87" x="211.789582" y="112.380933" transform="rotate(-0 211.789582 112.380933)">Q1  Infer and act</text>
+   </g>
+   <g id="text_2">
+    <text style="font-style: italic; font-size: 12px; font-family: 'DejaVu Sans'" transform="translate(137.347394 138.762095)">What should be believed</text>
+    <text style="font-style: italic; font-size: 12px; font-family: 'DejaVu Sans'" transform="translate(180.434894 153.165377)">and done?</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'" transform="translate(109.979894 181.693088)">Update beliefs from observations;</text>
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'" transform="translate(114.617707 196.09637)">evaluate actions under a model.</text>
+   </g>
+   <g id="text_4">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #535d63" x="211.789582" y="236.880813" transform="rotate(-0 211.789582 236.880813)">Failure: misspecified likelihood</text>
+   </g>
+   <g id="text_5">
+    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #236e66" x="475.943218" y="112.380933" transform="rotate(-0 475.943218 112.380933)">Q2  Contextualize evidence</text>
+   </g>
+   <g id="text_6">
+    <text style="font-style: italic; font-size: 12px; font-family: 'DejaVu Sans'" transform="translate(414.885718 138.762095)">Which source model</text>
+    <text style="font-style: italic; font-size: 12px; font-family: 'DejaVu Sans'" transform="translate(435.209781 153.165377)">is warranted?</text>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'" transform="translate(384.420718 181.693088)">Condition on source reliability;</text>
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'" transform="translate(375.138531 196.09637)">examine the context of evidence.</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #535d63" x="475.943218" y="236.880813" transform="rotate(-0 475.943218 236.880813)">Failure: unreliable metadata</text>
+   </g>
+   <g id="text_9">
+    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #916133" x="211.789582" y="309.863501" transform="rotate(-0 211.789582 309.863501)">Q3  Monitor inquiry</text>
+   </g>
+   <g id="text_10">
+    <text style="font-style: italic; font-size: 12px; font-family: 'DejaVu Sans'" transform="translate(160.201769 336.244664)">Is more evidence</text>
+    <text style="font-style: italic; font-size: 12px; font-family: 'DejaVu Sans'" transform="translate(167.998957 350.647945)">worth its cost?</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'" transform="translate(125.548019 379.175657)">Assess uncertainty and cost;</text>
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'" transform="translate(124.863644 393.578938)">regulate further observation.</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #535d63" x="211.789582" y="434.363381" transform="rotate(-0 211.789582 434.363381)">Failure: confident early stopping</text>
+   </g>
+   <g id="text_13">
+    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #6b5289" x="475.943218" y="309.863501" transform="rotate(-0 475.943218 309.863501)">Q4  Evaluate and revise</text>
+   </g>
+   <g id="text_14">
+    <text style="font-style: italic; font-size: 12px; font-family: 'DejaVu Sans'" transform="translate(406.110718 336.244664)">What warrants revising</text>
+    <text style="font-style: italic; font-size: 12px; font-family: 'DejaVu Sans'" transform="translate(412.692906 350.647945)">these commitments?</text>
+   </g>
+   <g id="text_15">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'" transform="translate(383.424156 379.175657)">Challenge model assumptions;</text>
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'" transform="translate(377.737281 393.578938)">justify revisions before adoption.</text>
+   </g>
+   <g id="text_16">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #535d63" x="475.943218" y="434.363381" transform="rotate(-0 475.943218 434.363381)">Failure: unjustified model change</text>
+   </g>
+   <g id="text_17">
+    <text style="font-weight: 700; font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: middle" x="211.789582" y="35.105146" transform="rotate(-0 211.789582 35.105146)">TASK EVIDENCE</text>
+   </g>
+   <g id="text_18">
+    <text style="font-weight: 700; font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: middle" x="475.943218" y="35.105146" transform="rotate(-0 475.943218 35.105146)">EVIDENCE ABOUT ITS SOURCE</text>
+   </g>
+   <g id="text_19">
+    <text style="font-weight: 700; font-size: 12px; font-family: 'DejaVu Sans'" transform="translate(36.214603 248.022162) rotate(-90)">INFERENCE IN A MODEL</text>
+   </g>
+   <g id="text_20">
+    <text style="font-weight: 700; font-size: 12px; font-family: 'DejaVu Sans'" transform="translate(36.214603 450.10973) rotate(-90)">REGULATION OF INQUIRY</text>
+   </g>
+   <g id="text_21">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'" transform="translate(164.535775 471.477292)">Roles may overlap. This map does not establish a hierarchy</text>
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'" transform="translate(167.9164 485.880573)">of cognitive faculties or guarantee improved performance.</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p5a729ca891">
+   <rect x="7.2" y="7.2" width="605.99952" height="497.99952"/>
+  </clipPath>
+ </defs>
+</svg>

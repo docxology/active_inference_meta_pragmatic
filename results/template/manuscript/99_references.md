@@ -1,3 +1,3 @@
 # References {#sec:references}
 
-The renderer resolves citations against `references.bib` and includes linked bibliographic records. See `docs/scholarship_audit.md` for the scope and corrections of the source review.
+Publication records and preprints are identified separately below. The scholarship register records source identities, reading scope, and which interpretations each added reference supports.

@@ -14,9 +14,9 @@ from scipy.special import expit
 from scipy import stats
 
 from core.active_inference import ActiveInferenceFramework
-from core.generative_models import GenerativeModel
 from core.free_energy_principle import calculate_variational_free_energy
 from core.probability import bayesian_update
+from core.gnn import ImportedGNNModel, sensor_model, specified_model, verify_upstream
 from utils.exceptions import ValidationError
 from .statistical_analysis import StatisticalAnalyzer
 
@@ -101,6 +101,38 @@ def _metrics(probabilities: np.ndarray, states: np.ndarray, cost: np.ndarray) ->
     }
 
 
+def gnn_sensor_posterior(
+    observations: np.ndarray, models: list[ImportedGNNModel]
+) -> np.ndarray:
+    """Execute imported static GNN likelihoods, preserving exact Bayesian support."""
+    observations = np.asarray(observations)
+    if not models or observations.ndim != 2 or observations.shape[1] != len(models):
+        raise ValidationError("Observation columns must match the imported GNN sensors")
+    if np.any((observations != 0) & (observations != 1)):
+        raise ValidationError("Observations must be binary categories")
+    posterior = np.tile(models[0].model.D, (len(observations), 1))
+    for index, imported in enumerate(models):
+        model = imported.model
+        if (
+            model.A.shape != (2, 2)
+            or model.n_actions != 1
+            or not np.array_equal(model.B[:, :, 0], np.eye(2))
+        ):
+            raise ValidationError(
+                "Sensor profile requires binary outcomes and static identity dynamics"
+            )
+        if not np.array_equal(model.D, models[0].model.D):
+            raise ValidationError("All sensors must declare the same initial prior")
+        joint = posterior * model.A[observations[:, index].astype(int)]
+        evidence = joint.sum(axis=1, keepdims=True)
+        if np.any(evidence == 0):
+            raise ValidationError(
+                "Impossible observations under the imported GNN model"
+            )
+        posterior = joint / evidence
+    return posterior[:, 1]
+
+
 def paired_sign_flip_test(
     differences: np.ndarray, seed: int = 2718, n_resamples: int = 10000
 ) -> float:
@@ -131,48 +163,73 @@ def run_quadrant_experiment(config: ExperimentConfig = ExperimentConfig()) -> di
     config.validate()
     rows, trials, learned = [], [], []
     reliability = np.asarray(config.sensor_reliabilities)
+    verify_upstream()
+    oracle_models = [sensor_model(float(r)) for r in reliability]
+    fixed_models = [sensor_model(config.assumed_reliability)] * 3
+    misleading_models = [sensor_model(r) for r in (0.95, 0.85, 0.55)]
+    specifications = {
+        model.specification_sha256: model.specification
+        for model in [*oracle_models, *fixed_models, *misleading_models]
+    }
     strategies = (
         "Q1_fixed",
         "Q2_metadata",
         "Q3_adaptive",
         "Q4_learned",
         "Q2_misleading",
+        "Fixed_four",
+        "Fixed_five",
     )
     for seed in range(config.first_seed, config.first_seed + config.n_seeds):
         train_stream, test_stream = np.random.SeedSequence(seed).spawn(2)
-        train_rng, test_rng = np.random.default_rng(
-            train_stream
-        ), np.random.default_rng(test_stream)
+        train_rng, test_rng = (
+            np.random.default_rng(train_stream),
+            np.random.default_rng(test_stream),
+        )
         # Training labels are available only here; no held-out states enter fitting.
         correct_training = train_rng.random((config.n_training, 3)) < reliability[:3]
         fitted = (correct_training.sum(axis=0) + 1) / (config.n_training + 2)
         learned.append({"seed": seed, "reliabilities": fitted.tolist()})
+        fitted_models = [sensor_model(float(r)) for r in fitted]
+        specifications.update(
+            {m.specification_sha256: m.specification for m in fitted_models}
+        )
         states = test_rng.integers(0, 2, config.n_trials)
         correct_test = test_rng.random((config.n_trials, 5)) < reliability
         observations = np.where(correct_test, states[:, None], 1 - states[:, None])
         first_three = observations[:, :3]
-        fixed = binary_sensor_posterior(
-            first_three, np.full(3, config.assumed_reliability)
-        )
-        metadata = binary_sensor_posterior(first_three, reliability[:3])
-        fitted_posterior = binary_sensor_posterior(first_three, fitted)
+        fixed = gnn_sensor_posterior(first_three, fixed_models)
+        metadata = gnn_sensor_posterior(first_three, oracle_models[:3])
+        fitted_posterior = gnn_sensor_posterior(first_three, fitted_models)
         adaptive = metadata.copy()
         cost = np.full(config.n_trials, 3)
         for n_sensors in (4, 5):
             acquire = np.maximum(adaptive, 1 - adaptive) < config.confidence_threshold
-            expanded = binary_sensor_posterior(
-                observations[:, :n_sensors], reliability[:n_sensors]
+            expanded = gnn_sensor_posterior(
+                observations[:, :n_sensors], oracle_models[:n_sensors]
             )
             adaptive[acquire] = expanded[acquire]
             cost[acquire] += 1
-        misleading = binary_sensor_posterior(first_three, np.array([0.95, 0.85, 0.55]))
-        probabilities = (fixed, metadata, adaptive, fitted_posterior, misleading)
+        misleading = gnn_sensor_posterior(first_three, misleading_models)
+        four = gnn_sensor_posterior(observations[:, :4], oracle_models[:4])
+        five = gnn_sensor_posterior(observations, oracle_models)
+        probabilities = (
+            fixed,
+            metadata,
+            adaptive,
+            fitted_posterior,
+            misleading,
+            four,
+            five,
+        )
         costs = (
             np.full(config.n_trials, 3),
             np.full(config.n_trials, 3),
             cost,
             np.full(config.n_trials, 3),
             np.full(config.n_trials, 3),
+            np.full(config.n_trials, 4),
+            np.full(config.n_trials, 5),
         )
         for strategy, p, sensing in zip(strategies, probabilities, costs):
             rows.append(
@@ -235,6 +292,10 @@ def run_quadrant_experiment(config: ExperimentConfig = ExperimentConfig()) -> di
         "learned_reliabilities": learned,
         "summary": summary,
         "comparisons": comparisons,
+        "gnn": {
+            "upstream_revision": verify_upstream(),
+            "specifications": specifications,
+        },
         "limitations": [
             "Known reliability is privileged metadata, not a free benefit.",
             "Q3 consumes more observations; accuracy and sensing cost must be considered jointly.",
@@ -253,7 +314,13 @@ def mathematical_checks(n_models: int = 50, seed: int = 1729) -> dict:
     for _ in range(n_models):
         A = rng.dirichlet(np.ones(3), size=2).T
         B = np.stack([rng.dirichlet(np.ones(2), size=2).T for _ in range(2)], axis=2)
-        model = GenerativeModel(A, B, rng.normal(size=3), rng.dirichlet(np.ones(2)))
+        model = specified_model(
+            A,
+            B,
+            rng.normal(size=3),
+            rng.dirichlet(np.ones(2)),
+            "Random categorical identity check",
+        ).model
         framework = ActiveInferenceFramework(model)
         beliefs = rng.dirichlet(np.ones(2))
         for policy in product(range(2), repeat=2):
@@ -280,9 +347,9 @@ def reliability_sensitivity() -> list[dict]:
     """Exact policy terms over a prespecified observation-reliability grid."""
     rows = []
     for r in np.linspace(0.5, 1.0, 26):
-        model = GenerativeModel(
+        model = specified_model(
             [[r, 1 - r], [1 - r, r]], np.eye(2), [1.0, -1.0], [0.5, 0.5]
-        )
+        ).model
         _, parts = ActiveInferenceFramework(model).calculate_expected_free_energy(
             [0.5, 0.5], [0]
         )

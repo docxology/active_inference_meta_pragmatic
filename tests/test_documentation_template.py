@@ -9,6 +9,7 @@ from utils.documentation import validate_documentation
 from utils.exceptions import ValidationError
 from utils.template_rendering import check_template_checkout, prepare_web_sources
 from utils.figure_manager import FigureManager
+from utils.template_rendering import _cover_details
 
 
 def git(root, *args):
@@ -109,6 +110,31 @@ def test_documentation_requires_hub(tmp_path):
         validate_documentation(tmp_path)
 
 
+def test_cover_uses_declared_asset_and_requires_description(tmp_path):
+    (tmp_path / "abstract.png").write_bytes(b"real asset fixture")
+    config = tmp_path / "config.yaml"
+    config.write_text(
+        "paper:\n  cover:\n    image: abstract.png\n    alt: Scientific abstract\n"
+    )
+    path, description = _cover_details(tmp_path)
+    assert path == tmp_path / "abstract.png" and description == "Scientific abstract"
+    config.write_text("paper:\n  cover:\n    image: abstract.png\n")
+    with pytest.raises(ValidationError, match="description"):
+        _cover_details(tmp_path)
+    config.write_text(
+        "paper:\n  cover:\n    image: missing.png\n    alt: Scientific abstract\n"
+    )
+    with pytest.raises(ValidationError, match="existing"):
+        _cover_details(tmp_path)
+    config.write_text(
+        "paper:\n  cover:\n    image: ../outside.png\n    alt: Scientific abstract\n"
+    )
+    with pytest.raises(ValidationError, match="existing"):
+        _cover_details(tmp_path)
+    config.write_text("paper:\n  title: No cover\n")
+    assert _cover_details(tmp_path) == (None, "")
+
+
 def web_projection_fixture(root):
     manuscript = root / "manuscript"
     manuscript.mkdir()
@@ -143,6 +169,9 @@ F=G+H
 
 def test_web_projection_preserves_authorship_and_actual_numbers(tmp_path):
     source, aux = web_projection_fixture(tmp_path)
+    (tmp_path / "manuscript/config.yaml").write_text(
+        "paper:\n  title: Projection fixture\n"
+    )
     original = source.read_bytes()
     files, record = prepare_web_sources(tmp_path, [source], aux)
     text = files[0].read_text()
@@ -154,6 +183,37 @@ def test_web_projection_preserves_authorship_and_actual_numbers(tmp_path):
     assert "![Retained evidence.](../figures/test.png){#fig:test width=95%}" in text
     assert record["reference_numbers"]["eq:test"] == "2"
     assert record["pdf_aux_sha256"] and record["hydrated_source_sha256"]
+
+
+@pytest.mark.parametrize(
+    "configuration",
+    [
+        "scalar",
+        "0",
+        "paper: scalar",
+        "paper:\n  cover: scalar",
+        "paper:\n  cover:\n    image: 0\n    alt: Description",
+    ],
+)
+def test_malformed_cover_configuration_rejected(tmp_path, configuration):
+    (tmp_path / "config.yaml").write_text(configuration)
+    with pytest.raises(ValidationError):
+        _cover_details(tmp_path)
+
+
+def test_projection_carries_selected_cover_and_red_link_style(tmp_path):
+    source, aux = web_projection_fixture(tmp_path)
+    assets = tmp_path / "manuscript/assets"
+    assets.mkdir()
+    (assets / "graph.png").write_bytes(b"graphical abstract fixture")
+    (assets / "publication.css").write_text("a:any-link{color:#cc0000!important}")
+    (tmp_path / "manuscript/config.yaml").write_text(
+        "paper:\n  cover:\n    image: assets/graph.png\n    alt: Scientific graphical abstract\n"
+    )
+    files, _ = prepare_web_sources(tmp_path, [source], aux)
+    assert "../figures/graph.png" in files[0].read_text()
+    assert "Scientific graphical abstract" in files[0].read_text()
+    assert "color:#cc0000!important" in files[0].read_text()
 
 
 def test_web_projection_missing_pdf_number_rejected(tmp_path):

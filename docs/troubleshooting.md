@@ -2,7 +2,9 @@
 
 **Installed imports fail:** run `uv sync --locked --extra dev --extra research`. Installed package imports are `core`, `framework`, `analysis`, `visualization` and `utils`; `src` reexports support checkout use. Confirm the active interpreter belongs to this project.
 
-**Python 3.10 on recent Apple Silicon macOS:** SciPy 1.15.3's wheel can fail to import with a `__thread_bss` zero-fill-section error, as reported in the [upstream SciPy issue](https://github.com/scipy/scipy/issues/25635). The dependency markers select the verified SciPy 1.14.1 fallback specifically for Python 3.10 on macOS arm64. Other platforms/interpreters retain the normal SciPy range. Python 3.12 remains the recorded research environment.
+**Python 3.10:** the GNN revision requires Python 3.11 or newer because the pinned upstream parser declares that minimum. Earlier Python 3.10/SciPy fallback results remain historical evidence for version 1.1. Python 3.12 remains the recorded research environment.
+
+**GNN checkout unavailable or mismatched:** set `GNN_ROOT` to the actual checkout and compare its revision with `src/core/gnn_models/upstream.lock.json`. Preserve upstream work. Use a source-preserving worktree at the pin if the canonical upstream owner has advanced. Do not bypass the pin or introduce a substitute parser.
 
 **Invalid model or evidence:** check dimensions and finite nonnegative probabilities. A/B columns must sum to one, C is a finite logit vector, D is normalized, and action indices are valid. Impossible evidence is an input/model conflict; do not hide it by clipping probabilities.
 

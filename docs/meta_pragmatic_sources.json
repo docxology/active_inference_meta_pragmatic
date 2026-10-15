@@ -1,0 +1,33 @@
+{
+  "checked_date": "2026-10-14",
+  "scope": "Version-specific requested Zenodo records; official metadata and selected PDF passages, not peer-review verification",
+  "records": [
+    {
+      "record": 18984939,
+      "url": "https://zenodo.org/records/18984939",
+      "title": "Before Pragmatism Had a Name: Blake's \"America A Prophecy\" Anticipates American Anticipatory Epistemology",
+      "doi": "10.5281/zenodo.18984939",
+      "pdf_sha256": "05a1a6613bdcba4d0ff0a948afe90ff41a10f589a7835f92e57f17cf0367b426",
+      "pdf_md5": "55b82ff4f15ac0bf99ba265ddc974804",
+      "published_md5_verified": true
+    },
+    {
+      "record": 17243488,
+      "url": "https://zenodo.org/records/17243488",
+      "title": "Synthesis of Agent and Niche",
+      "doi": "10.5281/zenodo.17243488",
+      "pdf_sha256": "89d8d1251696fedeb6db0f31bdeb30cdfcc0f8406d798f89475005794a8566e3",
+      "pdf_md5": "fce7043ef771ab88c0f7dd52d5802778",
+      "published_md5_verified": true
+    },
+    {
+      "record": 21316511,
+      "url": "https://zenodo.org/records/21316511",
+      "title": "Prior Cognitive Art",
+      "doi": "10.5281/zenodo.21316511",
+      "pdf_sha256": "62aa1d8d4af75f4b5bdc894516720bdf61ae68a4be27f44aefc09c2dd2fbba67",
+      "pdf_md5": "e792cca2876e25c849c62d8c4d0638ec",
+      "published_md5_verified": true
+    }
+  ]
+}

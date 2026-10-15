@@ -3,22 +3,31 @@
 # Edit this file to customize your paper's metadata
 
 paper:
-  title: "Active Inference as a Meta-Pragmatic and Meta-Epistemic Method"
-  subtitle: "A Framework for Understanding Cognitive Science and Cognitive Security Implications"
-  version: "1.1"
+  title: "Active Inference as a Meta-Pragmatic Framework"
+  subtitle: "Executable Models, Evidence, and the Discipline of Revision"
+  version: "1.2"
+  cover:
+    image: "assets/scientific_graphical_abstract.png"
+    alt: "Four defined inquiry roles: Q1 infer and act, Q2 contextualize evidence, Q3 monitor inquiry, and Q4 evaluate and revise. Each card explains its operation; Q means quadrant and the roles overlap rather than forming stages. GNN means Generalized Notation Notation. Lower panels show sensor accuracy with marginal seed intervals and exact action probabilities from expected free energy. The two demonstrations are synthetic; model revision remains subject to researcher evaluation."
   date: "" # Auto-generated if empty (uses current date)
 
 # Author information
 authors:
-  - name: "Daniel Friedman"
-    orcid: "" # Not supplied
+  - name: "Daniel Ari Friedman"
+    orcid: "0000-0001-6232-9096"
     email: "" # Not supplied
-    affiliation: "Independent Researcher"
+    affiliations:
+      - "Active Inference Institute"
+      - "FractiAI"
+    orcid_status: "Verified against the public ORCID registry"
     corresponding: true
 
 # Publication information (optional)
 publication:
-  doi: "" # To be assigned upon publication
+  doi: ""
+  reserved_doi: "10.5281/zenodo.23397453"
+  doi_status: "10.5281/zenodo.23397453 (reserved; unpublished draft)"
+  zenodo_draft_url: "https://zenodo.org/uploads/23397453"
   journal: "" # For future publication
   volume: "" # For future publication
   pages: "" # For future publication
@@ -63,6 +72,7 @@ render:
 # Let sections flow rather than leaving isolated continuation pages.
 rendering:
   section_breaks: false
+  cover_height_fraction: 0.58
 
 # Testing Configuration
 testing:

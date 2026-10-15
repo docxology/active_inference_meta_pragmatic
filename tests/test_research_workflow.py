@@ -79,7 +79,7 @@ def test_experiment_reproducibility_units_and_raw_scores():
     a = run_quadrant_experiment(config)
     b = run_quadrant_experiment(config)
     assert a == b
-    assert len(a["replicates"]) == 30 and len(a["trials"]) == 480
+    assert len(a["replicates"]) == 42 and len(a["trials"]) == 480
     assert len(a["comparisons"]) == 3
     rows = a["trials"][:80]
     for strategy in a["summary"]:
@@ -148,11 +148,19 @@ def test_full_pipeline_and_hash_integrity(tmp_path):
         n_seeds=6, n_trials=80, n_training=80, bootstrap_resamples=100
     )
     result = run_pipeline(tmp_path, tmp_path / "results", config)
+    assert result["model_robustness"]["metric_rows"] == 63
+    assert len(list((tmp_path / "results/robustness_gnn").glob("*.md"))) == 21
+    assert (tmp_path / "results/figures/model_robustness.svg").stat().st_size > 1000
+    registry = json.loads((tmp_path / "results/figures/figure_registry.json").read_text())
+    assert registry["fig:quadrant_orientation"]["alt_text"]
+    for name in ("executed_models", "canonical_model_atlas"):
+        assert registry["fig:" + name]["parameters"]
+        assert (tmp_path / "results/figures" / (name + ".pdf")).read_bytes().startswith(b"%PDF")
     assert result["stages_completed"] == [1, 2, 3, 4, 5, 6]
     assert result["manuscript_validation"]["valid"]
     data = json.loads((tmp_path / "results/summary.json").read_text())
     assert data["experiment"]["config"]["n_seeds"] == 6
-    assert len(list(csv.DictReader((tmp_path / "results/replicates.csv").open()))) == 30
+    assert len(list(csv.DictReader((tmp_path / "results/replicates.csv").open()))) == 42
     manifest = json.loads((tmp_path / "results/manifest.json").read_text())
     for relative, digest in manifest["output_sha256"].items():
         assert sha256(tmp_path / "results" / relative) == digest

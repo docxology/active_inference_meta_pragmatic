@@ -1,0 +1,7 @@
+{
+  "repository": "https://github.com/ActiveInferenceInstitute/Generalized_Notation_Notation",
+  "revision": "46459949944e3217f8a6a804d4ff8c52829ef275",
+  "parser": "gnn.parsers.markdown_parser.MarkdownGNNParser",
+  "profile": "categorical-single-factor-v1",
+  "syntax": "docs/gnn/reference/gnn_syntax.md"
+}

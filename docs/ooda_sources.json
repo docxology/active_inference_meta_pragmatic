@@ -1,0 +1,21 @@
+{
+  "record": 5759807,
+  "url": "https://zenodo.org/records/5759807",
+  "doi": "10.5281/zenodo.5759807",
+  "title": "Active Inference in Modeling Conflict",
+  "authors": ["Scott David", "Richard J. Cordes", "Daniel A. Friedman"],
+  "date": "2021-12-02",
+  "version": "v1.2",
+  "type": "preprint",
+  "license": "CC-BY-4.0",
+  "metadata_url": "https://zenodo.org/api/records/5759807",
+  "file_url": "https://zenodo.org/api/records/5759807/files/AIC%20v1_2.pdf/content",
+  "file_name": "AIC v1_2.pdf",
+  "file_bytes": 1025494,
+  "published_md5": "bb07e5a4aa1e3d20f26885fb169bf5c6",
+  "downloaded_md5_matches": true,
+  "pdf_sha256": "bdcfd42872e921cc3ca6c00184821c080d6565704480eb7f2811ebe79bdb88f8",
+  "consulted": ["title page and abstract", "printed pages 17-18: OODA overview", "printed pages 37-38 and Figure 9: active-inference alignment", "selected discussion on printed page 53", "references for Boyd's presentation collection"],
+  "scope": "Conceptual antecedent; the present crosswalk is an interpretation of the local executable tasks, not empirical validation of conflict management or an identity between OODA stages and inquiry roles.",
+  "access_limit": "The primary Boyd collection linked by this preprint returned HTTP 403 and was not read or added as a directly consulted source."
+}

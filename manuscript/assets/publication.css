@@ -1,0 +1,9 @@
+a:any-link,
+a:any-link:hover,
+a:any-link:focus {
+  color: #cc0000 !important;
+}
+
+a:any-link .figure-full-size-label {
+  color: inherit !important;
+}

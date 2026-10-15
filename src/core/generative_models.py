@@ -203,30 +203,9 @@ def create_simple_generative_model() -> GenerativeModel:
     Returns:
         Simple GenerativeModel instance with basic matrices
     """
-    # Simple 2-state, 2-observation, 2-action model
-    n_states = 2
-    n_observations = 2
-    n_actions = 2
+    from .gnn import MODEL_DIRECTORY, load_gnn_model
 
-    # A: Observation likelihoods P(o|s)
-    # State 0 likely generates observation 0, state 1 generates observation 1
-    A = np.array(
-        [[0.8, 0.2], [0.2, 0.8]]  # P(o=0|s=0), P(o=0|s=1)  # P(o=1|s=0), P(o=1|s=1)
-    )
-
-    # B: Transition probabilities P(s'|s,a)
-    # Action 0: stay in current state, Action 1: switch states
-    B = np.zeros((n_states, n_states, n_actions))
-    B[:, :, 0] = np.eye(n_states)  # Stay action
-    B[:, :, 1] = np.fliplr(np.eye(n_states))  # Switch action
-
-    # C: Preferences - prefer observation 0, avoid observation 1
-    C = np.array([1.0, -1.0])  # log preferences
-
-    # D: Prior beliefs - equal probability
-    D = np.array([0.5, 0.5])
-
-    return GenerativeModel(A, B, C, D)
+    return load_gnn_model(MODEL_DIRECTORY / "control_agent.md").model
 
 
 def demonstrate_generative_model_concepts() -> Dict[str, Union[str, Dict]]:
