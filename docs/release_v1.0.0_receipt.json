@@ -1,0 +1,130 @@
+{
+  "checked_at_utc": "2026-10-15T16:43:05.812701+00:00",
+  "version": "1.0.0",
+  "tag": "v1.0.0",
+  "release_commit": "eadfa2f030ea068df7ebdddc341829f20b85c713",
+  "repository_url": "https://github.com/docxology/active_inference_meta_pragmatic",
+  "repository_public": true,
+  "github_release_url": "https://github.com/docxology/active_inference_meta_pragmatic/releases/tag/v1.0.0",
+  "annotated_tag_object": "4947c3ab2ba87d9b5c89c3197d96c4c9f15f2a09",
+  "zenodo_record_url": "https://zenodo.org/records/23397453",
+  "zenodo_record_id": 23397453,
+  "doi": "10.5281/zenodo.23397453",
+  "zenodo_access_right": "open",
+  "zenodo_version": "1.0.0",
+  "doi_resolver": {
+    "http_status": 200,
+    "final_url": "https://zenodo.org/records/23397453"
+  },
+  "verification": "Unauthenticated HTTPS GET; every GitHub and Zenodo release asset downloaded and compared to local SHA-256 and byte count",
+  "github_files": {
+    "active_inference_meta_pragmatic-1.0.0-history.bundle": {
+      "sha256": "07d051917431feebc9eae1297433f06a3ae1e3e420f4d1dd99f2e34e991af9cb",
+      "bytes": 16626445,
+      "url": "https://github.com/docxology/active_inference_meta_pragmatic/releases/download/v1.0.0/active_inference_meta_pragmatic-1.0.0-history.bundle"
+    },
+    "active_inference_meta_pragmatic-1.0.0-py3-none-any.whl": {
+      "sha256": "c0390fb4071fea6d348af3c841f03c951bb5af9c6f58f68251208027fc3b145d",
+      "bytes": 130578,
+      "url": "https://github.com/docxology/active_inference_meta_pragmatic/releases/download/v1.0.0/active_inference_meta_pragmatic-1.0.0-py3-none-any.whl"
+    },
+    "active_inference_meta_pragmatic-1.0.0-source.zip": {
+      "sha256": "007e7f52f98d2908ff181df67a416bb10ad37d6b5fe44683f394cf46e54f3b8a",
+      "bytes": 24999027,
+      "url": "https://github.com/docxology/active_inference_meta_pragmatic/releases/download/v1.0.0/active_inference_meta_pragmatic-1.0.0-source.zip"
+    },
+    "active_inference_meta_pragmatic-1.0.0-web.zip": {
+      "sha256": "4b61b23293e28745e4576b78df6fa693af35aa8584282d9d7a51a1acfdce7457",
+      "bytes": 9843341,
+      "url": "https://github.com/docxology/active_inference_meta_pragmatic/releases/download/v1.0.0/active_inference_meta_pragmatic-1.0.0-web.zip"
+    },
+    "active_inference_meta_pragmatic-1.0.0.pdf": {
+      "sha256": "36495911a7b249d52145d8feaec5d82b846b5d3016c66a43a951c16a5ab2a9a7",
+      "bytes": 5015269,
+      "url": "https://github.com/docxology/active_inference_meta_pragmatic/releases/download/v1.0.0/active_inference_meta_pragmatic-1.0.0.pdf"
+    },
+    "active_inference_meta_pragmatic-1.0.0.tar.gz": {
+      "sha256": "118860b94777e951e2538589804a498d8a0af511ba5fa52592c5b0e74b567d6e",
+      "bytes": 2607590,
+      "url": "https://github.com/docxology/active_inference_meta_pragmatic/releases/download/v1.0.0/active_inference_meta_pragmatic-1.0.0.tar.gz"
+    },
+    "release_manifest.json": {
+      "sha256": "b258ebbf32f191ed6a66607812054377e20f3dfd2d946bc2266f661ceac6dc3b",
+      "bytes": 2112,
+      "url": "https://github.com/docxology/active_inference_meta_pragmatic/releases/download/v1.0.0/release_manifest.json"
+    },
+    "RELEASE_NOTES.md": {
+      "sha256": "467d1d9c374024bc46f986ba8f4725236c7b3b3ea623c5bc8354dbb57547aa01",
+      "bytes": 2582,
+      "url": "https://github.com/docxology/active_inference_meta_pragmatic/releases/download/v1.0.0/RELEASE_NOTES.md"
+    },
+    "SHA256SUMS.txt": {
+      "sha256": "b1ab60982de94192ebf1335cc4e644915d004c5876b75adc0e94a2bba666c070",
+      "bytes": 857,
+      "url": "https://github.com/docxology/active_inference_meta_pragmatic/releases/download/v1.0.0/SHA256SUMS.txt"
+    }
+  },
+  "zenodo_files": {
+    "SHA256SUMS.txt": {
+      "sha256": "b1ab60982de94192ebf1335cc4e644915d004c5876b75adc0e94a2bba666c070",
+      "bytes": 857,
+      "url": "https://zenodo.org/api/records/23397453/files/SHA256SUMS.txt/content"
+    },
+    "release_manifest.json": {
+      "sha256": "b258ebbf32f191ed6a66607812054377e20f3dfd2d946bc2266f661ceac6dc3b",
+      "bytes": 2112,
+      "url": "https://zenodo.org/api/records/23397453/files/release_manifest.json/content"
+    },
+    "active_inference_meta_pragmatic-1.0.0-web.zip": {
+      "sha256": "4b61b23293e28745e4576b78df6fa693af35aa8584282d9d7a51a1acfdce7457",
+      "bytes": 9843341,
+      "url": "https://zenodo.org/api/records/23397453/files/active_inference_meta_pragmatic-1.0.0-web.zip/content"
+    },
+    "RELEASE_NOTES.md": {
+      "sha256": "467d1d9c374024bc46f986ba8f4725236c7b3b3ea623c5bc8354dbb57547aa01",
+      "bytes": 2582,
+      "url": "https://zenodo.org/api/records/23397453/files/RELEASE_NOTES.md/content"
+    },
+    "active_inference_meta_pragmatic-1.0.0.pdf": {
+      "sha256": "36495911a7b249d52145d8feaec5d82b846b5d3016c66a43a951c16a5ab2a9a7",
+      "bytes": 5015269,
+      "url": "https://zenodo.org/api/records/23397453/files/active_inference_meta_pragmatic-1.0.0.pdf/content"
+    },
+    "active_inference_meta_pragmatic-1.0.0-py3-none-any.whl": {
+      "sha256": "c0390fb4071fea6d348af3c841f03c951bb5af9c6f58f68251208027fc3b145d",
+      "bytes": 130578,
+      "url": "https://zenodo.org/api/records/23397453/files/active_inference_meta_pragmatic-1.0.0-py3-none-any.whl/content"
+    },
+    "active_inference_meta_pragmatic-1.0.0-history.bundle": {
+      "sha256": "07d051917431feebc9eae1297433f06a3ae1e3e420f4d1dd99f2e34e991af9cb",
+      "bytes": 16626445,
+      "url": "https://zenodo.org/api/records/23397453/files/active_inference_meta_pragmatic-1.0.0-history.bundle/content"
+    },
+    "active_inference_meta_pragmatic-1.0.0-source.zip": {
+      "sha256": "007e7f52f98d2908ff181df67a416bb10ad37d6b5fe44683f394cf46e54f3b8a",
+      "bytes": 24999027,
+      "url": "https://zenodo.org/api/records/23397453/files/active_inference_meta_pragmatic-1.0.0-source.zip/content"
+    },
+    "active_inference_meta_pragmatic-1.0.0.tar.gz": {
+      "sha256": "118860b94777e951e2538589804a498d8a0af511ba5fa52592c5b0e74b567d6e",
+      "bytes": 2607590,
+      "url": "https://zenodo.org/api/records/23397453/files/active_inference_meta_pragmatic-1.0.0.tar.gz/content"
+    }
+  },
+  "release_ci_runs": [
+    {
+      "id": 38770684472,
+      "url": "https://github.com/docxology/active_inference_meta_pragmatic/actions/runs/38770684472",
+      "head_sha": "eadfa2f030ea068df7ebdddc341829f20b85c713",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 38770685013,
+      "url": "https://github.com/docxology/active_inference_meta_pragmatic/actions/runs/38770685013",
+      "head_sha": "eadfa2f030ea068df7ebdddc341829f20b85c713",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ]
+}

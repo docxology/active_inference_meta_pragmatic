@@ -1,6 +1,6 @@
 # Cover, identity and resource comparison
 
-This page records the preceding cover/identity build. The later [American Pragmatism revision](american_pragmatism.md) replaces its cover diagram and expands the bibliography; the validation measurements below describe this earlier build.
+This page records the preceding cover/identity build. The later [American Pragmatism revision](american_pragmatism.md) replaces its cover diagram and expands the bibliography; the validation measurements below describe this earlier build. The DOI reservation and access statements below are historical. The author subsequently authorized the [public version 1.0.0 release](release_v1.0.0.md), which publishes the same reserved DOI.
 
 The cover graphic connects the four inquiry roles around a central executable GNN specification, above retained sensor estimates and the exact EFE action surface. The cycle is conceptual; it does not assert measured cognitive modules or a mandatory order of operations. All graphical evidence still comes from the existing synthetic studies.
 
