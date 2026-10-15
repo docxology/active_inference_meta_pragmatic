@@ -1,4 +1,4 @@
-include LICENSE README.md uv.lock .python-version template.lock.json
+include LICENSE README.md CHANGELOG.md CITATION.cff .zenodo.json uv.lock .python-version template.lock.json
 recursive-include manuscript *.md *.bib *.yaml
 recursive-include manuscript/assets *.png *.json *.pdf *.svg *.css
 recursive-include docs *.md *.json

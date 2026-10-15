@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "Please cite the versioned manuscript and reproducibility archive when using this research."
+type: software
+title: "Active Inference as a Meta-Pragmatic Framework: Executable Models, Evidence, and the Discipline of Revision"
+version: 1.0.0
+date-released: "2026-10-15"
+doi: 10.5281/zenodo.23397453
+url: https://github.com/docxology/active_inference_meta_pragmatic
+repository-code: https://github.com/docxology/active_inference_meta_pragmatic
+license: Apache-2.0
+authors:
+  - family-names: Friedman
+    given-names: Daniel Ari
+    affiliation: "Active Inference Institute; FractiAI"
+    orcid: https://orcid.org/0000-0001-6232-9096
+preferred-citation:
+  type: article
+  title: "Active Inference as a Meta-Pragmatic Framework: Executable Models, Evidence, and the Discipline of Revision"
+  authors:
+    - family-names: Friedman
+      given-names: Daniel Ari
+      affiliation: "Active Inference Institute; FractiAI"
+      orcid: https://orcid.org/0000-0001-6232-9096
+  year: 2026
+  doi: 10.5281/zenodo.23397453
+  url: https://zenodo.org/records/23397453
+  notes: "Version 1.0.0 preprint and reproducibility archive; no peer review is claimed."

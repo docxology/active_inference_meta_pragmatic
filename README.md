@@ -4,6 +4,8 @@ A working research implementation of categorical active inference and a data/met
 
 ## Reproduce the research
 
+The first public release is **v1.0.0**: [GitHub release](https://github.com/docxology/active_inference_meta_pragmatic/releases/tag/v1.0.0), [Zenodo preprint and reproducibility archive](https://zenodo.org/records/23397453), DOI **10.5281/zenodo.23397453**. [Release history](CHANGELOG.md) explains the earlier private development labels and preserved commits; [publication documentation](docs/release_v1.0.0.md) separates the release cut from remote verification.
+
 Python 3.12 is the recorded environment; package support starts at Python 3.11, matching the pinned GNN parser's supported minimum. Set `GNN_ROOT` to the real Generalized_Notation_Notation checkout at the revision in `src/core/gnn_models/upstream.lock.json`; canonical GitVault placement is detected automatically.
 
 ```bash
@@ -87,6 +89,6 @@ The paper, *Active Inference as a Meta-Pragmatic Framework: Executable Models, E
 
 ## Citation and license
 
-This repository is a working manuscript, without an assigned publication DOI. Cite its author, title, commit and version/date rather than implying peer review. Author-supplied publication metadata belongs in `manuscript/config.yaml`; unknown identifiers and declarations are left unspecified.
+Cite Daniel Ari Friedman, *Active Inference as a Meta-Pragmatic Framework: Executable Models, Evidence, and the Discipline of Revision*, version 1.0.0, DOI [10.5281/zenodo.23397453](https://doi.org/10.5281/zenodo.23397453). [CITATION.cff](CITATION.cff) supplies machine-readable author, affiliation, ORCID and release metadata. This is a preprint; public availability and DOI registration do not imply peer review. Funding and competing-interest declarations remain unspecified.
 
 Software license: [Apache-2.0](LICENSE).

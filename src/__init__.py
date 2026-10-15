@@ -12,9 +12,9 @@ Subpackages:
 - utils: Logging, exceptions, figure management, markdown integration
 """
 
-__version__ = "1.1.0"
-__author__ = "Daniel Friedman"
-__description__ = "Active Inference as a Meta-(Pragmatic/Epistemic) Method"
+__version__ = "1.0.0"
+__author__ = "Daniel Ari Friedman"
+__description__ = "Active Inference as a Meta-Pragmatic Framework"
 
 from core import (
     ActiveInferenceFramework,

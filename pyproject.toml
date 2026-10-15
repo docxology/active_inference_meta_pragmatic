@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "active-inference-meta-pragmatic"
-version = "1.2.0"
+version = "1.0.0"
 description = "Active Inference as a Meta-Pragmatic Framework: executable models, synthetic evidence, and accountable revision"
 readme = "README.md"
 license = "Apache-2.0"

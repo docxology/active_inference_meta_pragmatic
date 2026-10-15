@@ -21,7 +21,8 @@ The [editorial structure guide](editorial_structure.md) describes the current ma
 | [Meta-pragmatic scholarship](meta_pragmatic_scholarship.md) | Primary sources, requested Zenodo works and interpretation limits |
 | [American Pragmatism](american_pragmatism.md) | Peirce, James, Dewey, Addams and Mead; primary reading scope and visual revision |
 | [OODA and the condensed pragmatist argument](ooda_pragmatism_revision.md) | Source-verified OODA crosswalk, editorial condensation, smaller margins and verification |
-| [Research integrity and review copy](research_integrity.md) | AI assistance, human responsibility, private review access, declarations and final layout verification |
+| [Research integrity and review copy](research_integrity.md) | AI assistance, human responsibility, declarations and historical authoring/layout verification |
+| [Version 1.0.0 release](release_v1.0.0.md) | Public-release authorization, preserved development history, assets and remote verification |
 | [Meta-pragmatic method revision](meta_pragmatic_revision.md) | Preceding implementation, scholarship and validation receipts |
 | [Main paper and supplements](editorial_structure.md) | Two-paragraph abstract, early quadrant map, actual model diagrams and consolidated notation |
 | [Figure readability](figure_readability.md) | Shared typography, matrix atlas, captions and publication verification |

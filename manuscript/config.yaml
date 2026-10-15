@@ -5,7 +5,7 @@
 paper:
   title: "Active Inference as a Meta-Pragmatic Framework"
   subtitle: "Executable Models, Evidence, and the Discipline of Revision"
-  version: "1.2"
+  version: "1.0.0"
   cover:
     image: "assets/scientific_graphical_abstract.png"
     alt: "Four defined inquiry roles: Q1 infer and act, Q2 contextualize evidence, Q3 monitor inquiry, and Q4 evaluate and revise. Each card explains its operation; Q means quadrant and the roles overlap rather than forming stages. GNN means Generalized Notation Notation. Lower panels show sensor accuracy with marginal seed intervals and exact action probabilities from expected free energy. The two demonstrations are synthetic; model revision remains subject to researcher evaluation."
@@ -24,16 +24,16 @@ authors:
 
 # Publication information (optional)
 publication:
-  doi: ""
+  doi: "10.5281/zenodo.23397453"
   reserved_doi: "10.5281/zenodo.23397453"
-  doi_status: "10.5281/zenodo.23397453 (reserved; unpublished draft)"
-  zenodo_draft_url: "https://zenodo.org/uploads/23397453"
+  doi_status: ""
+  zenodo_record_url: "https://zenodo.org/records/23397453"
   journal: "" # For future publication
   volume: "" # For future publication
   pages: "" # For future publication
   year: "2026"
   repository_url: "https://github.com/docxology/active_inference_meta_pragmatic"
-  repository_label: "Private source repository"
+  repository_label: "Source repository"
 
 # Keywords for metadata
 keywords:

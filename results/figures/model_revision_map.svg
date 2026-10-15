@@ -6,7 +6,7 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-10-15T09:06:58.808333</dc:date>
+    <dc:date>2026-10-15T09:29:08.146859</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -40,7 +40,7 @@ Q 25.379986 59.972446 25.379986 65.994885
 L 25.379986 168.376347
 Q 25.379986 174.398786 37.499976 174.398786
 z
-" clip-path="url(#pafc7db3fdf)" style="fill: #e8ecef; stroke: #67757a; stroke-width: 0.8; stroke-linejoin: miter"/>
+" clip-path="url(#pd6b7b087f6)" style="fill: #e8ecef; stroke: #67757a; stroke-width: 0.8; stroke-linejoin: miter"/>
    </g>
    <g id="patch_3">
     <path d="M 328.379746 174.398786
@@ -53,7 +53,7 @@ Q 316.259755 59.972446 316.259755 65.994885
 L 316.259755 168.376347
 Q 316.259755 174.398786 328.379746 174.398786
 z
-" clip-path="url(#pafc7db3fdf)" style="fill: #ddedf0; stroke: #67757a; stroke-width: 0.8; stroke-linejoin: miter"/>
+" clip-path="url(#pd6b7b087f6)" style="fill: #ddedf0; stroke: #67757a; stroke-width: 0.8; stroke-linejoin: miter"/>
    </g>
    <g id="patch_4">
     <path d="M 37.499976 309.903663
@@ -66,7 +66,7 @@ Q 25.379986 195.477323 25.379986 201.499762
 L 25.379986 303.881224
 Q 25.379986 309.903663 37.499976 309.903663
 z
-" clip-path="url(#pafc7db3fdf)" style="fill: #f3e7d9; stroke: #67757a; stroke-width: 0.8; stroke-linejoin: miter"/>
+" clip-path="url(#pd6b7b087f6)" style="fill: #f3e7d9; stroke: #67757a; stroke-width: 0.8; stroke-linejoin: miter"/>
    </g>
    <g id="patch_5">
     <path d="M 328.379746 309.903663
@@ -79,7 +79,7 @@ Q 316.259755 195.477323 316.259755 201.499762
 L 316.259755 303.881224
 Q 316.259755 309.903663 328.379746 309.903663
 z
-" clip-path="url(#pafc7db3fdf)" style="fill: #ece7f3; stroke: #67757a; stroke-width: 0.8; stroke-linejoin: miter"/>
+" clip-path="url(#pd6b7b087f6)" style="fill: #ece7f3; stroke: #67757a; stroke-width: 0.8; stroke-linejoin: miter"/>
    </g>
    <g id="text_1">
     <text style="font-weight: 700; font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle" x="158.69988" y="96.10708" transform="rotate(-0 158.69988 96.10708)">Q1 | Infer and act</text>
@@ -134,7 +134,7 @@ Q 70.82995 373.672938 70.82995 378.189767
 L 70.82995 420.34684
 Q 70.82995 424.863669 79.919942 424.863669
 z
-" clip-path="url(#p01abd23c97)" style="fill: #f3f1e9; stroke: #67757a; stroke-width: 0.8; stroke-linejoin: miter"/>
+" clip-path="url(#pd235a878b8)" style="fill: #f3f1e9; stroke: #67757a; stroke-width: 0.8; stroke-linejoin: miter"/>
    </g>
    <g id="patch_7">
     <path d="M 79.919942 494.121717
@@ -147,7 +147,7 @@ Q 70.82995 442.930986 70.82995 447.447815
 L 70.82995 489.604888
 Q 70.82995 494.121717 79.919942 494.121717
 z
-" clip-path="url(#p01abd23c97)" style="fill: #f3f1e9; stroke: #67757a; stroke-width: 0.8; stroke-linejoin: miter"/>
+" clip-path="url(#pd235a878b8)" style="fill: #f3f1e9; stroke: #67757a; stroke-width: 0.8; stroke-linejoin: miter"/>
    </g>
    <g id="patch_8">
     <path d="M 79.919942 563.379765
@@ -160,7 +160,7 @@ Q 70.82995 512.189034 70.82995 516.705863
 L 70.82995 558.862936
 Q 70.82995 563.379765 79.919942 563.379765
 z
-" clip-path="url(#p01abd23c97)" style="fill: #f3f1e9; stroke: #67757a; stroke-width: 0.8; stroke-linejoin: miter"/>
+" clip-path="url(#pd235a878b8)" style="fill: #f3f1e9; stroke: #67757a; stroke-width: 0.8; stroke-linejoin: miter"/>
    </g>
    <g id="patch_9">
     <path d="M 79.919942 632.637813
@@ -173,7 +173,7 @@ Q 70.82995 581.447082 70.82995 585.963911
 L 70.82995 628.120984
 Q 70.82995 632.637813 79.919942 632.637813
 z
-" clip-path="url(#p01abd23c97)" style="fill: #f3f1e9; stroke: #67757a; stroke-width: 0.8; stroke-linejoin: miter"/>
+" clip-path="url(#pd235a878b8)" style="fill: #f3f1e9; stroke: #67757a; stroke-width: 0.8; stroke-linejoin: miter"/>
    </g>
    <g id="text_13">
     <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle" x="310.19976" y="391.740255" transform="rotate(-0 310.19976 391.740255)">Specify</text>
@@ -232,10 +232,10 @@ L 307.39976 569.718744
   </g>
  </g>
  <defs>
-  <clipPath id="pafc7db3fdf">
+  <clipPath id="pd6b7b087f6">
    <rect x="7.2" y="23.837812" width="605.99952" height="301.121947"/>
   </clipPath>
-  <clipPath id="p01abd23c97">
+  <clipPath id="pd235a878b8">
    <rect x="7.2" y="348.077572" width="605.99952" height="301.121948"/>
   </clipPath>
  </defs>

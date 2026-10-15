@@ -1,0 +1,22 @@
+{
+  "title": "Active Inference as a Meta-Pragmatic Framework: Executable Models, Evidence, and the Discipline of Revision",
+  "upload_type": "publication",
+  "publication_type": "preprint",
+  "publication_date": "2026-10-15",
+  "version": "1.0.0",
+  "access_right": "open",
+  "license": "apache-2.0",
+  "language": "eng",
+  "description": "Version 1.0.0 preprint and reproducibility archive. Executable upstream GNN specifications, exact categorical active inference, paired synthetic studies, explicit resources and accountable model revision. The release preserves development history and does not claim peer review, independent replication or biological validation.",
+  "creators": [{
+    "name": "Friedman, Daniel Ari",
+    "affiliation": "Active Inference Institute; FractiAI",
+    "orcid": "0000-0001-6232-9096"
+  }],
+  "keywords": ["active inference", "meta-pragmatism", "American Pragmatism", "GNN", "model criticism", "reproducible research"],
+  "related_identifiers": [
+    {"identifier": "https://github.com/docxology/active_inference_meta_pragmatic", "relation": "isSupplementTo", "resource_type": "software"},
+    {"identifier": "https://github.com/docxology/active_inference_meta_pragmatic/releases/tag/v1.0.0", "relation": "isSupplementTo", "resource_type": "software"}
+  ],
+  "notes": "First public release. Earlier 1.1/1.2 strings were private development labels, not previous public versions. Consult CHANGELOG.md and the tagged Git history. Funding and competing-interest declarations are not supplied."
+}
