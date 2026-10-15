@@ -2,7 +2,7 @@
 
 **Installed imports fail:** run `uv sync --locked --extra dev --extra research`. Installed package imports are `core`, `framework`, `analysis`, `visualization` and `utils`; `src` reexports support checkout use. Confirm the active interpreter belongs to this project.
 
-**Python 3.10:** the GNN revision requires Python 3.11 or newer because the pinned upstream parser declares that minimum. Earlier Python 3.10/SciPy fallback results remain historical evidence for version 1.1. Python 3.12 remains the recorded research environment.
+**Python version:** use Python 3.11 or newer, as required by the pinned GNN parser. Python 3.12 is the recorded research environment. Keep the template's environment separate and use its declared Python version.
 
 **GNN checkout unavailable or mismatched:** set `GNN_ROOT` to the actual checkout and compare its revision with `src/core/gnn_models/upstream.lock.json`. Preserve upstream work. Use a source-preserving worktree at the pin if the canonical upstream owner has advanced. Do not bypass the pin or introduce a substitute parser.
 

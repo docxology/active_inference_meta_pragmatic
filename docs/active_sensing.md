@@ -1,6 +1,6 @@
 # Executed GNN active sensing and graphical abstract
 
-This revision adds an actual action-selection task alongside the original confidence-threshold sensor study. It also restores red hyperlinks in the PDF, template HTML and offline HTML, and replaces the selected cover with a data-generated scientific graphical abstract. The previous [GNN](revision_2026-10-14.md) and [diagnostic expansion](expansion_2026-10-14.md) records describe earlier artifact states.
+The action-selection task complements the confidence-threshold sensor study with policies evaluated by exact normalized expected free energy. Its imported GNN model supplies world generation and agent computation. The scientific graphical abstract presents the inquiry roles and retained evidence.
 
 ## Model and execution
 
@@ -31,7 +31,7 @@ Real-computation tests check context-preserving transitions, analytical posterio
 | `active_sensing_landscape.csv` | 187 exact GNN policy evaluations |
 | `active_sensing_gnn/` | Materialized model specifications selected in summary metadata |
 
-Two new numbered figures distinguish exact policy surfaces from sampled outcomes. The graphical abstract combines the specification/execution/evaluation workflow, original sensor accuracy intervals, and the exact action-selection surface. All have PNG, SVG and PDF editions. Numerical panels are generated from actual evidence; no AI image-generation output is used in the selected cover.
+Two numbered figures distinguish exact policy surfaces from sampled outcomes. The graphical abstract combines the specification/execution/evaluation workflow, original sensor accuracy intervals, and the exact action-selection surface. All have PNG, SVG and PDF editions. Numerical panels are generated from actual evidence; no AI image-generation output is used in the selected cover.
 
 ```bash
 uv run python scripts/07_analysis_pipeline.py --update-cover
@@ -39,26 +39,10 @@ uv run python scripts/08_render_with_template.py --template-root "$TEMPLATE_ROOT
 uv run python scripts/09_validate_documentation.py
 ```
 
-`--update-cover` explicitly copies the generated abstract into `manuscript/assets/` and writes `graphical-abstract-provenance.json`; ordinary pipeline runs and tests write figures only into their requested output directory. The flag requires data export stage 4 or later. The selected cover follows `paper.cover.image` and `paper.cover.alt`; missing/out-of-tree assets or missing descriptions fail. The original conceptual cover remains preserved as historical source.
+`--update-cover` explicitly copies the generated abstract into `manuscript/assets/` and writes `graphical-abstract-provenance.json`; ordinary pipeline runs and tests write figures only into their requested output directory. The flag requires data export stage 4 or later. The selected cover follows `paper.cover.image` and `paper.cover.alt`; missing/out-of-tree assets or missing descriptions fail.
 
 Publication links use `#cc0000`. The manuscript preamble configures PDF link/citation/URL color, while `assets/publication.css` is included in the recorded HTML source projection; the actual pinned template source is unmodified. The offline preview uses the same red.
 
-## Corrections retained during validation
+## Materialization contract
 
-The source-level model materializer previously replaced every line beginning with A/B/C/D assignments, including their ontology labels. A real failing regression reproduced this defect. Replacement is now limited to the first numerical assignment in the ordered canonical template, preserving the ontology block. The active-sensing base specification also retains the proper labels. Model tensors and numerical estimates are unchanged. Earlier materialized bytes are preserved under ignored `output/active-sensing-evidence/pre-ontology-models/`, and the newly generated selected models replace them in the current results.
-
-The first extended PDF exposed an overfull float with a clipped model-work diagram. The source now gives that figure explicit placement and a bounded aspect-preserving height. Failed/earlier receipts and rasterized pages are preserved; the final renderer is rerun and checked after the correction. No upstream GNN or template tracked source is modified.
-
-## Historical action-study validation
-
-The following receipts describe the preceding 604-test, 24-page build. See the [current revision](meta_pragmatic_revision.md) for the subsequent title, scholarship and exact world–agent robustness expansion. The current materializer scopes replacement to named sections, extending the first-assignment correction recorded above.
-
-All 604 tests pass on actual Python 3.11.15, 3.12.13 and 3.13.14 environments, with environment and base-interpreter paths on GitVault. Unit/integration branch coverage is 94.00%; including actual pipeline and template CLI/worker execution yields 95.64%. The gate remains 90%, with the 95% target unchanged. The focused rules and Ruff error checks pass. The full pipeline and installed-wheel GNN/EFE study run successfully; the source distribution retains the new model and publication assets. Generated graphical-abstract SVG output is normalized for trailing whitespace before it is copied into manuscript assets.
-
-The upstream GNN validator accepts all 247 selected/authored specifications: three packaged models, 57 sensor realizations and 187 action models. A deliberately malformed specification is rejected. The ontology regression fails before the correction and passes afterward. Its receipts and the original failed fixture/render outputs remain under ignored `output/active-sensing-evidence/`.
-
-The actual unmodified template produces a 24-page PDF with eight numbered figures, a scientific graphical abstract, 35 references and 74 corresponding typeset expressions in HTML. Every PDF page is rasterized for inspection. The final compiler log has no overfull boxes or undefined references; remaining warnings concern ordinary float placement and unused table caption setup. The PDF is not tagged. HTML inspection observes nine loaded, described images, zero broken internal anchors and MathJax errors, and red computed color for all links. PDF linked-content text is red; black citation punctuation is distinguished from link content in text extraction. Wide and narrow viewport checks show no horizontal document overflow.
-
-The retained run reports sampled-EFE accuracy 71.23% (marginal 95% interval 70.23–72.28%) and 0.617 informative observations per trial (0.607–0.626), against exact expectations 71.64% and 0.6182. Always inspect gives 84.90% accuracy and always blind gives 49.97%. These are exploratory, model-conditional results. They do not change the original H1–H3 family or establish biological validation.
-
-The final manifest records 136 source-file and 345 output digests; the renderer receipt identifies 56 output digests. Source/output bytes and the corresponding 481 staged Git blobs are verified, together with all selected specification hashes and the renderer's authored/hydrated inputs. A deliberately corrupted output digest is rejected. All work remains local on `codex/gnn-manuscript-revision`; no commit or push is claimed.
+Model materialization changes numerical assignments only within named GNN sections and preserves ontology annotations. Each realization is parsed, validated and executed; generated specification hashes bind the selected model bytes to the summary. Tests exercise assignment boundaries and reject malformed models. See [GNN models](gnn_models.md) and [outputs](output_conventions.md).

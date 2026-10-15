@@ -66,7 +66,7 @@ The action model orders states as blind context 0, blind context 1, informative 
 | $w_e,w_p,w_m$ | Authored heuristic weights for information, preference and metadata terms |
 | $K(m)$ | Authored metadata penalty in that illustrative weighted score |
 
-**total** is the compatibility API's raw-logit score; **normalized_total** is its normalized counterpart. Their fixed-model relationship and horizon conventions are stated in Supplement \ref{sec:formal_contracts}. Adding a constant to all preference logits leaves normalized preferences unchanged. These API fields are not interchangeable when comparing models with different preference normalizers.
+**total** is the API's raw-logit score; **normalized_total** is its normalized counterpart. Their fixed-model relationship and horizon conventions are stated in Supplement \ref{sec:formal_contracts}. Adding a constant to all preference logits leaves normalized preferences unchanged. These API fields are not interchangeable when comparing models with different preference normalizers.
 
 ```{=latex}
 \clearpage

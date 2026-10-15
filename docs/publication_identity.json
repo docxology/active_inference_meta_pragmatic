@@ -17,16 +17,5 @@
   "uploaded_file_count": 9,
   "publication_performed": true,
   "verification": "Authenticated publication followed by anonymous record metadata and file SHA-256 verification",
-  "publication_receipt": "release_v1.0.0_receipt.json",
-  "reservation": {
-    "checked_date": "2026-10-15",
-    "reserved_doi": "10.5281/zenodo.23397453",
-    "zenodo_draft_id": 23397453,
-    "zenodo_draft_url": "https://zenodo.org/uploads/23397453",
-    "submitted": false,
-    "access_right": "restricted",
-    "uploaded_file_count": 0,
-    "verification": "Authenticated POST reservation followed by independent authenticated GET of the created deposition",
-    "publication_performed": false
-  }
+  "publication_receipt": "release_v1.0.0_receipt.json"
 }

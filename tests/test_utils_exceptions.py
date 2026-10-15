@@ -179,41 +179,33 @@ class TestValidationError:
         assert error3.suggestions == ["Fix"]
 
 
-class TestBackwardCompatWrappers:
-    """Test backward-compat wrapper modules in src/ root."""
-
-    def test_active_inference_wrapper(self):
-        """Test src/active_inference.py re-exports from core."""
+class TestPublicPackageImports:
+    def test_active_inference_import(self):
         from core.active_inference import ActiveInferenceFramework
 
         assert ActiveInferenceFramework is not None
 
-    def test_free_energy_principle_wrapper(self):
-        """Test src/free_energy_principle.py re-exports from core."""
+    def test_free_energy_principle_import(self):
         from core.free_energy_principle import FreeEnergyPrinciple
 
         assert FreeEnergyPrinciple is not None
 
-    def test_meta_cognition_wrapper(self):
-        """Test src/meta_cognition.py re-exports from framework."""
+    def test_meta_cognition_import(self):
         from framework.meta_cognition import MetaCognitiveSystem
 
         assert MetaCognitiveSystem is not None
 
-    def test_modeler_perspective_wrapper(self):
-        """Test src/modeler_perspective.py re-exports from framework."""
+    def test_modeler_perspective_import(self):
         from framework.modeler_perspective import ModelerPerspective
 
         assert ModelerPerspective is not None
 
-    def test_validation_wrapper(self):
-        """Test src/validation.py re-exports from analysis."""
+    def test_validation_import(self):
         from analysis.validation import ValidationFramework
 
         assert ValidationFramework is not None
 
-    def test_statistical_analysis_wrapper(self):
-        """Test src/statistical_analysis.py re-exports from analysis."""
+    def test_statistical_analysis_import(self):
         from analysis.statistical_analysis import StatisticalAnalyzer
 
         assert StatisticalAnalyzer is not None

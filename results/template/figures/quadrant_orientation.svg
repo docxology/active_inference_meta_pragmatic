@@ -6,7 +6,7 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-10-15T09:29:04.780800</dc:date>
+    <dc:date>2026-10-15T11:13:24.304742</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -40,7 +40,7 @@ Q 89.035833 83.617168 89.035833 88.768887
 L 89.035833 247.613561
 Q 89.035833 252.765281 95.251212 252.765281
 z
-" clip-path="url(#pdfe4833c9d)" style="fill: #e5edf4; stroke: #8c9ba1; stroke-width: 0.9; stroke-linejoin: miter"/>
+" clip-path="url(#pfef0d7396d)" style="fill: #e5edf4; stroke: #8c9ba1; stroke-width: 0.9; stroke-linejoin: miter"/>
    </g>
    <g id="patch_3">
     <path d="M 359.404849 252.765281
@@ -53,7 +53,7 @@ Q 353.18947 83.617168 353.18947 88.768887
 L 353.18947 247.613561
 Q 353.18947 252.765281 359.404849 252.765281
 z
-" clip-path="url(#pdfe4833c9d)" style="fill: #dff0ee; stroke: #8c9ba1; stroke-width: 0.9; stroke-linejoin: miter"/>
+" clip-path="url(#pfef0d7396d)" style="fill: #dff0ee; stroke: #8c9ba1; stroke-width: 0.9; stroke-linejoin: miter"/>
    </g>
    <g id="patch_4">
     <path d="M 95.251212 450.247849
@@ -66,7 +66,7 @@ Q 89.035833 281.099736 89.035833 286.251455
 L 89.035833 445.09613
 Q 89.035833 450.247849 95.251212 450.247849
 z
-" clip-path="url(#pdfe4833c9d)" style="fill: #f5eadc; stroke: #8c9ba1; stroke-width: 0.9; stroke-linejoin: miter"/>
+" clip-path="url(#pfef0d7396d)" style="fill: #f5eadc; stroke: #8c9ba1; stroke-width: 0.9; stroke-linejoin: miter"/>
    </g>
    <g id="patch_5">
     <path d="M 359.404849 450.247849
@@ -79,7 +79,7 @@ Q 353.18947 281.099736 353.18947 286.251455
 L 353.18947 445.09613
 Q 353.18947 450.247849 359.404849 450.247849
 z
-" clip-path="url(#pdfe4833c9d)" style="fill: #ece7f3; stroke: #8c9ba1; stroke-width: 0.9; stroke-linejoin: miter"/>
+" clip-path="url(#pfef0d7396d)" style="fill: #ece7f3; stroke: #8c9ba1; stroke-width: 0.9; stroke-linejoin: miter"/>
    </g>
    <g id="text_1">
     <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #245d87" x="211.789582" y="112.380933" transform="rotate(-0 211.789582 112.380933)">Q1  Infer and act</text>
@@ -156,7 +156,7 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="pdfe4833c9d">
+  <clipPath id="pfef0d7396d">
    <rect x="7.2" y="7.2" width="605.99952" height="497.99952"/>
   </clipPath>
  </defs>

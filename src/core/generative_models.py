@@ -101,7 +101,7 @@ class GenerativeModel:
     ) -> float:
         """Return preference strength, or normalized preference probability.
 
-        The legacy unnormalized exp(C) path rejects overflow. Use normalized=True
+        The unnormalized exp(C) path rejects overflow. Use normalized=True
         or preference_distribution() for shift-invariant probabilities.
         """
         try:

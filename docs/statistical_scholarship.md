@@ -1,6 +1,6 @@
-# Scholarship and philosophical revision
+# Statistical and methodological sources
 
-This revision retains the 19 previously cited records and adds sixteen identified sources in two passes, giving 35 cited records. The bibliography is a focused selection, not a systematic review. Source identity, a read passage, and an empirical replication are different forms of evidence.
+These primary records support the methodological distinctions used in the manuscript. The reading scope is explicit; a source identity, a consulted passage and empirical replication are different forms of evidence.
 
 | Source | Verified primary record or text | Reading scope and use |
 |---|---|---|
@@ -13,11 +13,7 @@ This revision retains the 19 previously cited records and adds sixteen identifie
 | Efron and Tibshirani (1993) | [Book scan](https://www.hms.harvard.edu/bss/neuro/bornlab/nb204/statistics/bootstrap.pdf), Chapman and Hall | Book identity and bootstrap-method context. DOI landing-page retrieval failed; no universal validity claim is attached to the percentile intervals. |
 | GNN project (pinned source) | [Normative syntax](https://github.com/ActiveInferenceInstitute/Generalized_Notation_Notation/blob/46459949944e3217f8a6a804d4ff8c52829ef275/docs/gnn/reference/gnn_syntax.md) and actual local parser | Syntax and parser implementation read locally; models are imported and executed. This is software/specification attribution, not a peer-reviewed efficacy claim. |
 
-The added philosophy separates computational correctness, methodological criticism, and normative authorization. Representation, metadata trust, acquisition budgets, and preference revision are distinct objects of inquiry. The manuscript identifies which claims are interpretations, exact identities, simulation findings, or future proposals.
-
-Unresolved access limitations are recorded above rather than treated as completed full-text review. All bibliography entries are cited in the manuscript. The original source register remains a historical record; this supplement records the additions.
-
-## Further statistical and methodological expansion
+## Predictive evaluation and resource limits
 
 | Source | Primary record inspected | Reading scope and bounded use |
 |---|---|---|
@@ -30,4 +26,4 @@ Unresolved access limitations are recorded above rather than treated as complete
 | Talts et al. (2018; revised 2020) | [arXiv 1804.06788](https://arxiv.org/abs/1804.06788) | Authors, versions, abstract. Simulation-based calibration checks Bayesian algorithms across simulations. Used to distinguish that procedure from the implemented algebraic identities and predictive reliability curves, not to claim SBC execution. |
 | Vehtari, Gelman and Gabry (2017) | [arXiv record and abstract](https://arxiv.org/abs/1507.04544), journal reference and DOI 10.1007/s11222-016-9696-4 | Predictive evaluation through LOO/WAIC and PSIS. The current study instead has independent training/test generation and implements none of these estimators. |
 
-These additions support explicit methodological distinctions. No citation is offered as validation of this taxonomy, security efficacy, biological mechanism, or universal optimality of the stopping rule.
+These sources motivate distinctions between model criticism, predictive evaluation, calibration, resampling and resource accounting. They do not validate the proposed taxonomy, security efficacy, biological mechanisms or universal optimality of the stopping rule. See [statistics](statistics.md) and [source qualification](scholarship_audit.md).

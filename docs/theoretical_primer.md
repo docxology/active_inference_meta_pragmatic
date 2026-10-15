@@ -4,7 +4,7 @@ A categorical generative model maps hidden states to observations (A), propagate
 
 State inference conditions on observed evidence. Exact variational free energy additionally evaluates a candidate distribution against an explicit joint model, and equals negative log evidence plus KL divergence to the exact posterior. Without a joint model, an arbitrary energy-minus-entropy score is not automatically a variational bound.
 
-The implementation's normalized EFE is negative information gain minus expected log outcome preference. For its known categorical likelihood, this equals outcome risk plus expected observation ambiguity. The legacy raw-logit return omits the additive preference normalizer. Mean and sum aggregation are explicit because a finite-horizon objective and an average per-step score are different conventions.
+The implementation's normalized EFE is negative information gain minus expected log outcome preference. For its known categorical likelihood, this equals outcome risk plus expected observation ambiguity. The raw-logit return omits the additive preference normalizer. Mean and sum aggregation are explicit because a finite-horizon objective and an average per-step score are different conventions.
 
 The quadrant framework distinguishes task evidence from information about its reliability, and direct inference from monitoring/revision. These are analytical distinctions. Metadata-aware inference can be ordinary Bayesian inference under an appropriate likelihood. Adaptive acquisition can improve accuracy by spending more observations. Reliability learning requires data and an evaluation split. None of those mechanisms guarantees benefit when metadata is false, observations are correlated, or costs dominate.
 

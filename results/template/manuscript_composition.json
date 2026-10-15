@@ -1,9 +1,9 @@
 {
   "algorithm": "web-renderer-combine-v1",
-  "binding_sha256": "2f0d215a246d37756172f3e786cc038c67261e7f07d962004b041e0ecc502fae",
+  "binding_sha256": "02159909b77faeb2fcf100b1fc03e4cb43ca6c6e16e4f96b7dd46dc2bd1a3314",
   "combined_path": "output/web/_combined_manuscript.md",
-  "combined_sha256": "184b8535954449c2fda4d6557682ea258fb783e65482a33de77ddcae6e9926c6",
-  "combined_size_bytes": 109225,
+  "combined_sha256": "d083529777aacbe71fc6d96b0e71a69425aaff750500118b23014e85edddcb69",
+  "combined_size_bytes": 108677,
   "input_root_kind": "hydrated",
   "ordered_inputs": [
     {
@@ -63,20 +63,20 @@
     {
       "ordinal": 10,
       "path": "output/manuscript/10_acknowledgments.md",
-      "sha256": "eb4a4dd70483559c6730dc642ed249e3b6f1243fd968b49c9de04a5ec7fc2bb5",
-      "size_bytes": 3236
+      "sha256": "57d4a0fdf58d9388ec294968d9ba4fdc676aad663cb41f8d14e95548f4b683d3",
+      "size_bytes": 2908
     },
     {
       "ordinal": 11,
       "path": "output/manuscript/11_appendix.md",
-      "sha256": "d1a9ff925e66f6bbb71f33e7779b03106725a7963821e7a7184666b81e5d4ec1",
-      "size_bytes": 36804
+      "sha256": "bd6eee79dc97fede75841c2027fbbafbfda1a738fd22343b963b4878cda0f184",
+      "size_bytes": 36598
     },
     {
       "ordinal": 12,
       "path": "output/manuscript/98_symbols_glossary.md",
-      "sha256": "a31c6dace5722bb59a2c680634bad9f329b9a697d402eb6575d72916ca5d1d20",
-      "size_bytes": 7757
+      "sha256": "ae7b7629e5734f0b49116c133382081ac232f860415360802a53ea37f995038d",
+      "size_bytes": 7743
     },
     {
       "ordinal": 13,
@@ -85,7 +85,7 @@
       "size_bytes": 223
     }
   ],
-  "ordered_inputs_sha256": "0326d59532ec0154c6887507ed45de3a1a0ecbabd3a9950289cdc3e7c1bcd2ca",
+  "ordered_inputs_sha256": "b519efdf0bee3eacadd5c18aaea87a4b3e746f01e3790941bdd89d6d91932485",
   "project": "active_inference_meta_pragmatic",
   "schema_version": "template-manuscript-composition-v1"
 }

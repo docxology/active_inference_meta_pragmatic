@@ -35,9 +35,9 @@ def validate_documentation(project_root: Path) -> dict:
     files.extend(
         sorted(
             path
-            for folder in ("src", "scripts", "manuscript", "doc")
+            for folder in ("src", "scripts", "manuscript")
             for path in (root / folder).rglob("*.md")
-            if path.name in ("README.md", "AGENTS.md") or folder == "doc"
+            if path.name in ("README.md", "AGENTS.md")
         )
     )
     checked = 0

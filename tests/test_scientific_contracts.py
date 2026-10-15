@@ -144,7 +144,7 @@ def test_exact_vfe_bound_and_equality_at_posterior():
         FreeEnergyPrinciple(states).calculate_free_energy([0.5, 0.5], [0.5, 0.5])[1][
             "evaluation_kind"
         ]
-        == "legacy_illustrative_score"
+        == "illustrative_score"
     )
 
 

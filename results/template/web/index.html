@@ -2532,9 +2532,7 @@ href="https://orcid.org/0000-0001-6232-9096">0000-0001-6232-9096</a>.
 The version 1.0.0 manuscript and reproducibility archive are identified
 by DOI <a
 href="https://doi.org/10.5281/zenodo.23397453">10.5281/zenodo.23397453</a>.
-This is a preprint; archival release does not imply peer review. The
-repository’s changelog distinguishes the initial public release from
-earlier private development revisions.</p>
+This is a preprint; archival release does not imply peer review.</p>
 <h2 data-number="10.2"
 id="synthetic-intelligence-assistance-and-human-accountability"><span
 class="header-section-number">10.2</span> Synthetic intelligence
@@ -2567,19 +2565,15 @@ retained with configuration and source hashes in the accompanying <a
 href="https://github.com/docxology/active_inference_meta_pragmatic">source
 repository</a>. The versioned archive includes the manuscript, source
 and computational evidence; release checksums bind its downloadable
-files. The repository carries an Apache-2.0 license. Historical
-development snapshots remain identifiable in Git rather than being
-presented as prior public releases.</p>
+files. The repository carries an Apache-2.0 license.</p>
 <p>The cover is a scientific graphical abstract generated
 programmatically from retained synthetic estimates and exact GNN/EFE
 evaluations. Its source data, generator and asset digests are recorded
-with the manuscript assets. Earlier conceptual artwork and its prompt
-remain as historical assets and are not the selected cover. The
-model-revision diagram is an authored conceptual illustration; the
-empirical figures and policy surfaces use retained synthetic trials or
-exact model evaluations. The upstream GNN and template implementations
-are separately attributed and are consumed without modifying their
-tracked source.</p>
+with the manuscript assets. The model-revision diagram is an authored
+conceptual illustration; the empirical figures and policy surfaces use
+retained synthetic trials or exact model evaluations. The upstream GNN
+and template implementations are separately attributed and are consumed
+without modifying their tracked source.</p>
 <hr />
 <h1 data-number="11" id="sec:appendix"><span
 class="header-section-number">11</span> Technical Supplement: Formal
@@ -2699,10 +2693,9 @@ p(o,s)\right]
 reaches the bound at the exact posterior. Candidate beliefs assigning
 positive mass outside posterior support have infinite free energy. The
 exact implementation is <code>calculate_variational_free_energy</code>;
-the older model-free
-<code>FreeEnergyPrinciple.calculate_free_energy</code> path remains an
-explicitly labeled schematic score for compatibility. Its trajectories
-and state-boundary diagrams do not establish a variational bound,
+the model-free <code>FreeEnergyPrinciple.calculate_free_energy</code>
+path is an explicitly labeled schematic score. Its trajectories and
+state-boundary diagrams do not establish a variational bound,
 conditional independence, or the physical claims of the FEP. Supplying a
 generative model to that class selects the exact calculation.</p>
 <h3 data-number="11.2.5"
@@ -2726,16 +2719,16 @@ expanding mutual information and KL divergence. It is exact for this
 finite, known-likelihood predictive model. It does not include
 uncertainty about parameters, posterior approximation error, or
 observation-contingent replanning.</p>
-<p>For compatibility, the returned <code>total</code> uses the raw-logit
-score <span class="math inline">\(-I-\mathbb{E}[C]\)</span>.
+<p>The returned <code>total</code> uses the raw-logit score <span
+class="math inline">\(-I-\mathbb{E}[C]\)</span>.
 <code>normalized_total</code> adds <code>logsumexp(C)</code> per step
 and equals risk plus ambiguity. Normalized values are evaluated directly
 from stable log preferences to avoid cancellation under large constant
 logit shifts. Policy rankings agree mathematically for a fixed model and
-horizon convention. Mean aggregation is the legacy default; sum
-aggregation implements additive finite-horizon costs. Comparing
-different horizons or different preference models requires specifying
-this convention and normalization explicitly.</p>
+horizon convention. Mean aggregation is the default; sum aggregation
+implements additive finite-horizon costs. Comparing different horizons
+or different preference models requires specifying this convention and
+normalization explicitly.</p>
 <p>Policy selection accepts current posterior beliefs, with <span
 class="math inline">\(D\)</span> used when beliefs are omitted. It
 returns an argmin and a policy distribution proportional to <span
@@ -2772,10 +2765,8 @@ implemented in <code>src/analysis/experiments.py</code>; the narrative
 quadrant class supplies definitions and examples, rather than four
 independently validated algorithms.</p>
 <p>The design below is fixed in code and recorded in each output
-manifest. It is not a preregistered study. Historical numerical claims
-in earlier manuscript versions lacked a corresponding experiment and are
-superseded by the retained results reported here. No participant data,
-clinical outcomes, or deployment incidents are analyzed.</p>
+manifest. It is not a preregistered study. No participant data, clinical
+outcomes, or deployment incidents are analyzed.</p>
 <h3 data-number="11.3.2"
 id="the-binary-sensor-task-and-its-resource-matched-controls"><span
 class="header-section-number">11.3.2</span> The binary sensor task and
@@ -3736,7 +3727,7 @@ terms</td>
 </tr>
 </tbody>
 </table></div>
-<p><strong>total</strong> is the compatibility API’s raw-logit score;
+<p><strong>total</strong> is the API’s raw-logit score;
 <strong>normalized_total</strong> is its normalized counterpart. Their
 fixed-model relationship and horizon conventions are stated in
 Supplement <a href="#sec:formal_contracts">11.2</a>. Adding a constant

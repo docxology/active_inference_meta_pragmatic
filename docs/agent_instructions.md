@@ -1,6 +1,6 @@
 # Maintenance workflow
 
-Read applicable repository and parent guidance. Preserve user changes and use the shared GitVault lock/migration guard for canonical repository writes. The author authorized public release v1.0.0; read [release history and publication](release_v1.0.0.md) before changing visibility, archival metadata, tags or release files. Preserve unrelated private work.
+Read applicable repository and parent guidance. Preserve user changes and use the shared GitVault lock/migration guard for canonical repository writes. The author authorized public release v1.0.0; read [publication information](release_v1.0.0.md) before changing visibility, archival metadata, tags or release files. Preserve unrelated private work.
 
 For numerical changes, confirm conventions and add meaningful analytical regressions. For experiment changes, update the methods/statistics guides and manuscript together. Keep scripts thin and use real computations/files in tests.
 

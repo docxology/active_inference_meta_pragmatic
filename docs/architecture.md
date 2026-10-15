@@ -4,7 +4,7 @@ GNN import (`core.gnn`), section-scoped serialization (`core.gnn_serialization`)
 
 The standalone package uses a src layout with `core`, `framework`, `analysis`, `visualization`, and `utils` packages. The repository-level `src/__init__.py` reexports APIs for checkout use; canonical installed imports use the packages directly.
 
-`core/probability.py` owns categorical probability contracts shared by models, inference, validation and diagnostics. This prevents row/column convention differences. `generative_models.py` and `active_inference.py` use those contracts; `free_energy_principle.py` distinguishes exact categorical mathematics from legacy illustrations.
+`core/probability.py` owns categorical probability contracts shared by models, inference, validation and diagnostics. This prevents row/column convention differences. `generative_models.py` and `active_inference.py` use those contracts; `free_energy_principle.py` distinguishes exact categorical mathematics from schematic illustrations.
 
 `framework` contains the interpretive taxonomy, modeler examples, confidence/control heuristics and structural security diagnostics. These classes do not implement all of the hypothetical optimization equations in the earlier manuscript. `analysis/experiments.py` implements the concrete mechanisms evaluated in the retained study.
 

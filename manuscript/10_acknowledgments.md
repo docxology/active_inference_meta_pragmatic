@@ -8,7 +8,7 @@ This work builds on the active inference, Bayesian modeling, and metacognition l
 
 ## Author identity and the versioned preprint archive
 
-The author's affiliations are Active Inference Institute and FractiAI. The author's ORCID is [0000-0001-6232-9096](https://orcid.org/0000-0001-6232-9096). The version 1.0.0 manuscript and reproducibility archive are identified by DOI [10.5281/zenodo.23397453](https://doi.org/10.5281/zenodo.23397453). This is a preprint; archival release does not imply peer review. The repository's changelog distinguishes the initial public release from earlier private development revisions.
+The author's affiliations are Active Inference Institute and FractiAI. The author's ORCID is [0000-0001-6232-9096](https://orcid.org/0000-0001-6232-9096). The version 1.0.0 manuscript and reproducibility archive are identified by DOI [10.5281/zenodo.23397453](https://doi.org/10.5281/zenodo.23397453). This is a preprint; archival release does not imply peer review.
 
 ## Synthetic intelligence assistance and human accountability
 
@@ -18,6 +18,6 @@ Synthetic intelligence, including generative artificial intelligence (AI) assist
 
 The numerical studies use synthetic data only and involve no human or animal participants. Funding and competing-interest declarations have not been supplied for this draft; the author should complete the declarations required by the eventual submission venue.
 
-The manuscript, implementation, generated data and figure sources are retained with configuration and source hashes in the accompanying [source repository](https://github.com/docxology/active_inference_meta_pragmatic). The versioned archive includes the manuscript, source and computational evidence; release checksums bind its downloadable files. The repository carries an Apache-2.0 license. Historical development snapshots remain identifiable in Git rather than being presented as prior public releases.
+The manuscript, implementation, generated data and figure sources are retained with configuration and source hashes in the accompanying [source repository](https://github.com/docxology/active_inference_meta_pragmatic). The versioned archive includes the manuscript, source and computational evidence; release checksums bind its downloadable files. The repository carries an Apache-2.0 license.
 
-The cover is a scientific graphical abstract generated programmatically from retained synthetic estimates and exact GNN/EFE evaluations. Its source data, generator and asset digests are recorded with the manuscript assets. Earlier conceptual artwork and its prompt remain as historical assets and are not the selected cover. The model-revision diagram is an authored conceptual illustration; the empirical figures and policy surfaces use retained synthetic trials or exact model evaluations. The upstream GNN and template implementations are separately attributed and are consumed without modifying their tracked source.
+The cover is a scientific graphical abstract generated programmatically from retained synthetic estimates and exact GNN/EFE evaluations. Its source data, generator and asset digests are recorded with the manuscript assets. The model-revision diagram is an authored conceptual illustration; the empirical figures and policy surfaces use retained synthetic trials or exact model evaluations. The upstream GNN and template implementations are separately attributed and are consumed without modifying their tracked source.

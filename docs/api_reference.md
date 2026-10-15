@@ -10,13 +10,13 @@ Installed imports use the top-level packages below. Public errors use `utils.exc
 - `predict_state_transition(current_state, action)`: state index or normalized beliefs → next-state probabilities.
 - `perform_inference(observation, prior_beliefs=None)`: category or normalized virtual evidence → posterior. Impossible evidence raises; exact zeros are preserved.
 - `preference_distribution()`: stable normalized softmax(C).
-- `calculate_preference_likelihood(observation, normalized=False)`: legacy exp(C) strength, or normalized probability; overflow is rejected.
+- `calculate_preference_likelihood(observation, normalized=False)`: unnormalized exp(C) strength, or normalized probability; overflow is rejected.
 
 ## Active inference
 
 `core.active_inference.ActiveInferenceFramework(generative_model, precision=1.0)` accepts a model or A/B/C/D dictionary. Precision must be positive and finite.
 
-`calculate_expected_free_energy(posterior_beliefs, policy, observations=None, aggregation="mean")` returns `(score, components)`. The compatibility `observations` argument does not update beliefs. Update beliefs before evaluating the policy. Policies are nonempty, one-dimensional integer action sequences.
+`calculate_expected_free_energy(posterior_beliefs, policy, observations=None, aggregation="mean")` returns `(score, components)`. The `observations` argument does not update beliefs. Update beliefs before evaluating the policy. Policies are nonempty, one-dimensional integer action sequences.
 
 Components include `epistemic` (negative information gain), `pragmatic` (negative expected C), `total`, `information_gain`, `ambiguity`, `outcome_entropy`, `preference_normalizer`, `normalized_total`, and `risk`. `normalized_total = risk + ambiguity`. `aggregation="sum"` sums across future steps; the default averages. Planning propagates predicted beliefs open-loop without observation-contingent updates.
 
@@ -26,7 +26,7 @@ Components include `epistemic` (negative information gain), `pragmatic` (negativ
 
 `core.free_energy_principle.calculate_variational_free_energy(model, observation, beliefs, prior=None)` returns F and its energy, entropy, surprise and posterior-divergence decomposition. Infinite F is retained for posterior-support violations. Impossible evidence raises an error.
 
-`FreeEnergyPrinciple(system_states, precision=1.0, generative_model=None)` retains schematic state-boundary and homeostatic demonstrations. With a model, `calculate_free_energy` delegates to the exact calculation. Without a model it declares `evaluation_kind="legacy_illustrative_score"`; its score and trajectories are not a validated physical FEP simulation.
+`FreeEnergyPrinciple(system_states, precision=1.0, generative_model=None)` retains schematic state-boundary and homeostatic demonstrations. With a model, `calculate_free_energy` delegates to the exact calculation. Without a model it declares `evaluation_kind="illustrative_score"`; its score and trajectories are not a validated physical FEP simulation.
 
 ## Statistics
 

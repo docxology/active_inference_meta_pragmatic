@@ -14,4 +14,4 @@ Before completion, run the tests, standalone pipeline, manuscript validator, and
 
 See `docs/architecture.md`, `docs/api_reference.md`, and `docs/scholarship_audit.md`. Subdirectory AGENTS files add scoped guidance.
 
-Maintain docs/ as the modular documentation source and validate it with script 09. Legacy doc/ files are compatibility pointers. Publication editions use script 08 and must be inspected before claiming successful rendering. Refresh the research manifest after rendering.
+Maintain docs/ as the modular documentation source and validate it with script 09. Publication editions use script 08 and must be inspected before claiming successful rendering. Refresh the research manifest after rendering.

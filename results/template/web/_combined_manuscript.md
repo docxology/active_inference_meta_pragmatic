@@ -426,7 +426,7 @@ This work builds on the active inference, Bayesian modeling, and metacognition l
 
 ## Author identity and the versioned preprint archive
 
-The author's affiliations are Active Inference Institute and FractiAI. The author's ORCID is [0000-0001-6232-9096](https://orcid.org/0000-0001-6232-9096). The version 1.0.0 manuscript and reproducibility archive are identified by DOI [10.5281/zenodo.23397453](https://doi.org/10.5281/zenodo.23397453). This is a preprint; archival release does not imply peer review. The repository's changelog distinguishes the initial public release from earlier private development revisions.
+The author's affiliations are Active Inference Institute and FractiAI. The author's ORCID is [0000-0001-6232-9096](https://orcid.org/0000-0001-6232-9096). The version 1.0.0 manuscript and reproducibility archive are identified by DOI [10.5281/zenodo.23397453](https://doi.org/10.5281/zenodo.23397453). This is a preprint; archival release does not imply peer review.
 
 ## Synthetic intelligence assistance and human accountability
 
@@ -436,9 +436,9 @@ Synthetic intelligence, including generative artificial intelligence (AI) assist
 
 The numerical studies use synthetic data only and involve no human or animal participants. Funding and competing-interest declarations have not been supplied for this draft; the author should complete the declarations required by the eventual submission venue.
 
-The manuscript, implementation, generated data and figure sources are retained with configuration and source hashes in the accompanying [source repository](https://github.com/docxology/active_inference_meta_pragmatic). The versioned archive includes the manuscript, source and computational evidence; release checksums bind its downloadable files. The repository carries an Apache-2.0 license. Historical development snapshots remain identifiable in Git rather than being presented as prior public releases.
+The manuscript, implementation, generated data and figure sources are retained with configuration and source hashes in the accompanying [source repository](https://github.com/docxology/active_inference_meta_pragmatic). The versioned archive includes the manuscript, source and computational evidence; release checksums bind its downloadable files. The repository carries an Apache-2.0 license.
 
-The cover is a scientific graphical abstract generated programmatically from retained synthetic estimates and exact GNN/EFE evaluations. Its source data, generator and asset digests are recorded with the manuscript assets. Earlier conceptual artwork and its prompt remain as historical assets and are not the selected cover. The model-revision diagram is an authored conceptual illustration; the empirical figures and policy surfaces use retained synthetic trials or exact model evaluations. The upstream GNN and template implementations are separately attributed and are consumed without modifying their tracked source.
+The cover is a scientific graphical abstract generated programmatically from retained synthetic estimates and exact GNN/EFE evaluations. Its source data, generator and asset digests are recorded with the manuscript assets. The model-revision diagram is an authored conceptual illustration; the empirical figures and policy surfaces use retained synthetic trials or exact model evaluations. The upstream GNN and template implementations are separately attributed and are consumed without modifying their tracked source.
 
 
 
@@ -495,7 +495,7 @@ F(q,o)=\sum_s q(s)\left[\log q(s)-\log p(o,s)\right]
 $$
 :::
 
-Equation [(2)](#eq:vfe) bounds negative log evidence and reaches the bound at the exact posterior. Candidate beliefs assigning positive mass outside posterior support have infinite free energy. The exact implementation is `calculate_variational_free_energy`; the older model-free `FreeEnergyPrinciple.calculate_free_energy` path remains an explicitly labeled schematic score for compatibility. Its trajectories and state-boundary diagrams do not establish a variational bound, conditional independence, or the physical claims of the FEP. Supplying a generative model to that class selects the exact calculation.
+Equation [(2)](#eq:vfe) bounds negative log evidence and reaches the bound at the exact posterior. Candidate beliefs assigning positive mass outside posterior support have infinite free energy. The exact implementation is `calculate_variational_free_energy`; the model-free `FreeEnergyPrinciple.calculate_free_energy` path is an explicitly labeled schematic score. Its trajectories and state-boundary diagrams do not establish a variational bound, conditional independence, or the physical claims of the FEP. Supplying a generative model to that class selects the exact calculation.
 
 ### Normalized expected free energy and categorical policy selection
 
@@ -511,7 +511,7 @@ $$
 
 The equivalence in Equation [(3)](#eq:efe) follows by expanding mutual information and KL divergence. It is exact for this finite, known-likelihood predictive model. It does not include uncertainty about parameters, posterior approximation error, or observation-contingent replanning.
 
-For compatibility, the returned `total` uses the raw-logit score $-I-\mathbb{E}[C]$. `normalized_total` adds `logsumexp(C)` per step and equals risk plus ambiguity. Normalized values are evaluated directly from stable log preferences to avoid cancellation under large constant logit shifts. Policy rankings agree mathematically for a fixed model and horizon convention. Mean aggregation is the legacy default; sum aggregation implements additive finite-horizon costs. Comparing different horizons or different preference models requires specifying this convention and normalization explicitly.
+The returned `total` uses the raw-logit score $-I-\mathbb{E}[C]$. `normalized_total` adds `logsumexp(C)` per step and equals risk plus ambiguity. Normalized values are evaluated directly from stable log preferences to avoid cancellation under large constant logit shifts. Policy rankings agree mathematically for a fixed model and horizon convention. Mean aggregation is the default; sum aggregation implements additive finite-horizon costs. Comparing different horizons or different preference models requires specifying this convention and normalization explicitly.
 
 Policy selection accepts current posterior beliefs, with $D$ used when beliefs are omitted. It returns an argmin and a policy distribution proportional to $\exp(-\gamma G)$, where $\gamma>0$ is precision. Increasing precision concentrates this distribution; it does not change an exact argmin. Equal scores retain a uniform distribution. All entropy and KL quantities use natural logarithms and are measured in nats.
 
@@ -523,7 +523,7 @@ Policy selection accepts current posterior beliefs, with $D$ used when beliefs a
 
 This is a conceptual framework with a synthetic computational demonstration. The taxonomy was not derived from empirical clustering and is not tested as a biological partition. The experiment tests concrete mechanisms inspired by its quadrants. The mechanisms are implemented in `src/analysis/experiments.py`; the narrative quadrant class supplies definitions and examples, rather than four independently validated algorithms.
 
-The design below is fixed in code and recorded in each output manifest. It is not a preregistered study. Historical numerical claims in earlier manuscript versions lacked a corresponding experiment and are superseded by the retained results reported here. No participant data, clinical outcomes, or deployment incidents are analyzed.
+The design below is fixed in code and recorded in each output manifest. It is not a preregistered study. No participant data, clinical outcomes, or deployment incidents are analyzed.
 
 ### The binary sensor task and its resource-matched controls
 
@@ -804,7 +804,7 @@ The action model orders states as blind context 0, blind context 1, informative 
 | $w_e,w_p,w_m$ | Authored heuristic weights for information, preference and metadata terms |
 | $K(m)$ | Authored metadata penalty in that illustrative weighted score |
 
-**total** is the compatibility API's raw-logit score; **normalized_total** is its normalized counterpart. Their fixed-model relationship and horizon conventions are stated in Supplement [11.2](#sec:formal_contracts). Adding a constant to all preference logits leaves normalized preferences unchanged. These API fields are not interchangeable when comparing models with different preference normalizers.
+**total** is the API's raw-logit score; **normalized_total** is its normalized counterpart. Their fixed-model relationship and horizon conventions are stated in Supplement [11.2](#sec:formal_contracts). Adding a constant to all preference logits leaves normalized preferences unchanged. These API fields are not interchangeable when comparing models with different preference normalizers.
 
 ```{=latex}
 \clearpage

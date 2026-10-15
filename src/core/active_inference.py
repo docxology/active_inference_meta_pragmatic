@@ -129,11 +129,11 @@ class ActiveInferenceFramework:
     ) -> Tuple[float, Dict[str, float]]:
         """Evaluate open-loop EFE with exact zero support.
 
-        The legacy score is -I(s;o) - E[C(o)]. `normalized_total` adds
+        The raw-logit score is -I(s;o) - E[C(o)]. `normalized_total` adds
         logsumexp(C) per step and equals risk + ambiguity for normalized
-        preferences. Mean is the backward-compatible horizon convention;
+        preferences. Mean is the default horizon convention;
         use aggregation='sum' for additive finite-horizon planning.
-        `observations` is retained for compatibility; update beliefs first.
+        `observations` does not update beliefs; update beliefs first.
         """
         beliefs = probability_vector(
             posterior_beliefs, self.n_states, "posterior beliefs"

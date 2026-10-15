@@ -21,6 +21,6 @@ The default evidence is synthetic and retained in Git. Runtime environments, cac
 
 The correct rebuild order is research pipeline, template rendering, visual/content checks, then manifest refresh. A rerender changes artifact digests and therefore requires a refreshed research manifest. A custom experiment is distinct evidence and must not silently replace the default manuscript's estimates.
 
-The authoritative GNN selection is `experiment.gnn.specifications` in the current `results/summary.json`; a directory scan must not widen it. The final version 1.2 run retains 57 selected sensor realizations. Earlier generated specification bytes from this editing session are preserved under ignored `output/revision-evidence/gnn-history/`, separately from the current scientific output set.
-
 Git attributes preserve the exact bytes of retained outputs across checkouts. CSV CRLF record separators and Matplotlib SVG path whitespace are valid producer formatting; their scoped whitespace rules do not relax source-code checks. Before publication, staged Git blobs are checked against the recorded source/output digests.
+
+The authoritative GNN selection is `experiment.gnn.specifications` in `results/summary.json`. The sensor study retains 57 selected realizations. Directory contents must agree with each study's selected digests; a directory scan must not widen that selection.

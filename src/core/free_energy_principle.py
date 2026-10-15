@@ -103,7 +103,7 @@ class FreeEnergyPrinciple:
         ):
             raise ValidationError("System states must be nonempty finite vectors")
         self.generative_model = generative_model
-        # Padding belongs only to the legacy schematic system-state illustration.
+        # Padding belongs only to the schematic system-state illustration.
         state_shapes = [arr.shape[0] for arr in system_states.values()]
         state_shape_set = set(state_shapes)
 
@@ -161,7 +161,7 @@ class FreeEnergyPrinciple:
     ) -> Tuple[float, Dict[str, float]]:
         """Calculate exact VFE when a generative_model was supplied.
 
-        Without a model this retains the legacy cross-entropy illustration,
+        Without a model this evaluates a schematic cross-entropy illustration,
         which is not a variational bound or proof of the FEP. The result
         declares its evaluation_kind explicitly. Use the standalone exact
         calculate_variational_free_energy function for scientific analyses.
@@ -211,7 +211,7 @@ class FreeEnergyPrinciple:
                 "entropy": entropy,
                 "free_energy": free_energy,
                 "surprise": surprise,
-                "evaluation_kind": "legacy_illustrative_score",
+                "evaluation_kind": "illustrative_score",
             }
 
             logger.debug(

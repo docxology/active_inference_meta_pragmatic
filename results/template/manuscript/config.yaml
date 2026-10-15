@@ -25,8 +25,6 @@ authors:
 # Publication information (optional)
 publication:
   doi: "10.5281/zenodo.23397453"
-  reserved_doi: "10.5281/zenodo.23397453"
-  doi_status: ""
   zenodo_record_url: "https://zenodo.org/records/23397453"
   journal: "" # For future publication
   volume: "" # For future publication
