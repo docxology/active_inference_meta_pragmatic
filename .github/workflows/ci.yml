@@ -9,14 +9,14 @@ jobs:
       matrix:
         python: ['3.11', '3.12', '3.13']
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # actions/checkout@v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # actions/checkout@v7.0.1
         with:
           repository: ActiveInferenceInstitute/Generalized_Notation_Notation
           ref: 46459949944e3217f8a6a804d4ff8c52829ef275
           path: .gnn
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # astral-sh/setup-uv@v10.3.3
         with:
           python-version: ${{ matrix.python }}
       - run: uv sync --locked --extra dev --extra research --python ${{ matrix.python }}
@@ -36,20 +36,20 @@ jobs:
   template-render:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # actions/checkout@v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # actions/checkout@v7.0.1
         with:
           repository: ActiveInferenceInstitute/Generalized_Notation_Notation
           ref: 46459949944e3217f8a6a804d4ff8c52829ef275
           path: .gnn
           persist-credentials: false
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # actions/checkout@v7.0.1
         with:
           repository: docxology/template
           ref: 192c8bda16c08d06ae2fee4eac71d56901d3ad22
           path: .template
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # astral-sh/setup-uv@v10.3.3
       - run: sudo apt-get update && sudo apt-get install -y pandoc texlive-xetex texlive-latex-extra texlive-science texlive-fonts-recommended
       - run: uv sync --locked --extra dev --extra research --python 3.12
       - run: uv sync --project .template --locked --no-default-groups --python 3.14
