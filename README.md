@@ -2,6 +2,8 @@
 
 A working research implementation of categorical active inference and a data/metadata × cognition/meta-cognition taxonomy. The manuscript joins a conceptual argument to reproducible **synthetic** sensor and EFE action studies, plus exact world–agent mismatch analysis. Real upstream GNN imports bind model specifications to execution. The framework connects declared models, decisions, external evaluation and accountable revision; its numerical evidence is bounded to these tasks.
 
+![Graphical abstract: four roles in meta-pragmatic inquiry (infer and act, contextualize evidence, monitor inquiry, evaluate and revise) with synthetic evidence and action-selection panels](results/figures/scientific_graphical_abstract.png)
+
 ## Reproduce the research
 
 Version **1.0.0**: [GitHub release](https://github.com/docxology/active_inference_meta_pragmatic/releases/tag/v1.0.0), [Zenodo preprint](https://zenodo.org/records/23397453), DOI **10.5281/zenodo.23397453**. See [release notes](CHANGELOG.md) and [publication information](docs/release_v1.0.0.md).
