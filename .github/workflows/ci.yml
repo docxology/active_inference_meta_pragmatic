@@ -19,7 +19,7 @@ jobs:
           ref: 46459949944e3217f8a6a804d4ff8c52829ef275
           path: .gnn
           persist-credentials: false
-      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # astral-sh/setup-uv@v10.3.3
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # astral-sh/setup-uv@v10.4.0
         with:
           python-version: ${{ matrix.python }}
       - run: uv sync --locked --extra dev --extra research --python ${{ matrix.python }}
@@ -52,7 +52,7 @@ jobs:
           ref: 192c8bda16c08d06ae2fee4eac71d56901d3ad22
           path: .template
           persist-credentials: false
-      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # astral-sh/setup-uv@v10.3.3
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # astral-sh/setup-uv@v10.4.0
       - run: sudo apt-get update && sudo apt-get install -y pandoc texlive-xetex texlive-latex-extra texlive-science texlive-fonts-recommended
       - run: uv sync --locked --extra dev --extra research --python 3.12
       - run: uv sync --project .template --locked --no-default-groups --python 3.14
