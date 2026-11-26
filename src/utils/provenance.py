@@ -34,7 +34,7 @@ def write_manifest(project_root: Path, output_dir: Path, config: dict) -> Path:
     except (subprocess.CalledProcessError, FileNotFoundError):
         revision = None
     sources = {}
-    for folder in ("src", "scripts", "manuscript", "docs", "tests"):
+    for folder in ("src", "scripts", "docs", "tests"):
         for path in sorted((project_root / folder).rglob("*")):
             if path.is_file() and path.suffix in (
                 ".py",
@@ -48,7 +48,7 @@ def write_manifest(project_root: Path, output_dir: Path, config: dict) -> Path:
         path = project_root / filename
         if path.exists():
             sources[filename] = sha256(path)
-    for path in sorted((project_root / "manuscript/assets").rglob("*")):
+    for path in sorted((project_root / "docs/manuscript/assets").rglob("*")):
         if path.is_file():
             sources[str(path.relative_to(project_root))] = sha256(path)
     outputs = {

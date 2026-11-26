@@ -39,7 +39,7 @@ uv run python scripts/08_render_with_template.py --template-root "$TEMPLATE_ROOT
 uv run python scripts/09_validate_documentation.py
 ```
 
-`--update-cover` explicitly copies the generated abstract into `manuscript/assets/` and writes `graphical-abstract-provenance.json`; ordinary pipeline runs and tests write figures only into their requested output directory. The flag requires data export stage 4 or later. The selected cover follows `paper.cover.image` and `paper.cover.alt`; missing/out-of-tree assets or missing descriptions fail.
+`--update-cover` explicitly copies the generated abstract into `docs/manuscript/assets/` and writes `graphical-abstract-provenance.json`; ordinary pipeline runs and tests write figures only into their requested output directory. The flag requires data export stage 4 or later. The selected cover follows `paper.cover.image` and `paper.cover.alt`; missing/out-of-tree assets or missing descriptions fail.
 
 Publication links use `#cc0000`. The manuscript preamble configures PDF link/citation/URL color, while `assets/publication.css` is included in the recorded HTML source projection; the actual pinned template source is unmodified. The offline preview uses the same red.
 

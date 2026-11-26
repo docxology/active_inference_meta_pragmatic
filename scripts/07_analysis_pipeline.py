@@ -51,7 +51,7 @@ def main() -> None:
         return
     result = run_pipeline(project_root, args.output_dir, config, args.stages)
     if args.update_cover:
-        assets = project_root / "manuscript/assets"
+        assets = project_root / "docs/manuscript/assets"
         selected = {}
         for extension in ("png", "pdf", "svg"):
             source = (

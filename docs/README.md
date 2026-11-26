@@ -34,6 +34,11 @@ These guides describe the implemented repository and its retained synthetic evid
 | [Troubleshooting](troubleshooting.md) | Diagnosing installation, validation and rendering failures |
 | [FAQ](faq.md) | Interpretation and reproducibility questions |
 | [Agent workflow](agent_instructions.md) | Safe maintenance and completion checks |
+| [Pragmatic Active Inference](pragmatic-active-inference.md) | Background and reading notes |
+| [Changelog](changelog.md) | Release history |
+| [Maintenance](maintenance.md) | Open technical work |
+| [Developer guides](developer/README.md) | Source, scripts, utilities and tests |
+| [Manuscript](manuscript/README.md) | Authored sections, assets and references |
 | [Scoped guidance](AGENTS.md) | Documentation maintenance contract |
 
-[Source records](scholarship_sources.json) support citation qualification. Numbered files in `manuscript/` are the paper; `docs/` provides the maintained guides.
+[Source records](scholarship_sources.json) support citation qualification. The numbered files under [manuscript](manuscript/) are the authored paper.

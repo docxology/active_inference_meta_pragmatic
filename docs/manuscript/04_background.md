@@ -11,7 +11,7 @@ The action study asks a different question: when does an agent choose an informa
 ```{=latex}
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.96\textwidth,height=0.76\textheight,keepaspectratio]{../results/figures/executed_models.png}
+\includegraphics[width=0.96\textwidth,height=0.76\textheight,keepaspectratio]{../../results/figures/executed_models.png}
 \caption{Two executable models and the evidence each can supply. (a) A shared binary context generates five potential sensor reports; percentages give each sensor's probability of reporting the true context. All strategies begin with sensors 1--3. Additional observations follow a fixed budget or a confidence rule; fitted reliability uses separate labeled training. (b) The imported GNN action model preserves context while choosing blind or informative observation mode. Arrows show nonself transitions, with self transitions implicit. Likelihood A, transitions B, preference logits C and initial beliefs D define the agent; external context labels assess forecasts rather than supplying the agent's confidence.}
 \label{fig:executed_models}
 \end{figure}

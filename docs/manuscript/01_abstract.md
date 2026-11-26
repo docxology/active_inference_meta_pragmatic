@@ -9,7 +9,7 @@ The proposal is made concrete through executable Generalized Notation Notation (
 ```{=latex}
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.96\textwidth,height=0.62\textheight,keepaspectratio]{../results/figures/quadrant_orientation.png}
+\includegraphics[width=0.96\textwidth,height=0.62\textheight,keepaspectratio]{../../results/figures/quadrant_orientation.png}
 \caption{Four complementary roles in meta-pragmatic inquiry. Q denotes quadrant: Q1 infers states and evaluates actions; Q2 contextualizes evidence; Q3 monitors uncertainty and regulates acquisition; Q4 evaluates assumptions and justifies revision. Columns distinguish task evidence from information about its source, and rows distinguish inference within a model from regulation of inquiry. Each cell states a guiding question, operation and failure case. These overlapping responsibilities are neither sequential stages nor measured cognitive faculties; no historical pragmatist is assigned to a single quadrant.}
 \label{fig:quadrant_orientation}
 \end{figure}

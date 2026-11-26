@@ -29,7 +29,7 @@ The modeler and the modeled agent must also be distinguished. Here the researche
 ```{=latex}
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.95\textwidth]{../results/figures/resource_calibration.png}
+\includegraphics[width=0.95\textwidth]{../../results/figures/resource_calibration.png}
 \caption{Prediction, sensing resources and descriptive calibration answer distinct questions. (a,b) Aligned strategy rows show percentage accuracy and observations per trial, with numeric means, distinct symbols and marginal 95 percent intervals over 30 paired seeds. Shading marks the fitted model's separate labeled training, excluded from the observation count. (c,d) Two views separate the pooled calibration comparisons across 12,000 held-out trials per strategy. Line style supplements color; point area scales with occupied-bin population. Points use mean forecasts and observed state frequencies in ten fixed bins, with empty bins omitted. The dashed diagonal denotes agreement. These curves have no calibration uncertainty bands.}
 \label{fig:resource_calibration}
 \end{figure}
@@ -56,7 +56,7 @@ Figure \ref{fig:active_sensing_outcomes} compares EFE policy sampling with fixed
 ```{=latex}
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{../results/figures/active_sensing_outcomes.png}
+\includegraphics[width=\textwidth]{../../results/figures/active_sensing_outcomes.png}
 \caption{Sampled action policies compared with exact expectations under the declared world. Small strategy-specific symbols show the 30 paired seed means, larger symbols show their averages, and capped dark bars give marginal 95 percent seed-bootstrap intervals. Open diamonds are exact expectations displaced slightly to the right for visibility. (a) Context accuracy favors larger values; (b,c) proper losses favor smaller values; (d) inspection counts expose informative-observation use. All three strategies share 6,000 generated world trials, yielding 18,000 scored rows rather than independent replications. EFE means expected free energy; its preference-sensitive action objective is distinct from maximizing accuracy.}
 \label{fig:active_sensing_outcomes}
 \end{figure}
@@ -71,7 +71,7 @@ Figure \ref{fig:model_robustness} separates the agent's model from the world's l
 ```{=latex}
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.95\textwidth,height=0.62\textheight,keepaspectratio]{../results/figures/model_robustness.png}
+\includegraphics[width=0.95\textwidth,height=0.62\textheight,keepaspectratio]{../../results/figures/model_robustness.png}
 \caption{Correct computation can produce inaccurate predictions under an incorrect world model. (a--c) The agent holds its assumed reliability at 0.85, with preferences and policy precision fixed, while actual reliability varies. Line styles identify the sampled EFE policy and fixed-action baselines; arrows indicate favorable score directions. The vertical reference marks the matched likelihood. (d) Distinct symbols and line styles compare inspection forecasts with exact world conditional frequencies at three actual reliabilities; the diagonal denotes calibration. Every curve is an exact world expectation, not an empirical estimate or uncertainty interval. No automatic model repair is implemented.}
 \label{fig:model_robustness}
 \end{figure}

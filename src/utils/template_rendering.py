@@ -88,7 +88,7 @@ def render_with_template(
         Path(template_root).resolve(),
     )
     check_template_checkout(project_root, template_root)
-    validate_manuscript(project_root / "manuscript")
+    validate_manuscript(project_root / "docs/manuscript")
     # Resolving a venv's Python symlink would lose its environment prefix.
     interpreter = Path(template_python or template_root / ".venv/bin/python").absolute()
     if not interpreter.is_file():
@@ -128,9 +128,9 @@ def prepare_web_sources(
     destination.mkdir(parents=True, exist_ok=True)
     for filename in ("config.yaml", "references.bib", "preamble.md"):
         shutil.copy2(
-            Path(project_root) / "manuscript" / filename, destination / filename
+            Path(project_root) / "docs/manuscript" / filename, destination / filename
         )
-    assets = Path(project_root) / "manuscript/assets"
+    assets = Path(project_root) / "docs/manuscript/assets"
     if assets.is_dir():
         shutil.copytree(assets, destination / "assets", dirs_exist_ok=True)
     projected = []
@@ -184,9 +184,9 @@ def prepare_web_sources(
         text = re.sub(
             r"```\{=latex\}\s*\n.*?\n```", project_block, text, flags=re.DOTALL
         )
-        text = text.replace("../results/figures/", "../figures/")
+        text = text.replace("../../results/figures/", "../figures/")
         if source.name.startswith("01_"):
-            cover, description = _cover_details(project_root / "manuscript")
+            cover, description = _cover_details(project_root / "docs/manuscript")
             style = assets / "publication.css"
             if style.is_file():
                 text = "<style>\n" + style.read_text() + "\n</style>\n\n" + text
@@ -212,6 +212,32 @@ def prepare_web_sources(
     }
 
 
+def prepare_validation_evidence(project_root: Path) -> None:
+    """Stage retained results and express the primary table in its published units."""
+    import shutil
+
+    source = project_root / "results/summary.json"
+    summary = json.loads(source.read_text())
+    output = project_root / "output/data"
+    output.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(source, output / source.name)
+    comparisons = {
+        contrast: {
+            field: round(100 * evidence["accuracy_difference"][field], 3)
+            for field in ("mean", "lower_bound", "upper_bound")
+        }
+        for contrast, evidence in summary["experiment"]["comparisons"].items()
+    }
+    table = {
+        "source": "results/summary.json:experiment.comparisons",
+        "unit": "percentage points",
+        "accuracy_difference": comparisons,
+    }
+    (output / "primary_accuracy_percentage_points.json").write_text(
+        json.dumps(table, indent=2) + "\n"
+    )
+
+
 def template_worker(project_root: Path, template_root: Path, output_dir: Path) -> Path:
     """Run the upstream combined renderers without copying or patching them."""
     project_root, template_root, output_dir = (
@@ -223,7 +249,7 @@ def template_worker(project_root: Path, template_root: Path, output_dir: Path) -
     sys.path.insert(0, str(template_root))
     from infrastructure.rendering import RenderManager, RenderingConfig
 
-    manuscript = project_root / "manuscript"
+    manuscript = project_root / "docs/manuscript"
     sources = sorted(
         path for path in manuscript.glob("*.md") if re.match(r"^\d{2}_", path.name)
     )
@@ -232,6 +258,7 @@ def template_worker(project_root: Path, template_root: Path, output_dir: Path) -
     import shutil
 
     runtime = project_root / "output"
+    prepare_validation_evidence(project_root)
     shutil.copytree(
         project_root / "results/figures", runtime / "figures", dirs_exist_ok=True
     )
@@ -250,16 +277,18 @@ def template_worker(project_root: Path, template_root: Path, output_dir: Path) -
     manager = RenderManager(
         config=config, manuscript_dir=manuscript, figures_dir=runtime / "figures"
     )
-    pdf = manager.render_combined_pdf(
-        sources, manuscript, project_name="active_inference_meta_pragmatic"
-    )
+    project_name = "active_inference_meta_pragmatic"
+    registered_projects = template_root.resolve() / "projects"
+    if project_root.is_relative_to(registered_projects):
+        project_name = project_root.relative_to(registered_projects).as_posix()
+    pdf = manager.render_combined_pdf(sources, manuscript, project_name=project_name)
     web_sources, projection = prepare_web_sources(
         project_root, sources, runtime / "pdf/_combined_manuscript.aux"
     )
     web = manager.render_combined_web(
         web_sources,
         runtime / "manuscript",
-        project_name="active_inference_meta_pragmatic",
+        project_name=project_name,
     )
     if not pdf.is_file() or not web.is_file():
         raise ValidationError("Both template PDF and HTML editions are required")
