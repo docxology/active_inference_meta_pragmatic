@@ -12,4 +12,4 @@ The standalone pipeline has six stages. Requested later stages execute preceding
 - `uv run python scripts/08_render_with_template.py --template-root /path/to/template`: produce the pinned template PDF/HTML editions and rendering receipt.
 - `uv run python scripts/09_validate_documentation.py`: validate the modular documentation index and actual local links.
 
-See [rendering](../docs/rendering_pipeline.md) and [documentation](../docs/README.md).
+See [rendering](../rendering_pipeline.md) and [documentation](../README.md).

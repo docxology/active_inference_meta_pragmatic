@@ -6,4 +6,4 @@ Use explicit labels, references, citation keys and figure paths. `utils.manuscri
 
 Every quantitative claim must trace to retained experiment evidence. Distinguish analytical identities, synthetic experiments, illustrative heuristics, untested proposals and literature context. Report seeds/units, train/test separation, controls, resource costs, uncertainty, multiplicity and limitations. Avoid unmeasured benchmarks, biological generalization, clinical guidance and security guarantees.
 
-Bibliographic metadata must match the cited source. Keep author/publication declarations unknown when not supplied; do not invent affiliations, funding, ORCID, email or journal status. See `docs/scholarship_audit.md` for the source-review scope.
+Bibliographic metadata must match the cited source. Keep author/publication declarations unknown when not supplied; do not invent affiliations, funding, ORCID, email or journal status. See [the scholarship audit](../scholarship_audit.md) for the source-review scope.

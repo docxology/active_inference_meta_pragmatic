@@ -29,4 +29,4 @@ assert abs(parts["normalized_total"] - parts["risk"] - parts["ambiguity"]) < 1e-
 
 The category and soft-evidence conventions differ deliberately. Invalid probabilities, mismatched dimensions and impossible evidence raise `utils.exceptions.ValidationError`. The tests include analytical expectations and real filesystem workflows; they use no mocks.
 
-For publication editions, run `uv run python scripts/08_render_with_template.py --template-root /path/to/template` after installing the template environment and TeX tools. Then run `uv run python scripts/09_validate_documentation.py`. See [rendering](rendering_pipeline.md) for setup and [outputs](output_conventions.md) for provenance refresh order.
+For publication editions, run `uv run python scripts/08_render_with_template.py --template-root /path/to/template --output-dir output/editions` after installing the template environment and TeX tools. Then run `uv run python scripts/09_validate_documentation.py`. See [rendering](rendering_pipeline.md) for setup and [outputs](output_conventions.md) for provenance refresh order.

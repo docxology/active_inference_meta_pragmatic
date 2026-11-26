@@ -6,7 +6,7 @@ A working research implementation of categorical active inference and a data/met
 
 ## Reproduce the research
 
-Version **1.0.0**: [GitHub release](https://github.com/docxology/active_inference_meta_pragmatic/releases/tag/v1.0.0), [Zenodo preprint](https://zenodo.org/records/23397453), DOI **10.5281/zenodo.23397453**. See [release notes](CHANGELOG.md) and [publication information](docs/release_v1.0.0.md).
+Version **1.0.0**: [GitHub release](https://github.com/docxology/active_inference_meta_pragmatic/releases/tag/v1.0.0), [Zenodo preprint](https://zenodo.org/records/23397453), DOI **10.5281/zenodo.23397453**. See [release notes](docs/changelog.md) and [publication information](docs/release_v1.0.0.md).
 
 Python 3.12 is the recorded environment; package support starts at Python 3.11, matching the pinned GNN parser's supported minimum. Set `GNN_ROOT` to the real Generalized_Notation_Notation checkout at the revision in `src/core/gnn_models/upstream.lock.json`; canonical GitVault placement is detected automatically.
 
@@ -83,11 +83,11 @@ The paper, *Active Inference as a Meta-Pragmatic Framework: Executable Models, E
 | `scripts/07_analysis_pipeline.py` | Standalone research workflow |
 | `scripts/08_render_with_template.py` | Pinned template PDF/HTML publication editions |
 | `scripts/09_validate_documentation.py` | Documentation index and local-link validation |
-| `manuscript/` | Numbered manuscript source and curated bibliography |
+| `docs/manuscript/` | Numbered manuscript source and curated bibliography |
 | `results/` | Retained numerical evidence, manuscript and figures |
 | `docs/` | Methods, API, architecture, scholarship and review notes |
 
-[Documentation index](docs/README.md) · [Quickstart](docs/quickstart.md) · [Methods and interpretation](docs/theoretical_primer.md) · [API](docs/api_reference.md) · [Architecture](docs/architecture.md) · [Scholarship audit](docs/scholarship_audit.md)
+[Manuscript source](docs/manuscript/README.md) · [Documentation index](docs/README.md) · [Quickstart](docs/quickstart.md) · [Methods and interpretation](docs/theoretical_primer.md) · [API](docs/api_reference.md) · [Architecture](docs/architecture.md) · [Scholarship audit](docs/scholarship_audit.md)
 
 ## Citation and license
 

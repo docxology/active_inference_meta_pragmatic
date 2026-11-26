@@ -19,10 +19,10 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--render", action="store_true")
     args = parser.parse_args()
-    result = validate_manuscript(project_root / "manuscript")
+    result = validate_manuscript(project_root / "docs/manuscript")
     if args.render:
         render_manuscript(
-            project_root / "manuscript", project_root / "results/manuscript.html"
+            project_root / "docs/manuscript", project_root / "results/manuscript.html"
         )
     print(json.dumps(result, indent=2))
 

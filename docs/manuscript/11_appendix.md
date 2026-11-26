@@ -7,7 +7,7 @@ This supplement retains the mathematical and experimental detail behind the main
 ```{=latex}
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.98\textwidth,height=0.78\textheight,keepaspectratio]{../results/figures/canonical_model_atlas.png}
+\includegraphics[width=0.98\textwidth,height=0.78\textheight,keepaspectratio]{../../results/figures/canonical_model_atlas.png}
 \caption{Actual imported GNN tensors make the model declarations inspectable. Each group prints likelihood A and action-specific transition B probabilities, with cell boundaries and all zero entries retained. A has outcome rows and hidden-state columns; B has after-action rows and before-action columns. Actions are named stay/switch or blind/inspect; the binary sensor's single B slice is repeated for layout. White means zero support and dark blue means probability one. Signed preference logits C and normalized initial beliefs D appear below each group. The stay/switch model is an analytical software control, not an additional experimental study.}
 \label{fig:canonical_model_atlas}
 \end{figure}
@@ -77,7 +77,7 @@ Policy selection accepts current posterior beliefs, with $D$ used when beliefs a
 ```{=latex}
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.95\textwidth]{../results/figures/efe_sensitivity.png}
+\includegraphics[width=0.95\textwidth]{../../results/figures/efe_sensitivity.png}
 \caption{An exact one-step decomposition separates information, ambiguity and outcome risk. For a binary symmetric likelihood, uniform state beliefs, identity transitions and C=(1,-1), (a) information gain rises toward the binary maximum ln 2 while ambiguity falls, and their sum stays ln 2. (b) Uniform predicted outcomes keep risk constant, so normalized expected free energy equals risk plus ambiguity throughout. Axis units are nats per policy step; distinct line styles identify the terms. The figure evaluates declared mathematics without fitted effects, sampling uncertainty or evidence that an agent's assumptions fit its world.}
 \label{fig:efe_sensitivity}
 \end{figure}
@@ -197,7 +197,7 @@ Figure \ref{fig:paired_diagnostics} evaluates the same matched seeds across clas
 ```{=latex}
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{../results/figures/paired_diagnostics.png}
+\includegraphics[width=\textwidth]{../../results/figures/paired_diagnostics.png}
 \caption{Paired differences preserve the common experimental units. Each row is the first named strategy minus the second on the same 30 seeds; points estimate the mean paired difference and capped dark bars show marginal 95 percent percentile-bootstrap intervals. (a) Positive accuracy differences favor the first strategy; (b,c) negative Brier or logarithmic-loss differences favor it. The dashed zero reference denotes equal scores. Accuracy uses percentage points and log loss uses nats; panel scales differ. These six exploratory comparisons do not have simultaneous interval coverage and do not expand the prespecified primary Holm testing family.}
 \label{fig:paired_diagnostics}
 \end{figure}
@@ -210,7 +210,7 @@ The stopping threshold expresses a procedural commitment about when current conf
 ```{=latex}
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{../results/figures/stopping_sensitivity.png}
+\includegraphics[width=\textwidth]{../../results/figures/stopping_sensitivity.png}
 \caption{The stopping threshold jointly changes prediction and sensing resources. Eleven required posterior-confidence thresholds are evaluated using the same retained states and potential reports. (a) Accuracy and (b) observation count show seed means with capped marginal 95 percent bootstrap intervals; markers denote evaluated thresholds, and connecting lines only guide the eye. The dashed reference identifies the original 0.90 rule. Higher thresholds can acquire additional reports up to the five-observation budget. This reused-data sensitivity analysis neither independently validates a selected threshold nor assigns a price to predictive errors or observation cost.}
 \label{fig:stopping_sensitivity}
 \end{figure}
@@ -227,7 +227,7 @@ The new action task distinguishes information quality from the preference for a 
 ```{=latex}
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{../results/figures/active_sensing_landscape.png}
+\includegraphics[width=\textwidth]{../../results/figures/active_sensing_landscape.png}
 \caption{Exact EFE policy consequences of changing information quality and outcome preference. The 187 cells represent separately materialized GNN reliability/logit combinations. (a) Inspection minus blind normalized expected free energy is in nats; negative values favor inspection. (b) The corresponding inspection probability uses policy precision 4. The outlined white contour denotes equal EFE and hence probability one half for these two policies. The cross locates the retained sampled design. Actions change observation mode while preserving context. These are model evaluations, not independent experimental replicates; they have no sampling intervals.}
 \label{fig:active_sensing_landscape}
 \end{figure}
@@ -246,7 +246,7 @@ In the retained action run, sampled EFE achieves 71.23% context accuracy with a 
 ```{=latex}
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.95\textwidth,height=0.76\textheight,keepaspectratio]{../results/figures/model_revision_map.png}
+\includegraphics[width=0.95\textwidth,height=0.76\textheight,keepaspectratio]{../../results/figures/model_revision_map.png}
 \caption{Inquiry roles and research procedures provide complementary descriptions of model work. (a) Q1 infers and acts; Q2 contextualizes evidence; Q3 monitors inquiry; Q4 evaluates and revises assumptions. Their responsibilities overlap. (b) Specification, execution, held-out evaluation and justified criticism form a proposed workflow. Arrows indicate procedural relations, not measured neural or causal connections. The experiments implement a bounded computational evaluation cycle and a supervised fitted-model comparison. Public participation, the authority to alter ends and open-ended autonomous revision remain outside the implemented mechanism.}
 \label{fig:model_revision_map}
 \end{figure}

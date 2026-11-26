@@ -136,8 +136,8 @@ def test_cover_uses_declared_asset_and_requires_description(tmp_path):
 
 
 def web_projection_fixture(root):
-    manuscript = root / "manuscript"
-    manuscript.mkdir()
+    manuscript = root / "docs/manuscript"
+    manuscript.mkdir(parents=True)
     for name in ("config.yaml", "references.bib", "preamble.md"):
         (manuscript / name).write_text("Source metadata\n")
     source = manuscript / "01_abstract.md"
@@ -153,7 +153,7 @@ F=G+H
 
 ```{=latex}
 \begin{figure}[h]
-\includegraphics[width=0.95\textwidth]{../results/figures/test.png}
+\includegraphics[width=0.95\textwidth]{../../results/figures/test.png}
 \caption{Retained evidence.}
 \label{fig:test}
 \end{figure}
@@ -169,7 +169,7 @@ F=G+H
 
 def test_web_projection_preserves_authorship_and_actual_numbers(tmp_path):
     source, aux = web_projection_fixture(tmp_path)
-    (tmp_path / "manuscript/config.yaml").write_text(
+    (tmp_path / "docs/manuscript/config.yaml").write_text(
         "paper:\n  title: Projection fixture\n"
     )
     original = source.read_bytes()
@@ -203,11 +203,11 @@ def test_malformed_cover_configuration_rejected(tmp_path, configuration):
 
 def test_projection_carries_selected_cover_and_red_link_style(tmp_path):
     source, aux = web_projection_fixture(tmp_path)
-    assets = tmp_path / "manuscript/assets"
+    assets = tmp_path / "docs/manuscript/assets"
     assets.mkdir()
     (assets / "graph.png").write_bytes(b"graphical abstract fixture")
     (assets / "publication.css").write_text("a:any-link{color:#cc0000!important}")
-    (tmp_path / "manuscript/config.yaml").write_text(
+    (tmp_path / "docs/manuscript/config.yaml").write_text(
         "paper:\n  cover:\n    image: assets/graph.png\n    alt: Scientific graphical abstract\n"
     )
     files, _ = prepare_web_sources(tmp_path, [source], aux)

@@ -35,11 +35,12 @@ def validate_documentation(project_root: Path) -> dict:
     files.extend(
         sorted(
             path
-            for folder in ("src", "scripts", "manuscript")
+            for folder in ("src", "scripts", "tests", "docs/manuscript")
             for path in (root / folder).rglob("*.md")
             if path.name in ("README.md", "AGENTS.md")
         )
     )
+    files.extend(sorted((root / "docs/developer").glob("*.md")))
     checked = 0
     for path in files:
         for target in _targets(path.read_text()):

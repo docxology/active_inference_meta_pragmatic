@@ -11,7 +11,7 @@ Figure \ref{fig:quadrant_experiment} shows why a single ranking would obscure th
 ```{=latex}
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.95\textwidth]{../results/figures/quadrant_experiment.png}
+\includegraphics[width=0.95\textwidth]{../../results/figures/quadrant_experiment.png}
 \caption{Predictive performance and observation use under seven explicit sensor strategies. Small symbols show 30 independent seed means; large symbols and capped dark bars show means and marginal 95 percent seed-bootstrap intervals. (a) Higher accuracy is better; (b,c) lower Brier and logarithmic loss is better; (d) acquired observations expose resource differences. Q1--Q4 refer to the implemented fixed-model, true-metadata, adaptive-sensing and fitted-model conditions, respectively; they do not test the full philosophical roles. Misled uses false metadata; F4/F5 use four/five reports. Counts exclude separate training. Paired contrasts, rather than overlap of these marginal intervals, address strategy differences.}
 \label{fig:quadrant_experiment}
 \end{figure}

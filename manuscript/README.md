@@ -1,9 +1,0 @@
-# Manuscript
-
-The numbered Markdown sections are authoritative source. The curated bibliography contains the records cited in those sections; source-review corrections and limits are in `../docs/scholarship_audit.md`.
-
-Sections 01–10 carry the main argument and principal figures. Section 01 has two prose paragraphs and the early quadrant map. Section 11 collects technical methods, derivations, sensitivity figures and retained result tables. Section 98 is the supplemental notation and conceptual glossary for the whole paper; section 99 is the shared bibliography. Preserve labels when moving technical material so main-text references continue to resolve. See the [editorial guide](../docs/editorial_structure.md).
-
-Generate source-backed figures and data with `uv run python scripts/07_analysis_pipeline.py`. Validate references and optionally render with `uv run python scripts/06_insert_all_figures.py --render`. The HTML at `../results/manuscript.html` uses native MathML and linked citations. Keep its figure directory beside the file.
-
-The work is a conceptual framework with synthetic demonstrations. It does not claim peer review, biological validation, universal quadrant benefits or tested security defenses. The author's verified ORCID, supplied affiliations (Active Inference Institute and FractiAI) and published DOI are recorded in the [publication identity receipt](../docs/publication_identity.json); [release documentation](../docs/release_v1.0.0.md) records the authorized public v1.0.0 archive. Funding and competing-interest declarations remain unspecified. Section 10 is titled Acknowledgments, Author Identity, and Research Integrity and discloses synthetic intelligence and AI assistance. The [research integrity guide](../docs/research_integrity.md) records the 0.35-inch page margins, abstract repository link and publication requirements; the [OODA guide](../docs/ooda.md) explains the conceptual connection.

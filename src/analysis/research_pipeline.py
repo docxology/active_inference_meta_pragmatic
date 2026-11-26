@@ -164,10 +164,10 @@ def run_pipeline(
         )
     if max(stages) >= 5:
         result["manuscript_validation"] = validate_manuscript(
-            Path(project_root) / "manuscript"
+            Path(project_root) / "docs/manuscript"
         )
         render_manuscript(
-            Path(project_root) / "manuscript", output_dir / "manuscript.html"
+            Path(project_root) / "docs/manuscript", output_dir / "manuscript.html"
         )
         (output_dir / "summary.json").write_text(
             json.dumps(result, indent=2, allow_nan=False) + "\n"

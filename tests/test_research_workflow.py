@@ -119,8 +119,8 @@ def test_mathematical_checks_and_exact_sweep():
 
 
 def make_manuscript(root):
-    directory = root / "manuscript"
-    directory.mkdir()
+    directory = root / "docs/manuscript"
+    directory.mkdir(parents=True)
     (directory / "references.bib").write_text(
         "@article{example, title={Example}, author={Author, A}, year={2026}, journal={Journal}, doi={10.1234/example}}"
     )
@@ -200,7 +200,7 @@ $$G=F+H$$
 
 ```{=latex}
 \begin{figure}[h]
-\includegraphics{../image.png}
+\includegraphics{../../image.png}
 \caption{A figure & caption}
 \label{fig:example}
 \end{figure}
